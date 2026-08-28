@@ -1,5 +1,5 @@
 from pathlib import Path
-import base64, hashlib, io, shutil, subprocess, sys, zipfile
+import base64, hashlib, io, os, shutil, subprocess, sys, zipfile
 
 ROOT = Path(__file__).resolve().parent
 BUNDLE = ROOT / 'bundle'
@@ -23,7 +23,11 @@ WORK.mkdir()
 with zipfile.ZipFile(io.BytesIO(archive)) as z:
     z.extractall(WORK)
 
-subprocess.run([sys.executable, 'build_site.py'], cwd=WORK, check=True)
+# The custom .com is now the permanent production URL. Allow an explicit
+# Cloudflare environment variable to override this later if needed.
+env = os.environ.copy()
+env.setdefault('SITE_BASE_URL', 'https://septicscope.com')
+subprocess.run([sys.executable, 'build_site.py'], cwd=WORK, check=True, env=env)
 shutil.copytree(WORK / 'site', OUTPUT)
 shutil.rmtree(WORK)
 print(f'SepticScope build complete: {OUTPUT}')
