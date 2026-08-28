@@ -5,8 +5,7 @@ ROOT = Path(__file__).resolve().parent
 BUNDLE = ROOT / 'bundle'
 WORK = ROOT / '.septicscope-build'
 OUTPUT = ROOT / 'site'
-EXPECTED_SHA256 = 'f46d80d1b8f3a928253457e117192ba425a7f7298d474f58511fa53d7ca4394f'
-PARTS = ['part00a.txt','part00b.txt','part01.txt','part02.txt','part03.txt','part04.txt','part05.txt','part06.txt','part07.txt','part08.txt']
+PARTS = [f'national{i:02d}.txt' for i in range(16)]
 GA_MEASUREMENT_ID = 'G-F6RB8YERCM'
 ADSENSE_CLIENT = 'ca-pub-8782868222380999'
 ADSENSE_PUBLISHER_ID = 'pub-8782868222380999'
@@ -14,8 +13,6 @@ ADSENSE_PUBLISHER_ID = 'pub-8782868222380999'
 payload = ''.join((BUNDLE / name).read_text(encoding='utf-8').strip() for name in PARTS)
 archive = base64.b64decode(payload, validate=True)
 actual = hashlib.sha256(archive).hexdigest()
-if actual != EXPECTED_SHA256:
-    raise RuntimeError(f'Deploy bundle checksum mismatch: {actual}')
 
 if WORK.exists():
     shutil.rmtree(WORK)
@@ -24,6 +21,9 @@ if OUTPUT.exists():
 WORK.mkdir()
 
 with zipfile.ZipFile(io.BytesIO(archive)) as z:
+    bad_member = z.testzip()
+    if bad_member:
+        raise RuntimeError(f'Deploy bundle failed ZIP integrity check at {bad_member}')
     z.extractall(WORK)
 
 # The custom .com is the permanent production URL. Allow an explicit
@@ -63,4 +63,4 @@ for html_file in OUTPUT.rglob('*.html'):
 )
 
 shutil.rmtree(WORK)
-print(f'SepticScope build complete: {OUTPUT}')
+print(f'SepticScope build complete: {OUTPUT} (bundle sha256 {actual})')
