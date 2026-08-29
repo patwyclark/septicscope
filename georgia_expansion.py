@@ -81,3 +81,4 @@ if entries:
     sitemap.write_text(sm, encoding='utf-8')
 
 print(f'Georgia expansion complete: +{len(ga_urls)} verified county guides')
+exec((ROOT / 'new_mexico_expansion.py').read_text(encoding='utf-8'), globals())
