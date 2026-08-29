@@ -125,6 +125,36 @@ for county,(phone,address) in KY_COUNTIES.items():
     url=write_county_page('Kentucky','kentucky',county,'Barren River District Health Department (local health department administering Kentucky’s onsite sewage program)',contact,sections,sources)
     ky_urls.append(url); ky_links.append(county)
 
+AL_STATE = 'https://www.alabamapublichealth.gov/onsite/index.html'
+AL_BEFORE = 'https://www.alabamapublichealth.gov/onsite/before-construction.html'
+AL_RECORDS = 'https://www.alabamapublichealth.gov/onsite/septic-tanks.html'
+AL_COUNTIES = {
+'Baldwin':('251-947-3618','22251 Palmer Street, Robertsdale, AL 36567','https://www.alabamapublichealth.gov/baldwin/sewage.html','https://www.alabamapublichealth.gov/baldwin/contact.html'),
+'Blount':('205-947-1076','1001 Lincoln Avenue, Oneonta, AL 35121','https://www.alabamapublichealth.gov/Blount/environmental-services.html','https://www.alabamapublichealth.gov/Blount/contact.html'),
+'Chambers':('334-756-0758','5 North Medical Park Drive, Valley, AL 36854',None,'https://www.alabamapublichealth.gov/chambers/contact.html'),
+'Cherokee':('256-927-7322','833 Cedar Bluff Road, Centre, AL 35960','https://www.alabamapublichealth.gov/cherokee/environmental-services.html','https://www.alabamapublichealth.gov/cherokee/contact.html'),
+'DeKalb':('256-845-7031','2401 Calvin Drive SW, Fort Payne, AL 35967',None,'https://www.alabamapublichealth.gov/Dekalb/contact.html'),
+'Houston':('334-678-2815','1781 East Cottonwood Road, Dothan, AL 36301','https://www.alabamapublichealth.gov/houston/sewage.html','https://www.alabamapublichealth.gov/houston/contact.html'),
+'Montgomery':('334-293-6452','3060 Mobile Highway, Montgomery, AL 36108','https://www.alabamapublichealth.gov/montgomery/sewage.html','https://www.alabamapublichealth.gov/about/locations.html'),
+}
+al_urls=[]; al_links=[]
+for county,(phone,address,sewage_url,contact_url) in AL_COUNTIES.items():
+    contact=f'{html.escape(county)} County Health Department Environmental Office — {html.escape(phone)}; {html.escape(address)}.'
+    sections=[
+    ('Permit before installation or repair','Alabama requires a permit from the local county health department before installing a new onsite sewage disposal system or repairing an existing system. The county environmental office is the local point of contact for the permit and inspection process.'),
+    ('Site and soil evaluation','ADPH directs property owners to have the site evaluated by an appropriate registered professional. Depending on site conditions and system type, this can involve a professional soils classifier, land surveyor, geologist, or engineer; engineered design is required for certain restricted sites or designed systems.'),
+    ('What goes into the application','State guidance identifies soils information, property or legal-description information, a plot plan and vicinity information among the materials used for permit review. The local health department reviews the application and site information before a Permit to Install is issued.'),
+    ('Installation and inspection','Do not begin construction until the Permit to Install has been issued. ADPH says system installers must be properly licensed, and county inspection or approval is required before the system is covered or placed into use.'),
+    ('Finding existing septic records','ADPH says property owners or their agents can contact the local health department for existing septic-system information. A completed permit or Approval for Use may include a diagram showing the installed tank and field-line layout.')]
+    sources=[('ADPH Soil and Onsite Sewage Branch',AL_STATE),('ADPH — before construction',AL_BEFORE),('ADPH — septic tank records and maintenance',AL_RECORDS),('County environmental/contact information',contact_url)]
+    if sewage_url:
+        sources.insert(0,(f'{county} County onsite/environmental sewage guidance',sewage_url))
+    if county == 'Cherokee':
+        sections.append(('Weiss Lake holding-tank rule','Cherokee County has a separate local rule for temporary sewage holding tanks within Alabama Power Company’s flood easement around Weiss Lake where sewer service is unavailable. That process requires a county application, a contract with a permitted pumper, county inspection and a permit before installation or use; it should not be treated as the ordinary septic-system process.'))
+        sources.append(('Cherokee County — sewage holding tanks','https://www.alabamapublichealth.gov/cherokee/sewage-holding-tanks.html'))
+    url=write_county_page('Alabama','alabama',county,f'{county} County Health Department, Environmental Office (Alabama Department of Public Health)',contact,sections,sources)
+    al_urls.append(url); al_links.append(county)
+
 def write_hub(state,state_slug,links,intro,note):
     items=''.join(f'<li><a href="/counties/{state_slug}/{slugify(c)}/">{html.escape(c)} County</a>{(" — "+html.escape(extra)) if extra else ""}</li>' for c,extra in links)
     page=f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{state} Septic Permit Guides by County | SepticScope</title><meta name="description" content="Official-source {state} septic permit guides by county."><link rel="canonical" href="https://septicscope.com/counties/{state_slug}/"><style>{COMMON_STYLE}</style>{ga_tag}{adsense_tag}</head><body><header><div class="nav"><a class="brand" href="/">SepticScope</a></div></header><main><p><a href="/counties/">← All county guides</a></p><h1>{state} septic permits by county</h1><p>{intro}</p><div class="note">{note}</div><h2>Choose a county</h2><ul class="grid">{items}</ul></main><footer><div>© 2026 SepticScope</div></footer></body></html>'''
@@ -132,6 +162,7 @@ def write_hub(state,state_slug,links,intro,note):
 
 write_hub('Tennessee','tennessee',[(c,o) for c,o in sorted(tn_links)],'These guides cover Tennessee counties where TDEC’s statewide Subsurface Sewage Disposal System process applies.','The nine Tennessee contract counties—Blount, Davidson, Hamilton, Jefferson, Knox, Madison, Sevier, Shelby and Williamson—remain excluded until their local septic procedures are documented individually.')
 write_hub('Kentucky','kentucky',[(c,'Barren River District Health Department') for c in sorted(ky_links)],'Kentucky administers onsite sewage through local health departments. This first Kentucky batch covers the eight counties served by Barren River District Health Department, whose official onsite-sewage program and county office contacts were validated.','Kentucky has 120 counties. SepticScope is adding them district-by-district so each page identifies a verified local permitting authority instead of publishing generic county pages.')
+write_hub('Alabama','alabama',[(c,'County Health Department Environmental Office') for c in sorted(al_links)],'Alabama’s Soil and Onsite Sewage Branch coordinates the onsite sewage program through county health departments. These first Alabama guides pair statewide permit rules with verified county environmental-office contacts and county-specific guidance where available.','This batch intentionally covers only counties whose environmental contact information and permitting role were validated from current ADPH pages. Additional Alabama counties will be added as their local information is checked.')
 
 county_index=OUTPUT/'counties'/'index.html'
 if county_index.exists():
@@ -139,12 +170,13 @@ if county_index.exists():
     promos=''
     if '/counties/tennessee/' not in text: promos += '<section><h2>Tennessee</h2><p><a href="/counties/tennessee/">Browse 86 verified Tennessee county septic guides →</a></p></section>'
     if '/counties/kentucky/' not in text: promos += '<section><h2>Kentucky</h2><p><a href="/counties/kentucky/">Browse the first 8 verified Kentucky county septic guides →</a></p></section>'
+    if '/counties/alabama/' not in text: promos += '<section><h2>Alabama</h2><p><a href="/counties/alabama/">Browse the first 7 verified Alabama county septic guides →</a></p></section>'
     if promos:
         text=text.replace('</main>',promos+'</main>',1) if '</main>' in text else text.replace('</body>',promos+'</body>',1)
         county_index.write_text(text,encoding='utf-8')
 
 sitemap=OUTPUT/'sitemap.xml'
-new_urls=['https://septicscope.com/counties/tennessee/']+tn_urls+['https://septicscope.com/counties/kentucky/']+ky_urls
+new_urls=['https://septicscope.com/counties/tennessee/']+tn_urls+['https://septicscope.com/counties/kentucky/']+ky_urls+['https://septicscope.com/counties/alabama/']+al_urls
 if sitemap.exists():
     sm=sitemap.read_text(encoding='utf-8')
 else:
@@ -155,4 +187,4 @@ if entries:
     sitemap.write_text(sm,encoding='utf-8')
 
 shutil.rmtree(WORK)
-print(f'SepticScope build complete: {OUTPUT} (+{len(tn_urls)} Tennessee counties, +{len(ky_urls)} Kentucky counties)')
+print(f'SepticScope build complete: {OUTPUT} (+{len(tn_urls)} Tennessee counties, +{len(ky_urls)} Kentucky counties, +{len(al_urls)} Alabama counties)')
