@@ -10,6 +10,7 @@ exec((ROOT / 'tennessee_contract_expansion.py').read_text(encoding='utf-8'), glo
 exec((ROOT / 'washington_third_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'ohio_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'wisconsin_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'wisconsin_additional_expansion.py').read_text(encoding='utf-8'), globals())
 
 # Add every current U.S. county/county-equivalent as either a verified guide or a clearly labeled lookup page.
 exec((ROOT / 'nationwide_county_lookup.py').read_text(encoding='utf-8'), globals())
