@@ -6,10 +6,12 @@ exec((ROOT / 'north_carolina_additional_expansion.py').read_text(encoding='utf-8
 exec((ROOT / 'north_carolina_third_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'north_carolina_fourth_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'washington_additional_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'tennessee_contract_expansion.py').read_text(encoding='utf-8'), globals())
 
 # Production deployment guard: fail the build if representative expansion pages are missing.
 required_pages = [
     OUTPUT / 'counties' / 'tennessee' / 'bedford' / 'index.html',
+    OUTPUT / 'counties' / 'tennessee' / 'hamilton' / 'index.html',
     OUTPUT / 'counties' / 'idaho' / 'ada' / 'index.html',
     OUTPUT / 'counties' / 'south-carolina' / 'greenville' / 'index.html',
     OUTPUT / 'counties' / 'arkansas' / 'benton' / 'index.html',
