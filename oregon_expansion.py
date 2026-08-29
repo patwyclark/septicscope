@@ -9,6 +9,7 @@ exec((ROOT / 'washington_additional_expansion.py').read_text(encoding='utf-8'), 
 exec((ROOT / 'tennessee_contract_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'washington_third_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'ohio_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'wisconsin_expansion.py').read_text(encoding='utf-8'), globals())
 
 # Add every current U.S. county/county-equivalent as either a verified guide or a clearly labeled lookup page.
 exec((ROOT / 'nationwide_county_lookup.py').read_text(encoding='utf-8'), globals())
@@ -37,6 +38,11 @@ required_pages = [
     OUTPUT / 'counties' / 'ohio' / 'delaware' / 'index.html',
     OUTPUT / 'counties' / 'ohio' / 'fairfield' / 'index.html',
     OUTPUT / 'counties' / 'ohio' / 'licking' / 'index.html',
+    OUTPUT / 'counties' / 'wisconsin' / 'waukesha' / 'index.html',
+    OUTPUT / 'counties' / 'wisconsin' / 'washington' / 'index.html',
+    OUTPUT / 'counties' / 'wisconsin' / 'brown' / 'index.html',
+    OUTPUT / 'counties' / 'wisconsin' / 'ozaukee' / 'index.html',
+    OUTPUT / 'counties' / 'wisconsin' / 'winnebago' / 'index.html',
     OUTPUT / 'counties' / 'california' / 'los-angeles' / 'index.html',
     OUTPUT / 'counties' / 'connecticut' / 'capitol' / 'index.html',
 ]
@@ -58,6 +64,12 @@ for ohio_county in ('franklin','delaware','fairfield','licking'):
         raise RuntimeError(f'Ohio verified page was replaced by fallback: {ohio_county}')
     if 'VERIFIED' not in ohio_text.upper():
         raise RuntimeError(f'Ohio verified marker missing: {ohio_county}')
+for wisconsin_county in ('waukesha','washington','brown','ozaukee','winnebago'):
+    wi_text=(OUTPUT/'counties'/'wisconsin'/wisconsin_county/'index.html').read_text(encoding='utf-8')
+    if 'Local septic rules not yet verified' in wi_text:
+        raise RuntimeError(f'Wisconsin verified page was replaced by fallback: {wisconsin_county}')
+    if 'VERIFIED' not in wi_text.upper():
+        raise RuntimeError(f'Wisconsin verified marker missing: {wisconsin_county}')
 
 county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
 (OUTPUT / 'deployment-manifest.txt').write_text(
@@ -66,6 +78,7 @@ county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
     f'County/state index files under /counties/: {len(county_index_files)}\n'
     'Nationwide county lookup: PASS\n'
     'Ohio verified expansion: PASS (+4)\n'
+    'Wisconsin verified expansion: PASS (+5)\n'
     'Representative expansion pages: PASS\n'
     'Site menu repair: PASS\n',
     encoding='utf-8'
