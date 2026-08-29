@@ -4,3 +4,4 @@ exec((ROOT / 'north_carolina_expansion.py').read_text(encoding='utf-8'), globals
 exec((ROOT / 'alabama_additional_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'north_carolina_additional_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'north_carolina_third_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'north_carolina_fourth_expansion.py').read_text(encoding='utf-8'), globals())
