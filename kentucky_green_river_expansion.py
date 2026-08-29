@@ -98,3 +98,6 @@ if entries:
     sitemap.write_text(sm, encoding='utf-8')
 
 print(f'Kentucky Green River expansion complete: +{len(ky_grdhd_urls)} verified county guides')
+
+# Continue with the next validated local-authority batch.
+exec((ROOT / 'virginia_rappahannock_rapidan_expansion.py').read_text(encoding='utf-8'), globals())
