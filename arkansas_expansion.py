@@ -85,3 +85,4 @@ if entries:
     sitemap.write_text(sm, encoding='utf-8')
 
 print(f'Arkansas expansion complete: +{len(ar_urls)} verified county guides')
+exec((ROOT / 'washington_expansion.py').read_text(encoding='utf-8'), globals())
