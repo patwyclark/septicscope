@@ -14,6 +14,7 @@ exec((ROOT / 'wisconsin_additional_expansion.py').read_text(encoding='utf-8'), g
 exec((ROOT / 'michigan_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'high_population_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'texas_additional_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'texas_third_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'georgia_additional_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'florida_expansion.py').read_text(encoding='utf-8'), globals())
 
@@ -44,6 +45,10 @@ required_pages = [
     OUTPUT / 'counties' / 'texas' / 'travis' / 'index.html',
     OUTPUT / 'counties' / 'texas' / 'hays' / 'index.html',
     OUTPUT / 'counties' / 'texas' / 'montgomery' / 'index.html',
+    OUTPUT / 'counties' / 'texas' / 'williamson' / 'index.html',
+    OUTPUT / 'counties' / 'texas' / 'comal' / 'index.html',
+    OUTPUT / 'counties' / 'texas' / 'guadalupe' / 'index.html',
+    OUTPUT / 'counties' / 'texas' / 'bastrop' / 'index.html',
     OUTPUT / 'counties' / 'georgia' / 'forsyth' / 'index.html',
     OUTPUT / 'counties' / 'georgia' / 'hall' / 'index.html',
     OUTPUT / 'counties' / 'georgia' / 'cherokee' / 'index.html',
@@ -74,6 +79,7 @@ verified_batches = {
     'Wisconsin': ('wisconsin', ('waukesha','washington','brown','ozaukee','winnebago','dane','sheboygan','walworth','rock','dodge','fond-du-lac')),
     'Michigan': ('michigan', ('oakland','ottawa','kent','washtenaw','ingham')),
     'Texas additional': ('texas', ('fort-bend','travis','hays','montgomery')),
+    'Texas third': ('texas', ('williamson','comal','guadalupe','bastrop')),
     'Georgia additional': ('georgia', ('forsyth','hall','cherokee')),
     'Florida': ('florida', ('lee','pasco','hernando','polk')),
     'High population': ('MULTI', ()),
@@ -104,6 +110,7 @@ county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
     'Michigan verified expansion: PASS (+5)\n'
     'High-population verified expansion: PASS (+4)\n'
     'Texas additional verified expansion: PASS (+4)\n'
+    'Texas third verified expansion: PASS (+4)\n'
     'Georgia additional verified expansion: PASS (+3)\n'
     'Florida verified expansion: PASS (+4)\n'
     'Representative expansion pages: PASS\n'
