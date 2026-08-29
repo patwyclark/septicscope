@@ -188,3 +188,4 @@ if entries:
 
 shutil.rmtree(WORK)
 print(f'SepticScope build complete: {OUTPUT} (+{len(tn_urls)} Tennessee counties, +{len(ky_urls)} Kentucky counties, +{len(al_urls)} Alabama counties)')
+exec((ROOT / 'georgia_expansion.py').read_text(encoding='utf-8'), globals())
