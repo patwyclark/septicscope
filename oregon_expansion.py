@@ -12,6 +12,7 @@ exec((ROOT / 'ohio_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'wisconsin_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'wisconsin_additional_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'michigan_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'high_population_expansion.py').read_text(encoding='utf-8'), globals())
 
 # Add every current U.S. county/county-equivalent as either a verified guide or a clearly labeled lookup page.
 exec((ROOT / 'nationwide_county_lookup.py').read_text(encoding='utf-8'), globals())
@@ -26,36 +27,18 @@ required_pages = [
     OUTPUT / 'counties' / 'idaho' / 'ada' / 'index.html',
     OUTPUT / 'counties' / 'south-carolina' / 'greenville' / 'index.html',
     OUTPUT / 'counties' / 'arkansas' / 'benton' / 'index.html',
-    OUTPUT / 'counties' / 'washington' / 'clark' / 'index.html',
     OUTPUT / 'counties' / 'washington' / 'king' / 'index.html',
-    OUTPUT / 'counties' / 'washington' / 'spokane' / 'index.html',
     OUTPUT / 'counties' / 'washington' / 'yakima' / 'index.html',
-    OUTPUT / 'counties' / 'washington' / 'whatcom' / 'index.html',
     OUTPUT / 'counties' / 'oregon' / 'clackamas' / 'index.html',
     OUTPUT / 'counties' / 'north-carolina' / 'guilford' / 'index.html',
-    OUTPUT / 'counties' / 'north-carolina' / 'brunswick' / 'index.html',
-    OUTPUT / 'counties' / 'north-carolina' / 'gaston' / 'index.html',
     OUTPUT / 'counties' / 'alabama' / 'mobile' / 'index.html',
     OUTPUT / 'counties' / 'ohio' / 'franklin' / 'index.html',
-    OUTPUT / 'counties' / 'ohio' / 'delaware' / 'index.html',
-    OUTPUT / 'counties' / 'ohio' / 'fairfield' / 'index.html',
-    OUTPUT / 'counties' / 'ohio' / 'licking' / 'index.html',
     OUTPUT / 'counties' / 'wisconsin' / 'waukesha' / 'index.html',
-    OUTPUT / 'counties' / 'wisconsin' / 'washington' / 'index.html',
-    OUTPUT / 'counties' / 'wisconsin' / 'brown' / 'index.html',
-    OUTPUT / 'counties' / 'wisconsin' / 'ozaukee' / 'index.html',
-    OUTPUT / 'counties' / 'wisconsin' / 'winnebago' / 'index.html',
-    OUTPUT / 'counties' / 'wisconsin' / 'dane' / 'index.html',
-    OUTPUT / 'counties' / 'wisconsin' / 'sheboygan' / 'index.html',
-    OUTPUT / 'counties' / 'wisconsin' / 'walworth' / 'index.html',
-    OUTPUT / 'counties' / 'wisconsin' / 'rock' / 'index.html',
-    OUTPUT / 'counties' / 'wisconsin' / 'dodge' / 'index.html',
-    OUTPUT / 'counties' / 'wisconsin' / 'fond-du-lac' / 'index.html',
     OUTPUT / 'counties' / 'michigan' / 'oakland' / 'index.html',
-    OUTPUT / 'counties' / 'michigan' / 'ottawa' / 'index.html',
-    OUTPUT / 'counties' / 'michigan' / 'kent' / 'index.html',
-    OUTPUT / 'counties' / 'michigan' / 'washtenaw' / 'index.html',
-    OUTPUT / 'counties' / 'michigan' / 'ingham' / 'index.html',
+    OUTPUT / 'counties' / 'texas' / 'denton' / 'index.html',
+    OUTPUT / 'counties' / 'texas' / 'collin' / 'index.html',
+    OUTPUT / 'counties' / 'virginia' / 'fairfax' / 'index.html',
+    OUTPUT / 'counties' / 'maryland' / 'prince-george-s' / 'index.html',
     OUTPUT / 'counties' / 'california' / 'los-angeles' / 'index.html',
     OUTPUT / 'counties' / 'connecticut' / 'capitol' / 'index.html',
 ]
@@ -76,14 +59,22 @@ verified_batches = {
     'Ohio': ('ohio', ('franklin','delaware','fairfield','licking')),
     'Wisconsin': ('wisconsin', ('waukesha','washington','brown','ozaukee','winnebago','dane','sheboygan','walworth','rock','dodge','fond-du-lac')),
     'Michigan': ('michigan', ('oakland','ottawa','kent','washtenaw','ingham')),
+    'High population': ('MULTI', ()),
 }
 for label,(state_slug,counties) in verified_batches.items():
+    if state_slug == 'MULTI':
+        continue
     for county_slug in counties:
         page_text=(OUTPUT/'counties'/state_slug/county_slug/'index.html').read_text(encoding='utf-8')
         if 'Local septic rules not yet verified' in page_text:
             raise RuntimeError(f'{label} verified page was replaced by fallback: {county_slug}')
         if 'VERIFIED' not in page_text.upper():
             raise RuntimeError(f'{label} verified marker missing: {county_slug}')
+
+for state_slug,county_slug in (('texas','denton'),('texas','collin'),('virginia','fairfax'),('maryland','prince-george-s')):
+    page_text=(OUTPUT/'counties'/state_slug/county_slug/'index.html').read_text(encoding='utf-8')
+    if 'Local septic rules not yet verified' in page_text or 'VERIFIED' not in page_text.upper():
+        raise RuntimeError(f'High-population verified page failed: {state_slug}/{county_slug}')
 
 county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
 (OUTPUT / 'deployment-manifest.txt').write_text(
@@ -94,6 +85,7 @@ county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
     'Ohio verified expansion: PASS (+4)\n'
     'Wisconsin verified expansions: PASS (+11)\n'
     'Michigan verified expansion: PASS (+5)\n'
+    'High-population verified expansion: PASS (+4)\n'
     'Representative expansion pages: PASS\n'
     'Site menu repair: PASS\n',
     encoding='utf-8'
