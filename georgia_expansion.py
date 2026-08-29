@@ -82,3 +82,4 @@ if entries:
 
 print(f'Georgia expansion complete: +{len(ga_urls)} verified county guides')
 exec((ROOT / 'new_mexico_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'south_carolina_expansion.py').read_text(encoding='utf-8'), globals())
