@@ -9,7 +9,10 @@ exec((ROOT / 'washington_additional_expansion.py').read_text(encoding='utf-8'), 
 exec((ROOT / 'tennessee_contract_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'washington_third_expansion.py').read_text(encoding='utf-8'), globals())
 
-# Apply shared UI repairs only after every content generator has finished.
+# Add every current U.S. county/county-equivalent as either a verified guide or a clearly labeled lookup page.
+exec((ROOT / 'nationwide_county_lookup.py').read_text(encoding='utf-8'), globals())
+
+# Apply shared UI repairs only after every content generator has finished, including nationwide fallback pages.
 exec((ROOT / 'site_ui_fix.py').read_text(encoding='utf-8'), globals())
 
 # Production deployment guard: fail the build if representative expansion pages are missing.
@@ -29,16 +32,28 @@ required_pages = [
     OUTPUT / 'counties' / 'north-carolina' / 'brunswick' / 'index.html',
     OUTPUT / 'counties' / 'north-carolina' / 'gaston' / 'index.html',
     OUTPUT / 'counties' / 'alabama' / 'mobile' / 'index.html',
+    OUTPUT / 'counties' / 'california' / 'los-angeles' / 'index.html',
+    OUTPUT / 'counties' / 'connecticut' / 'capitol' / 'index.html',
 ]
 missing_pages = [str(p.relative_to(OUTPUT)) for p in required_pages if not p.exists()]
 if missing_pages:
     raise RuntimeError('County expansion deployment guard failed; missing: ' + ', '.join(missing_pages))
+
+home_text=(OUTPUT/'index.html').read_text(encoding='utf-8')
+if 'Indiana launch' in home_text or 'Five Indiana counties are live in the launch build.' in home_text:
+    raise RuntimeError('Homepage still contains obsolete Indiana-launch positioning')
+if 'Search all 3,144 U.S. counties and county equivalents.' not in home_text:
+    raise RuntimeError('Homepage nationwide county message is missing')
+lookup_text=(OUTPUT/'counties'/'california'/'los-angeles'/'index.html').read_text(encoding='utf-8')
+if 'Local septic rules not yet verified' not in lookup_text:
+    raise RuntimeError('Nationwide fallback labeling is missing')
 
 county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
 (OUTPUT / 'deployment-manifest.txt').write_text(
     'SepticScope production county expansion build\n'
     'Validated: 2026-08-29\n'
     f'County/state index files under /counties/: {len(county_index_files)}\n'
+    'Nationwide county lookup: PASS\n'
     'Representative expansion pages: PASS\n'
     'Site menu repair: PASS\n',
     encoding='utf-8'
