@@ -99,3 +99,4 @@ if entries:
     sitemap.write_text(sm, encoding='utf-8')
 
 print(f'New Mexico expansion complete: +{len(nm_urls)} verified county guides')
+exec((ROOT / 'idaho_expansion.py').read_text(encoding='utf-8'), globals())
