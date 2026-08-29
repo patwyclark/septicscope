@@ -93,3 +93,6 @@ if entries:
     sitemap.write_text(sm, encoding='utf-8')
 
 print(f'North Dakota expansion complete: +{len(nd_urls)} verified county guides')
+
+# Continue with the next validated district batch.
+exec((ROOT / 'kentucky_green_river_expansion.py').read_text(encoding='utf-8'))
