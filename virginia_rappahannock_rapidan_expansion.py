@@ -85,3 +85,4 @@ if entries:
     sitemap.write_text(sm, encoding='utf-8')
 
 print(f'Virginia Rappahannock-Rapidan expansion complete: +{len(va_urls)} verified county guides')
+exec((ROOT / 'arkansas_expansion.py').read_text(encoding='utf-8'), globals())
