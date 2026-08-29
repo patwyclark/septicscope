@@ -136,3 +136,4 @@ if entries:
     sitemap.write_text(sm, encoding='utf-8')
 
 print(f'South Carolina expansion complete: +{len(sc_urls)} verified county guides')
+exec((ROOT / 'north_dakota_expansion.py').read_text(encoding='utf-8'), globals())
