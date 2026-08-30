@@ -75,3 +75,6 @@ for d in MI2_COUNTIES:
         raise RuntimeError(f'Michigan additional verified page failed: {d["county"]}')
 
 print(f'Michigan additional expansion complete: +{len(mi2_urls)} verified county guides; 8 verified Michigan counties total')
+
+# Continue with the verified Nevada county batch before nationwide fallback generation.
+exec((ROOT / 'nevada_expansion.py').read_text(encoding='utf-8'), globals())
