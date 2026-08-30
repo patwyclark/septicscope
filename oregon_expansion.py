@@ -19,6 +19,7 @@ exec((ROOT / 'georgia_additional_expansion.py').read_text(encoding='utf-8'), glo
 exec((ROOT / 'florida_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'arizona_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'virginia_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'colorado_expansion.py').read_text(encoding='utf-8'), globals())
 
 # Add every current U.S. county/county-equivalent as either a verified guide or a clearly labeled lookup page.
 exec((ROOT / 'nationwide_county_lookup.py').read_text(encoding='utf-8'), globals())
@@ -65,6 +66,9 @@ required_pages = [
     OUTPUT / 'counties' / 'virginia' / 'loudoun' / 'index.html',
     OUTPUT / 'counties' / 'virginia' / 'chesterfield' / 'index.html',
     OUTPUT / 'counties' / 'virginia' / 'albemarle' / 'index.html',
+    OUTPUT / 'counties' / 'colorado' / 'el-paso' / 'index.html',
+    OUTPUT / 'counties' / 'colorado' / 'larimer' / 'index.html',
+    OUTPUT / 'counties' / 'colorado' / 'weld' / 'index.html',
     OUTPUT / 'counties' / 'virginia' / 'fairfax' / 'index.html',
     OUTPUT / 'counties' / 'maryland' / 'prince-george-s' / 'index.html',
     OUTPUT / 'counties' / 'california' / 'los-angeles' / 'index.html',
@@ -93,6 +97,7 @@ verified_batches = {
     'Florida': ('florida', ('lee','pasco','hernando','polk')),
     'Arizona': ('arizona', ('maricopa','pima','yavapai','coconino')),
     'Virginia': ('virginia', ('loudoun','chesterfield','albemarle')),
+    'Colorado': ('colorado', ('el-paso','larimer','weld')),
     'High population': ('MULTI', ()),
 }
 for label,(state_slug,counties) in verified_batches.items():
@@ -113,7 +118,7 @@ for state_slug,county_slug in (('texas','denton'),('texas','collin'),('virginia'
 county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
 (OUTPUT / 'deployment-manifest.txt').write_text(
     'SepticScope production county expansion build\n'
-    'Validated: 2026-08-29\n'
+    'Validated: 2026-08-30\n'
     f'County/state index files under /counties/: {len(county_index_files)}\n'
     'Nationwide county lookup: PASS\n'
     'Ohio verified expansion: PASS (+4)\n'
@@ -126,6 +131,7 @@ county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
     'Florida verified expansion: PASS (+4)\n'
     'Arizona verified expansion: PASS (+4)\n'
     'Virginia verified expansion: PASS (+3)\n'
+    'Colorado verified expansion: PASS (+3)\n'
     'Representative expansion pages: PASS\n'
     'Site menu repair: PASS\n',
     encoding='utf-8'
