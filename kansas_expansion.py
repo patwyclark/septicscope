@@ -106,3 +106,4 @@ for d in KS_COUNTIES:
         raise RuntimeError(f'Kansas verified page failed: {d["county"]}')
 
 print(f'Kansas expansion complete: +{len(ks_urls)} verified county guides')
+exec((ROOT / 'new_york_expansion.py').read_text(encoding='utf-8'), globals())
