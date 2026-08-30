@@ -27,25 +27,6 @@ WA4_COUNTIES = [
         ],
     },
     {
-        'county': 'Whatcom',
-        'authority': 'Whatcom County Health and Community Services — Environmental Health, On-Site Sewage Program',
-        'contact': 'Whatcom County Health and Community Services, 509 Girard Street, Bellingham, WA 98225; 360-778-6000. Environmental Health administers local onsite sewage permitting, records, professional licensing, and operation-and-maintenance requirements.',
-        'sources': [
-            ('Whatcom County — On Site Sewage', 'https://www.whatcomcounty.us/891/On-Site-Sewage'),
-            ('Whatcom County — WCC 24.05 Code Update', 'https://www.whatcomcounty.us/4605/WCC-2405-Code-Update'),
-            ('Whatcom County — Licensed On Site Sewage Installers', 'https://www.whatcomcounty.us/1917/Licensed-On-Site-Sewage-Installers'),
-            ('Whatcom County — Septic & Drinking Water Records', 'https://www.whatcomcounty.us/3312/Septic-Drinking-Water-Records'),
-        ],
-        'sections': [
-            ('Permit required for most septic construction and modification', 'Whatcom County states that an OSS permit is required any time a septic system is constructed, repaired, replaced, modified, connected to, or expanded. The county separately lists limited minor maintenance items that do not require an OSS permit.'),
-            ('Current local code', 'Whatcom County has maintained local onsite-sewage regulations since the 1960s. The County Council adopted revisions to Whatcom County Code 24.05 on March 11, 2025 for implementation April 1, 2025, aligning the local program with Washington’s revised Chapter 246-272A WAC.'),
-            ('Licensed designer or professional engineer required', 'Whatcom County states that state and county sewage-control regulations require a licensed onsite sewage designer or registered professional engineer to design the OSS. Applicants should not rely on an owner-prepared design unless a specific county exemption applies.'),
-            ('County-licensed installer requirement', 'Whatcom County states that only onsite sewage installers licensed in Whatcom County may install OSS in the county, subject to the county’s homeowner-installation exemption process. The installer program also requires current contractor-registration documentation and county licensing.'),
-            ('Reserve area protection', 'Whatcom County identifies the reserve area on the OSS permit as the location held for a future replacement drainfield. The county directs owners to keep the reserve area free of impermeable surfaces such as buildings and pavement and notes that older reserve-area approvals may need redesign to current code when a new permit action occurs.'),
-            ('Official septic records', 'Whatcom County provides approved OSS permits, Reports of System Status, plats, and related environmental-health records through its online record system. Property owners can search by property ID, GeoID, or parcel number and contact Environmental Health when older records are not online.'),
-        ],
-    },
-    {
         'county': 'Skagit',
         'authority': 'Skagit County Public Health — Environmental Health, On-Site Sewage Program',
         'contact': 'Skagit County Public Health Environmental Health; septic program 360-416-1500, septic@co.skagit.wa.us. The department reviews site evaluations and permit applications and regulates local onsite sewage installation, operation, maintenance, and monitoring.',
@@ -61,6 +42,25 @@ WA4_COUNTIES = [
             ('Site evaluations and permit applications are reviewed by Public Health', 'The county’s sewage program specifically identifies site evaluations and permit applications as Health Department review functions. Applicants should complete the current county application and site-review process before installing or altering an onsite system.'),
             ('Ongoing inspection and maintenance records', 'Skagit County operates an ongoing septic inspection and maintenance program and provides financial-assistance programs tied to work performed by county-certified operations-and-maintenance providers. Current county provider applications also require timely submission of pumping and system-status reports.'),
             ('Current fee schedule is published by the Board of Health', 'Skagit County Public Health publishes a Board of Health Schedule of Charges and states that the current preapproved schedule took effect February 1, 2026. Applicants should use that current schedule for permit and review costs because fees vary by service.'),
+        ],
+    },
+    {
+        'county': 'Jefferson',
+        'authority': 'Jefferson County Public Health — Environmental Public Health, On-Site Sewage Program',
+        'contact': 'Jefferson County Environmental Public Health, 617 Sheridan Street, Port Townsend, WA 98368; 360-385-9444. The On-Site Sewage Program reviews and issues installation and repair permits, inspects installations, enforces state/local code, and certifies local septic professionals.',
+        'sources': [
+            ('Jefferson County — Septic Systems', 'https://www.co.jefferson.wa.us/650/Septic-Systems'),
+            ('Jefferson County — Licensed/Certified Septic System Professionals', 'https://www.co.jefferson.wa.us/655/LicensedCertified-Septic-System-Professi'),
+            ('Jefferson County — Operation and Monitoring Inspection', 'https://www.co.jefferson.wa.us/657/Operation-and-Monitoring-OM-Inspection'),
+            ('Jefferson County — Permit Files Online', 'https://www.co.jefferson.wa.us/661/Permit-Files-Online'),
+        ],
+        'sections': [
+            ('County Public Health issues installation and repair permits', 'Jefferson County’s On-Site Sewage Program lists review and issuance of installation and repair permits among its core program activities, together with installation inspection, complaint investigation, monitoring, education, and enforcement of state and local onsite-sewage codes.'),
+            ('Current local code', 'Jefferson County publishes Onsite Sewage Code 8.15 with revisions effective April 1, 2025. Applicants should use the current county code and Public Health permit process rather than older local septic instructions.'),
+            ('Designers are state licensed; installers and O&M specialists are county certified', 'Jefferson County states that onsite sewage designers are licensed by Washington State and may design in the county. Septic installers and operations-and-monitoring specialists must be certified by Jefferson County Environmental Health; out-of-county contractors still need Jefferson County certification to perform those services locally.'),
+            ('Routine inspection frequency depends on system type', 'Jefferson County requires regular operation-and-monitoring inspections. Conventional gravity systems are listed on a three-year interval, while pump-to-gravity, pressurized systems, sand filters, mounds, aerobic treatment units, proprietary devices, and food-service systems are listed for annual inspection.'),
+            ('Some homeowners may inspect eligible systems after authorization', 'Jefferson County allows qualifying owners of certain residential conventional gravity, pressure distribution, mound, and sand-filter systems to perform homeowner inspections after meeting the county’s eligibility, training, record, and authorization requirements. Other system types require professional inspection.'),
+            ('Septic permit records are available online', 'Jefferson County provides selected septic case-file records online, including available permit applications, approved permits and conditions, approved designs, soil reports, as-builts or record drawings, construction reports, and county correspondence. Environmental Health can provide additional file information when the online record is incomplete.'),
         ],
     },
 ]
