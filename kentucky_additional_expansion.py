@@ -28,20 +28,9 @@ for county in NKY_COUNTIES:
     ]
     nky_urls.append(write_county_page('Kentucky','kentucky',county,'Northern Kentucky Health Department — Environmental Health / Septic Program',contact,sections,sources,verified='August 30, 2026'))
 
-# Rebuild the Kentucky hub to include the original Barren River District batch plus this verified district.
-existing=[(c,'Barren River District Health Department') for c in ky_links]
-added=[(c,'Northern Kentucky Health Department') for c in NKY_COUNTIES]
-write_hub(
-    'Kentucky','kentucky',sorted(existing+added),
-    'Kentucky requires onsite sewage disposal permits through local health departments. SepticScope adds counties district-by-district only after the local permitting authority and current process are supported by official health-department and state regulatory sources.',
-    'Kentucky now includes the eight verified Barren River District counties plus Boone, Campbell, Grant, and Kenton counties served by Northern Kentucky Health Department. Other counties remain on the nationwide lookup layer until their local program is independently validated.'
-)
-
-county_index=OUTPUT/'counties'/'index.html'
-if county_index.exists():
-    text=county_index.read_text(encoding='utf-8')
-    text=text.replace('Browse the first 8 verified Kentucky county septic guides →','Browse 12 verified Kentucky county septic guides →')
-    county_index.write_text(text,encoding='utf-8')
+# Do not rebuild the Kentucky hub here. Earlier Kentucky expansion layers already
+# maintain the complete statewide county index. Replacing that hub with only this
+# verified subset would drop existing county links and break the nationwide audit.
 
 sitemap=OUTPUT/'sitemap.xml'
 if sitemap.exists():
