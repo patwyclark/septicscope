@@ -67,3 +67,6 @@ for d in IA2_COUNTIES:
         raise RuntimeError(f'Iowa additional verified page failed: {d["county"]}')
 
 print(f'Iowa additional expansion complete: +{len(ia2_urls)} verified county guides; 7 verified Iowa counties total')
+
+# Continue with the additional locally verified Michigan county batch before nationwide fallback generation.
+exec((ROOT / 'michigan_additional_expansion.py').read_text(encoding='utf-8'), globals())
