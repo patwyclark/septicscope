@@ -20,6 +20,7 @@ exec((ROOT / 'florida_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'arizona_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'virginia_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'colorado_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'iowa_expansion.py').read_text(encoding='utf-8'), globals())
 
 # Add every current U.S. county/county-equivalent as either a verified guide or a clearly labeled lookup page.
 exec((ROOT / 'nationwide_county_lookup.py').read_text(encoding='utf-8'), globals())
@@ -69,6 +70,10 @@ required_pages = [
     OUTPUT / 'counties' / 'colorado' / 'el-paso' / 'index.html',
     OUTPUT / 'counties' / 'colorado' / 'larimer' / 'index.html',
     OUTPUT / 'counties' / 'colorado' / 'weld' / 'index.html',
+    OUTPUT / 'counties' / 'iowa' / 'polk' / 'index.html',
+    OUTPUT / 'counties' / 'iowa' / 'linn' / 'index.html',
+    OUTPUT / 'counties' / 'iowa' / 'story' / 'index.html',
+    OUTPUT / 'counties' / 'iowa' / 'johnson' / 'index.html',
     OUTPUT / 'counties' / 'virginia' / 'fairfax' / 'index.html',
     OUTPUT / 'counties' / 'maryland' / 'prince-george-s' / 'index.html',
     OUTPUT / 'counties' / 'california' / 'los-angeles' / 'index.html',
@@ -98,6 +103,7 @@ verified_batches = {
     'Arizona': ('arizona', ('maricopa','pima','yavapai','coconino')),
     'Virginia': ('virginia', ('loudoun','chesterfield','albemarle')),
     'Colorado': ('colorado', ('el-paso','larimer','weld')),
+    'Iowa': ('iowa', ('polk','linn','story','johnson')),
     'High population': ('MULTI', ()),
 }
 for label,(state_slug,counties) in verified_batches.items():
@@ -132,6 +138,7 @@ county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
     'Arizona verified expansion: PASS (+4)\n'
     'Virginia verified expansion: PASS (+3)\n'
     'Colorado verified expansion: PASS (+3)\n'
+    'Iowa verified expansion: PASS (+4)\n'
     'Representative expansion pages: PASS\n'
     'Site menu repair: PASS\n',
     encoding='utf-8'
