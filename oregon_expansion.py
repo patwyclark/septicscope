@@ -7,6 +7,7 @@ exec((ROOT / 'north_carolina_third_expansion.py').read_text(encoding='utf-8'), g
 exec((ROOT / 'north_carolina_fourth_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'washington_additional_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'tennessee_contract_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'tennessee_contract_final_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'washington_third_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'ohio_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'wisconsin_expansion.py').read_text(encoding='utf-8'), globals())
@@ -32,6 +33,9 @@ exec((ROOT / 'site_ui_fix.py').read_text(encoding='utf-8'), globals())
 required_pages = [
     OUTPUT / 'counties' / 'tennessee' / 'bedford' / 'index.html',
     OUTPUT / 'counties' / 'tennessee' / 'hamilton' / 'index.html',
+    OUTPUT / 'counties' / 'tennessee' / 'davidson' / 'index.html',
+    OUTPUT / 'counties' / 'tennessee' / 'knox' / 'index.html',
+    OUTPUT / 'counties' / 'tennessee' / 'sevier' / 'index.html',
     OUTPUT / 'counties' / 'idaho' / 'ada' / 'index.html',
     OUTPUT / 'counties' / 'south-carolina' / 'greenville' / 'index.html',
     OUTPUT / 'counties' / 'arkansas' / 'benton' / 'index.html',
@@ -93,6 +97,7 @@ if 'Local septic rules not yet verified' not in lookup_text:
     raise RuntimeError('Nationwide fallback labeling is missing')
 
 verified_batches = {
+    'Tennessee contract completion': ('tennessee', ('davidson','knox','sevier')),
     'Ohio': ('ohio', ('franklin','delaware','fairfield','licking')),
     'Wisconsin': ('wisconsin', ('waukesha','washington','brown','ozaukee','winnebago','dane','sheboygan','walworth','rock','dodge','fond-du-lac')),
     'Michigan': ('michigan', ('oakland','ottawa','kent','washtenaw','ingham')),
@@ -127,6 +132,7 @@ county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
     'Validated: 2026-08-30\n'
     f'County/state index files under /counties/: {len(county_index_files)}\n'
     'Nationwide county lookup: PASS\n'
+    'Tennessee contract completion: PASS (+3; all 95 counties now verified)\n'
     'Ohio verified expansion: PASS (+4)\n'
     'Wisconsin verified expansions: PASS (+11)\n'
     'Michigan verified expansion: PASS (+5)\n'
