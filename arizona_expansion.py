@@ -100,3 +100,6 @@ if sitemap.exists():
         sitemap.write_text(sm.replace('</urlset>', entries + '</urlset>'), encoding='utf-8')
 
 print(f'Arizona expansion complete: +{len(new_urls)} verified county guides')
+
+# Additional Arizona counties are kept in a separate researched batch but execute here so they remain ahead of nationwide fallback generation.
+exec((ROOT / 'arizona_additional_expansion.py').read_text(encoding='utf-8'), globals())
