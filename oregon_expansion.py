@@ -13,6 +13,7 @@ exec((ROOT / 'washington_third_expansion.py').read_text(encoding='utf-8'), globa
 exec((ROOT / 'ohio_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'wisconsin_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'wisconsin_additional_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'wisconsin_third_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'michigan_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'high_population_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'texas_additional_expansion.py').read_text(encoding='utf-8'), globals())
@@ -53,6 +54,9 @@ required_pages = [
     OUTPUT / 'counties' / 'alabama' / 'mobile' / 'index.html',
     OUTPUT / 'counties' / 'ohio' / 'franklin' / 'index.html',
     OUTPUT / 'counties' / 'wisconsin' / 'waukesha' / 'index.html',
+    OUTPUT / 'counties' / 'wisconsin' / 'kenosha' / 'index.html',
+    OUTPUT / 'counties' / 'wisconsin' / 'jefferson' / 'index.html',
+    OUTPUT / 'counties' / 'wisconsin' / 'sauk' / 'index.html',
     OUTPUT / 'counties' / 'michigan' / 'oakland' / 'index.html',
     OUTPUT / 'counties' / 'texas' / 'denton' / 'index.html',
     OUTPUT / 'counties' / 'texas' / 'collin' / 'index.html',
@@ -116,7 +120,7 @@ verified_batches = {
     'Tennessee contract completion': ('tennessee', ('davidson','knox','sevier')),
     'North Carolina fifth': ('north-carolina', ('carteret','onslow','pender')),
     'Ohio': ('ohio', ('franklin','delaware','fairfield','licking')),
-    'Wisconsin': ('wisconsin', ('waukesha','washington','brown','ozaukee','winnebago','dane','sheboygan','walworth','rock','dodge','fond-du-lac')),
+    'Wisconsin': ('wisconsin', ('waukesha','washington','brown','ozaukee','winnebago','dane','sheboygan','walworth','rock','dodge','fond-du-lac','kenosha','jefferson','sauk')),
     'Michigan': ('michigan', ('oakland','ottawa','kent','washtenaw','ingham')),
     'Texas additional': ('texas', ('fort-bend','travis','hays','montgomery')),
     'Texas third': ('texas', ('williamson','comal','guadalupe','bastrop')),
@@ -155,7 +159,7 @@ county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
     'Tennessee contract completion: PASS (+3; all 95 counties now verified)\n'
     'North Carolina fifth verified expansion: PASS (+3; 26 total verified NC counties)\n'
     'Ohio verified expansion: PASS (+4)\n'
-    'Wisconsin verified expansions: PASS (+11)\n'
+    'Wisconsin verified expansions: PASS (+14)\n'
     'Michigan verified expansion: PASS (+5)\n'
     'High-population verified expansion: PASS (+4)\n'
     'Texas additional verified expansion: PASS (+4)\n'
