@@ -78,3 +78,4 @@ for county, data in MO_COUNTIES.items():
     write_county_page('Missouri', 'missouri', county, data['authority'], data['contact'], sections, sources, verified='August 30, 2026')
 
 print(f'Missouri expansion complete: +{len(MO_COUNTIES)} verified county guides')
+exec((ROOT / 'utah_expansion.py').read_text(encoding='utf-8'), globals())
