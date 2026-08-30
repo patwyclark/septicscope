@@ -18,6 +18,7 @@ exec((ROOT / 'texas_third_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'georgia_additional_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'florida_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'arizona_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'virginia_expansion.py').read_text(encoding='utf-8'), globals())
 
 # Add every current U.S. county/county-equivalent as either a verified guide or a clearly labeled lookup page.
 exec((ROOT / 'nationwide_county_lookup.py').read_text(encoding='utf-8'), globals())
@@ -61,6 +62,9 @@ required_pages = [
     OUTPUT / 'counties' / 'arizona' / 'pima' / 'index.html',
     OUTPUT / 'counties' / 'arizona' / 'yavapai' / 'index.html',
     OUTPUT / 'counties' / 'arizona' / 'coconino' / 'index.html',
+    OUTPUT / 'counties' / 'virginia' / 'loudoun' / 'index.html',
+    OUTPUT / 'counties' / 'virginia' / 'chesterfield' / 'index.html',
+    OUTPUT / 'counties' / 'virginia' / 'albemarle' / 'index.html',
     OUTPUT / 'counties' / 'virginia' / 'fairfax' / 'index.html',
     OUTPUT / 'counties' / 'maryland' / 'prince-george-s' / 'index.html',
     OUTPUT / 'counties' / 'california' / 'los-angeles' / 'index.html',
@@ -88,6 +92,7 @@ verified_batches = {
     'Georgia additional': ('georgia', ('forsyth','hall','cherokee')),
     'Florida': ('florida', ('lee','pasco','hernando','polk')),
     'Arizona': ('arizona', ('maricopa','pima','yavapai','coconino')),
+    'Virginia': ('virginia', ('loudoun','chesterfield','albemarle')),
     'High population': ('MULTI', ()),
 }
 for label,(state_slug,counties) in verified_batches.items():
@@ -120,6 +125,7 @@ county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
     'Georgia additional verified expansion: PASS (+3)\n'
     'Florida verified expansion: PASS (+4)\n'
     'Arizona verified expansion: PASS (+4)\n'
+    'Virginia verified expansion: PASS (+3)\n'
     'Representative expansion pages: PASS\n'
     'Site menu repair: PASS\n',
     encoding='utf-8'
