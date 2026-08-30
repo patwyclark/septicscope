@@ -28,3 +28,7 @@ jobs:
           test -f site/counties/alabama/mobile/index.html
           test -f site/counties/tennessee/bedford/index.html
           test -f site/counties/idaho/ada/index.html
+      - name: Audit every generated page and internal link
+        run: python audit_site.py
+      - name: Check external government and source links
+        run: python audit_site.py --external
