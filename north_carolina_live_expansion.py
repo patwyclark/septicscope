@@ -97,3 +97,4 @@ for d in NC_COUNTIES:
         raise RuntimeError(f'North Carolina verified page failed: {d["county"]}')
 
 print(f'North Carolina production expansion complete: +{len(nc_urls)} verified county guides')
+exec((ROOT / 'kentucky_additional_expansion.py').read_text(encoding='utf-8'), globals())
