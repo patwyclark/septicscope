@@ -27,6 +27,7 @@ exec((ROOT / 'iowa_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'minnesota_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'maryland_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'indiana_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'missouri_expansion.py').read_text(encoding='utf-8'), globals())
 
 # Add every current U.S. county/county-equivalent as either a verified guide or a clearly labeled lookup page.
 exec((ROOT / 'nationwide_county_lookup.py').read_text(encoding='utf-8'), globals())
@@ -81,7 +82,7 @@ required_pages = [
     OUTPUT / 'counties' / 'arizona' / 'coconino' / 'index.html',
     OUTPUT / 'counties' / 'virginia' / 'loudoun' / 'index.html',
     OUTPUT / 'counties' / 'virginia' / 'chesterfield' / 'index.html',
-    OUTPUT / 'counties' / 'virginia' / 'albemarle' / 'index.html',
+    OUTPUT / 'counties'' / 'virginia' / 'albemarle' / 'index.html',
     OUTPUT / 'counties' / 'colorado' / 'el-paso' / 'index.html',
     OUTPUT / 'counties' / 'colorado' / 'larimer' / 'index.html',
     OUTPUT / 'counties' / 'colorado' / 'weld' / 'index.html',
@@ -98,6 +99,10 @@ required_pages = [
     OUTPUT / 'counties' / 'indiana' / 'hamilton' / 'index.html',
     OUTPUT / 'counties' / 'indiana' / 'marshall' / 'index.html',
     OUTPUT / 'counties' / 'indiana' / 'grant' / 'index.html',
+    OUTPUT / 'counties' / 'missouri' / 'st-charles' / 'index.html',
+    OUTPUT / 'counties' / 'missouri' / 'greene' / 'index.html',
+    OUTPUT / 'counties' / 'missouri' / 'clay' / 'index.html',
+    OUTPUT / 'counties' / 'missouri' / 'platte' / 'index.html',
     OUTPUT / 'counties' / 'virginia' / 'fairfax' / 'index.html',
     OUTPUT / 'counties' / 'maryland' / 'prince-george-s' / 'index.html',
     OUTPUT / 'counties' / 'california' / 'los-angeles' / 'index.html',
@@ -133,6 +138,7 @@ verified_batches = {
     'Minnesota': ('minnesota', ('washington','hennepin','dakota')),
     'Maryland': ('maryland', ('anne-arundel','frederick','howard')),
     'Indiana': ('indiana', ('hamilton','marshall','grant')),
+    'Missouri': ('missouri', ('st-charles','greene','clay','platte')),
     'High population': ('MULTI', ()),
 }
 for label,(state_slug,counties) in verified_batches.items():
@@ -173,6 +179,7 @@ county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
     'Minnesota verified expansion: PASS (+3)\n'
     'Maryland verified expansion: PASS (+3; 4 total verified MD counties)\n'
     'Indiana verified expansion: PASS (+3)\n'
+    'Missouri verified expansion: PASS (+4)\n'
     'Representative expansion pages: PASS\n'
     'Site menu repair: PASS\n',
     encoding='utf-8'
