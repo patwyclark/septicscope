@@ -10,6 +10,7 @@ exec((ROOT / 'washington_additional_expansion.py').read_text(encoding='utf-8'), 
 exec((ROOT / 'tennessee_contract_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'tennessee_contract_final_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'washington_third_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'washington_fourth_hub.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'ohio_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'wisconsin_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'wisconsin_additional_expansion.py').read_text(encoding='utf-8'), globals())
