@@ -17,6 +17,7 @@ exec((ROOT / 'texas_additional_expansion.py').read_text(encoding='utf-8'), globa
 exec((ROOT / 'texas_third_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'georgia_additional_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'florida_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'arizona_expansion.py').read_text(encoding='utf-8'), globals())
 
 # Add every current U.S. county/county-equivalent as either a verified guide or a clearly labeled lookup page.
 exec((ROOT / 'nationwide_county_lookup.py').read_text(encoding='utf-8'), globals())
@@ -56,6 +57,10 @@ required_pages = [
     OUTPUT / 'counties' / 'florida' / 'pasco' / 'index.html',
     OUTPUT / 'counties' / 'florida' / 'hernando' / 'index.html',
     OUTPUT / 'counties' / 'florida' / 'polk' / 'index.html',
+    OUTPUT / 'counties' / 'arizona' / 'maricopa' / 'index.html',
+    OUTPUT / 'counties' / 'arizona' / 'pima' / 'index.html',
+    OUTPUT / 'counties' / 'arizona' / 'yavapai' / 'index.html',
+    OUTPUT / 'counties' / 'arizona' / 'coconino' / 'index.html',
     OUTPUT / 'counties' / 'virginia' / 'fairfax' / 'index.html',
     OUTPUT / 'counties' / 'maryland' / 'prince-george-s' / 'index.html',
     OUTPUT / 'counties' / 'california' / 'los-angeles' / 'index.html',
@@ -82,6 +87,7 @@ verified_batches = {
     'Texas third': ('texas', ('williamson','comal','guadalupe','bastrop')),
     'Georgia additional': ('georgia', ('forsyth','hall','cherokee')),
     'Florida': ('florida', ('lee','pasco','hernando','polk')),
+    'Arizona': ('arizona', ('maricopa','pima','yavapai','coconino')),
     'High population': ('MULTI', ()),
 }
 for label,(state_slug,counties) in verified_batches.items():
@@ -113,6 +119,7 @@ county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
     'Texas third verified expansion: PASS (+4)\n'
     'Georgia additional verified expansion: PASS (+3)\n'
     'Florida verified expansion: PASS (+4)\n'
+    'Arizona verified expansion: PASS (+4)\n'
     'Representative expansion pages: PASS\n'
     'Site menu repair: PASS\n',
     encoding='utf-8'
