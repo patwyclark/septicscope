@@ -93,3 +93,4 @@ for d in NY_COUNTIES:
         raise RuntimeError(f'New York verified page failed: {d["county"]}')
 
 print(f'New York expansion complete: +{len(ny_urls)} verified county guides')
+exec((ROOT / 'north_carolina_live_expansion.py').read_text(encoding='utf-8'), globals())
