@@ -46,3 +46,4 @@ for county in NKY_COUNTIES:
         raise RuntimeError(f'Northern Kentucky verified page failed: {county}')
 
 print(f'Northern Kentucky expansion complete: +{len(nky_urls)} verified county guides')
+exec((ROOT / 'illinois_expansion.py').read_text(encoding='utf-8'), globals())
