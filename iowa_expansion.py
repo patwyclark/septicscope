@@ -98,10 +98,13 @@ if county_index.exists():
 sitemap=OUTPUT/'sitemap.xml'
 new_urls=['https://septicscope.com/counties/iowa/']+ia_urls
 if sitemap.exists(): sm=sitemap.read_text(encoding='utf-8')
-else: sm='<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>'
+else: sm='<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/sitemap/0.9"></urlset>'
 entries=''.join(f'<url><loc>{u}</loc><lastmod>2026-08-30</lastmod></url>' for u in new_urls if u not in sm)
 if entries:
     sm=sm.replace('</urlset>',entries+'</urlset>')
     sitemap.write_text(sm,encoding='utf-8')
 
 print(f'Iowa expansion complete: +{len(ia_urls)} verified county guides')
+
+# Continue with the additional locally verified Iowa county batch before nationwide fallback generation.
+exec((ROOT / 'iowa_additional_expansion.py').read_text(encoding='utf-8'), globals())
