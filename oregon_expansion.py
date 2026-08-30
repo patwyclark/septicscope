@@ -25,6 +25,7 @@ exec((ROOT / 'colorado_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'iowa_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'minnesota_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'maryland_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'indiana_expansion.py').read_text(encoding='utf-8'), globals())
 
 # Add every current U.S. county/county-equivalent as either a verified guide or a clearly labeled lookup page.
 exec((ROOT / 'nationwide_county_lookup.py').read_text(encoding='utf-8'), globals())
@@ -90,6 +91,9 @@ required_pages = [
     OUTPUT / 'counties' / 'maryland' / 'anne-arundel' / 'index.html',
     OUTPUT / 'counties' / 'maryland' / 'frederick' / 'index.html',
     OUTPUT / 'counties' / 'maryland' / 'howard' / 'index.html',
+    OUTPUT / 'counties' / 'indiana' / 'hamilton' / 'index.html',
+    OUTPUT / 'counties' / 'indiana' / 'marshall' / 'index.html',
+    OUTPUT / 'counties' / 'indiana' / 'grant' / 'index.html',
     OUTPUT / 'counties' / 'virginia' / 'fairfax' / 'index.html',
     OUTPUT / 'counties' / 'maryland' / 'prince-george-s' / 'index.html',
     OUTPUT / 'counties' / 'california' / 'los-angeles' / 'index.html',
@@ -124,6 +128,7 @@ verified_batches = {
     'Iowa': ('iowa', ('polk','linn','story','johnson')),
     'Minnesota': ('minnesota', ('washington','hennepin','dakota')),
     'Maryland': ('maryland', ('anne-arundel','frederick','howard')),
+    'Indiana': ('indiana', ('hamilton','marshall','grant')),
     'High population': ('MULTI', ()),
 }
 for label,(state_slug,counties) in verified_batches.items():
@@ -163,6 +168,7 @@ county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
     'Iowa verified expansion: PASS (+4)\n'
     'Minnesota verified expansion: PASS (+3)\n'
     'Maryland verified expansion: PASS (+3; 4 total verified MD counties)\n'
+    'Indiana verified expansion: PASS (+3)\n'
     'Representative expansion pages: PASS\n'
     'Site menu repair: PASS\n',
     encoding='utf-8'
