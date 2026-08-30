@@ -90,3 +90,6 @@ if sitemap.exists():
         sitemap.write_text(sm.replace('</urlset>',entries+'</urlset>'),encoding='utf-8')
 
 print(f'High-population expansion complete: +{len(new_urls)} verified county guides')
+
+# Continue with the researched California high-population batch before nationwide fallback pages are generated.
+exec((ROOT / 'california_expansion.py').read_text(encoding='utf-8'), globals())
