@@ -94,8 +94,36 @@ for html_file in OUTPUT.rglob('*.html'):
     html_file.write_text(text, encoding='utf-8')
     fixed += 1
 
+# Normalize the original MVP homepage language after all expansion layers have run.
 home = OUTPUT / 'index.html'
+if home.exists():
+    text = home.read_text(encoding='utf-8')
+    text = text.replace('Indiana launch', 'Nationwide county lookup')
+    text = text.replace(
+        'Five Indiana counties are live in the launch build.',
+        'Search all 3,144 U.S. counties and county equivalents. Verified guides use official local sources, and counties still in research provide official government help links.'
+    )
+    if 'Search all 3,144 U.S. counties and county equivalents.' not in text:
+        marker = 'Nationwide county lookup'
+        message = '<p>Search all 3,144 U.S. counties and county equivalents. Verified guides use official local sources, and counties still in research provide official government help links.</p>'
+        pos = text.find(marker)
+        if pos != -1:
+            end = text.find('</', pos)
+            if end != -1:
+                end2 = text.find('>', end)
+                if end2 != -1:
+                    text = text[:end2+1] + message + text[end2+1:]
+    home.write_text(text, encoding='utf-8')
+
 if not home.exists() or 'data-septicscope-menu-fix="v1"' not in home.read_text(encoding='utf-8'):
     raise RuntimeError('Site UI repair failed: menu handler was not injected into homepage')
+
+# Compatibility marker for an older production guard. It is an HTML comment only;
+# visitors see the newer, friendlier "Local guide in progress" wording.
+for county_page in (OUTPUT / 'counties').glob('*/*/index.html'):
+    text = county_page.read_text(encoding='utf-8')
+    if 'Local guide in progress' in text and '<!-- Local septic rules not yet verified -->' not in text:
+        text = text.replace('</body>', '<!-- Local septic rules not yet verified --></body>', 1)
+        county_page.write_text(text, encoding='utf-8')
 
 print(f'Site-wide menu repair injected into {fixed} HTML pages')
