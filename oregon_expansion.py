@@ -82,7 +82,7 @@ required_pages = [
     OUTPUT / 'counties' / 'arizona' / 'coconino' / 'index.html',
     OUTPUT / 'counties' / 'virginia' / 'loudoun' / 'index.html',
     OUTPUT / 'counties' / 'virginia' / 'chesterfield' / 'index.html',
-    OUTPUT / 'counties'' / 'virginia' / 'albemarle' / 'index.html',
+    OUTPUT / 'counties' / 'virginia' / 'albemarle' / 'index.html',
     OUTPUT / 'counties' / 'colorado' / 'el-paso' / 'index.html',
     OUTPUT / 'counties' / 'colorado' / 'larimer' / 'index.html',
     OUTPUT / 'counties' / 'colorado' / 'weld' / 'index.html',
