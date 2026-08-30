@@ -28,6 +28,7 @@ exec((ROOT / 'minnesota_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'maryland_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'indiana_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'missouri_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'oregon_additional_expansion.py').read_text(encoding='utf-8'), globals())
 
 # Add every current U.S. county/county-equivalent as either a verified guide or a clearly labeled lookup page.
 exec((ROOT / 'nationwide_county_lookup.py').read_text(encoding='utf-8'), globals())
@@ -48,6 +49,9 @@ required_pages = [
     OUTPUT / 'counties' / 'washington' / 'king' / 'index.html',
     OUTPUT / 'counties' / 'washington' / 'yakima' / 'index.html',
     OUTPUT / 'counties' / 'oregon' / 'clackamas' / 'index.html',
+    OUTPUT / 'counties' / 'oregon' / 'yamhill' / 'index.html',
+    OUTPUT / 'counties' / 'oregon' / 'linn' / 'index.html',
+    OUTPUT / 'counties' / 'oregon' / 'columbia' / 'index.html',
     OUTPUT / 'counties' / 'north-carolina' / 'guilford' / 'index.html',
     OUTPUT / 'counties' / 'north-carolina' / 'carteret' / 'index.html',
     OUTPUT / 'counties' / 'north-carolina' / 'onslow' / 'index.html',
@@ -124,6 +128,7 @@ if 'Local septic rules not yet verified' not in lookup_text:
 verified_batches = {
     'Tennessee contract completion': ('tennessee', ('davidson','knox','sevier')),
     'North Carolina fifth': ('north-carolina', ('carteret','onslow','pender')),
+    'Oregon additional': ('oregon', ('yamhill','linn','columbia')),
     'Ohio': ('ohio', ('franklin','delaware','fairfield','licking')),
     'Wisconsin': ('wisconsin', ('waukesha','washington','brown','ozaukee','winnebago','dane','sheboygan','walworth','rock','dodge','fond-du-lac','kenosha','jefferson','sauk')),
     'Michigan': ('michigan', ('oakland','ottawa','kent','washtenaw','ingham')),
@@ -164,6 +169,7 @@ county_index_files = list((OUTPUT / 'counties').rglob('index.html'))
     'Nationwide county lookup: PASS\n'
     'Tennessee contract completion: PASS (+3; all 95 counties now verified)\n'
     'North Carolina fifth verified expansion: PASS (+3; 26 total verified NC counties)\n'
+    'Oregon additional verified expansion: PASS (+3; 8 total verified OR counties)\n'
     'Ohio verified expansion: PASS (+4)\n'
     'Wisconsin verified expansions: PASS (+14)\n'
     'Michigan verified expansion: PASS (+5)\n'
