@@ -136,3 +136,4 @@ if entries:
     sitemap.write_text(sm, encoding='utf-8')
 
 print(f'Washington third expansion complete: +{len(wa3_urls)} verified county guides')
+exec((ROOT / 'washington_fourth_expansion.py').read_text(encoding='utf-8'), globals())
