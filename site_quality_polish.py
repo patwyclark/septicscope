@@ -1,6 +1,7 @@
 """Apply deterministic final content polish before trust hardening and inventory."""
 from __future__ import annotations
 
+from html import unescape
 from pathlib import Path
 import re
 
@@ -8,30 +9,53 @@ ROOT = Path(__file__).resolve().parent
 SITE = ROOT / "site"
 
 
-def _replace_home_stat(text: str, label: str, value: int) -> str:
-    label_index = text.lower().find(label.lower())
-    if label_index < 0:
-        raise RuntimeError(f"Homepage metric label not found: {label}")
-    window_start = max(0, label_index - 1200)
-    window = text[window_start:label_index]
-    matches = list(re.finditer(r">\s*([0-9][0-9,]*)\s*<", window))
-    if not matches:
-        raise RuntimeError(f"Homepage metric value not found before: {label}")
-    match = matches[-1]
-    start = window_start + match.start(1)
-    end = window_start + match.end(1)
-    return text[:start] + f"{value:,}" + text[end:]
+def _metric_pattern(label: str) -> re.Pattern[str]:
+    return re.compile(
+        rf'(<div\s+class=["\']metric["\']>\s*)[0-9][0-9,]*(\s*</div>\s*'
+        rf'<div\s+class=["\']metric-label["\']>\s*){re.escape(label)}(\s*</div>)',
+        flags=re.IGNORECASE,
+    )
 
 
-def _visible_number_before(text: str, label: str) -> int:
-    label_index = text.lower().find(label.lower())
-    if label_index < 0:
-        raise RuntimeError(f"Homepage metric label not found after polish: {label}")
-    window = text[max(0, label_index - 1200):label_index]
-    matches = list(re.finditer(r">\s*([0-9][0-9,]*)\s*<", window))
-    if not matches:
-        raise RuntimeError(f"Homepage metric value not found after polish: {label}")
-    return int(matches[-1].group(1).replace(",", ""))
+def _replace_home_stat(
+    text: str,
+    accepted_labels: tuple[str, ...],
+    output_label: str,
+    value: int,
+) -> str:
+    for label in accepted_labels:
+        pattern = _metric_pattern(label)
+        updated, count = pattern.subn(
+            lambda match: (
+                f"{match.group(1)}{value:,}{match.group(2)}"
+                f"{output_label}{match.group(3)}"
+            ),
+            text,
+            count=1,
+        )
+        if count:
+            return updated
+    raise RuntimeError(
+        "Homepage metric card not found for any accepted label: "
+        + ", ".join(accepted_labels)
+    )
+
+
+def _visible_text(text: str) -> str:
+    without_tags = re.sub(r"<[^>]+>", " ", text)
+    return re.sub(r"\s+", " ", unescape(without_tags)).strip()
+
+
+def _assert_visible_metric(text: str, label: str, expected: int) -> None:
+    visible = _visible_text(text)
+    if not re.search(
+        rf"\b{expected:,}\s+{re.escape(label)}\b",
+        visible,
+        flags=re.IGNORECASE,
+    ):
+        raise RuntimeError(
+            f"Homepage does not show the expected metric: {expected:,} {label}"
+        )
 
 
 def _count_verified_counties() -> int:
@@ -51,28 +75,36 @@ def _polish_homepage() -> tuple[int, int, int]:
     home = SITE / "index.html"
     if not home.exists():
         raise RuntimeError("Generated homepage is missing")
+
     verified = _count_verified_counties()
     faq_count = len(list((SITE / "faq").glob("*/index.html")))
     guide_count = len(list((SITE / "guides").glob("*/index.html")))
 
     text = home.read_text(encoding="utf-8", errors="replace")
-    text = _replace_home_stat(text, "verified county guides", verified)
-    text = _replace_home_stat(text, "FAQ articles", faq_count)
-    guide_label = "cornerstone guides" if "cornerstone guides" in text.lower() else "septic guides"
-    text = _replace_home_stat(text, guide_label, guide_count)
-    text = re.sub(r"cornerstone guides", "septic guides", text, flags=re.IGNORECASE)
+    text = _replace_home_stat(
+        text,
+        ("verified county guides",),
+        "verified county guides",
+        verified,
+    )
+    text = _replace_home_stat(
+        text,
+        ("FAQ articles",),
+        "FAQ articles",
+        faq_count,
+    )
+    text = _replace_home_stat(
+        text,
+        ("cornerstone guides", "septic guides"),
+        "septic guides",
+        guide_count,
+    )
     home.write_text(text, encoding="utf-8")
 
     final = home.read_text(encoding="utf-8", errors="replace")
-    checks = {
-        "verified county guides": verified,
-        "FAQ articles": faq_count,
-        "septic guides": guide_count,
-    }
-    for label, expected in checks.items():
-        actual = _visible_number_before(final, label)
-        if actual != expected:
-            raise RuntimeError(f"Homepage metric mismatch for {label}: {actual} != {expected}")
+    _assert_visible_metric(final, "verified county guides", verified)
+    _assert_visible_metric(final, "FAQ articles", faq_count)
+    _assert_visible_metric(final, "septic guides", guide_count)
     return verified, faq_count, guide_count
 
 
