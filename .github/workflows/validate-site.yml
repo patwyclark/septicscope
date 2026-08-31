@@ -27,6 +27,7 @@ jobs:
           python system_types_guide.py
           python septic_winter_guide.py
           python septic_inspection_checklist.py
+          python septic_system_lifespan_guide.py
       - name: Verify expansion manifest
         run: |
           test -f site/deployment-manifest.txt
@@ -41,6 +42,7 @@ jobs:
           test -f site/guides/types-of-septic-systems/index.html
           test -f site/guides/septic-system-winter-care/index.html
           test -f site/guides/septic-inspection-checklist/index.html
+          test -f site/guides/septic-system-lifespan/index.html
       - name: Audit every generated page and internal link
         id: internal_audit
         continue-on-error: true
