@@ -191,7 +191,15 @@ def main() -> int:
             robots = info.robots.replace(' ', '')
             if 'noindex' not in robots or 'follow' not in robots:
                 errors.append(f'Lookup page missing noindex,follow: {src_path}')
-            if 'Do not rely on this page' in info.text or 'not yet verified' in info.text.lower():
+            # Transparent language such as "not yet verified" is appropriate on an
+            # in-progress regulatory page. Only fail wording that actively tells a
+            # visitor the page itself is unusable or unsafe to consult.
+            discouraging = (
+                'Do not rely on this page',
+                'This page is not reliable',
+                'This page cannot be relied on',
+            )
+            if any(phrase.lower() in info.text.lower() for phrase in discouraging):
                 errors.append(f'Unwelcoming legacy lookup wording remains: {src_path}')
             if 'usa.gov/states/' not in raw or 'epa.gov/septic/state-septic-system-program-contacts' not in raw:
                 errors.append(f'Lookup page missing official help links: {src_path}')
@@ -213,7 +221,6 @@ def main() -> int:
             if url_path_to_file(target_path) is None:
                 errors.append(f'Broken internal link: {src_path} -> {href}')
 
-    # robots.txt and ads.txt essentials
     robots_path = SITE / 'robots.txt'
     if not robots_path.exists():
         errors.append('robots.txt missing')
@@ -229,7 +236,6 @@ def main() -> int:
     if not ads_path.exists() or expected_ads not in ads_path.read_text(encoding='utf-8', errors='replace'):
         errors.append('ads.txt missing or does not contain expected AdSense publisher record')
 
-    # Sitemap integrity and noindex exclusion.
     sitemap_path = SITE / 'sitemap.xml'
     sitemap_urls: list[str] = []
     if not sitemap_path.exists():
@@ -256,7 +262,6 @@ def main() -> int:
             if info and 'noindex' in info.robots:
                 errors.append(f'Noindex page appears in sitemap: {url}')
 
-    # Every indexable page with a canonical should be discoverable in the sitemap.
     sitemap_set = set(sitemap_urls)
     for canonical, page in canonical_to_page.items():
         info = pages[page]
