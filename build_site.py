@@ -25,6 +25,8 @@ POST_BUILD_SCRIPTS = (
     "septic_winter_guide.py",
     "septic_inspection_checklist.py",
     "septic_system_lifespan_guide.py",
+    "local_services.py",
+    "homepage_experience.py",
     "site_quality_polish.py",
 )
 
@@ -44,9 +46,6 @@ def _run() -> None:
         captured_exit_handlers.append((function, args, kwargs))
         return function
 
-    # The legacy build chain registers final trust/AdSense passes with atexit.
-    # Capture them so this orchestrator can run supplemental page generators first,
-    # then apply those finalizers, and only then create the authoritative manifests.
     atexit.register = capture_register  # type: ignore[assignment]
     try:
         runpy.run_path(str(CORE_BUILD), run_name="__main__")
@@ -66,7 +65,6 @@ def _run() -> None:
             check=True,
         )
 
-    # Match normal Python atexit ordering (last registered, first executed).
     for function, args, kwargs in reversed(captured_exit_handlers):
         function(*args, **kwargs)
 

@@ -114,6 +114,9 @@ def main() -> None:
     if args.check:
         namespace["check"]()
     else:
+        from local_services import write_provider_directory
+
+        namespace["write_provider_landing"] = write_provider_directory
         namespace["generate"]()
     _verify_unique_county_urls(namespace)
 
