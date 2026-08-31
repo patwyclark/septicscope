@@ -68,3 +68,5 @@ def _write_pumping_guide() -> None:
 
 
 atexit.register(_write_pumping_guide)
+
+import replacement_guide_finalize  # noqa: E402,F401
