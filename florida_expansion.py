@@ -8,5 +8,6 @@ exec((ROOT / 'florida_second_expansion.py').read_text(encoding='utf-8'), globals
 exec((ROOT / 'texas_fourth_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'texas_fifth_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'texas_sixth_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'texas_seventh_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'north_carolina_sixth_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'north_carolina_seventh_expansion.py').read_text(encoding='utf-8'), globals())
