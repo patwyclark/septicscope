@@ -24,6 +24,7 @@ jobs:
           python drainfield_guide.py
           python tank_size_calculator.py
           python septic_maintenance_checklist.py
+          python septic_winter_guide.py
       - name: Verify expansion manifest
         run: |
           test -f site/deployment-manifest.txt
@@ -35,6 +36,7 @@ jobs:
           test -f site/guides/septic-drainfield-repair-replacement/index.html
           test -f site/guides/septic-tank-size-calculator/index.html
           test -f site/guides/septic-maintenance-checklist/index.html
+          test -f site/guides/septic-system-winter-care/index.html
       - name: Audit every generated page and internal link
         id: internal_audit
         continue-on-error: true
