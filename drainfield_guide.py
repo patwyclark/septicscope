@@ -63,7 +63,7 @@ page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name
 <h2>How to reduce future drainfield stress</h2>
 <p>EPA recommends keeping vehicles off the drainfield, keeping roof drains and other rainwater drainage away from it, spacing out high water-use activities, and maintaining the tank so solids do not migrate into the field. Tree placement also matters because roots can damage septic components.</p>
 <h2>Check the local permit path before work begins</h2>
-<p>Repair and replacement rules vary by state and local jurisdiction. Before excavation or system alteration, use <a href="/counties/">SepticScope's county directory</a> to locate the permitting authority and official sources for your area. If you are buying or selling a property, also review the <a href="/guides/buying-home-septic-system/">homebuyer septic checklist</a>.</p>
+<p>Repair and replacement rules vary by state and local jurisdiction. Before excavation or system alteration, use <a href="/counties/">SepticScope's county directory</a> to locate the permitting authority and official sources for your area. If you are troubleshooting symptoms, also review the <a href="/guides/septic-system-failure-signs/">septic failure symptom checker</a>.</p>
 <h2>Frequently asked questions</h2>{faq_html}
 <h2>Sources</h2><ul>
 <li><a href="https://www.epa.gov/septic/resolving-septic-system-malfunctions" rel="nofollow">U.S. EPA — Resolving Septic System Malfunctions</a></li>
@@ -85,7 +85,7 @@ if hub.exists():
 
 # Add contextually relevant links from existing national guides when those pages exist.
 for rel, anchor in [
-    ("guides/signs-septic-system-failure/index.html", '<p><strong>Drainfield-specific problem?</strong> See <a href="/guides/septic-drainfield-repair-replacement/">how to distinguish potential drainfield repairs from replacement scenarios</a>.</p>'),
+    ("guides/septic-system-failure-signs/index.html", '<p><strong>Drainfield-specific problem?</strong> See <a href="/guides/septic-drainfield-repair-replacement/">how to distinguish potential drainfield repairs from replacement scenarios</a>.</p>'),
     ("guides/septic-system-replacement-cost/index.html", '<p>Before assuming the entire system must be replaced, review the <a href="/guides/septic-drainfield-repair-replacement/">drainfield repair vs. replacement guide</a>.</p>')
 ]:
     path = SITE / rel
