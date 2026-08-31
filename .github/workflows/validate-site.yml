@@ -40,6 +40,12 @@ jobs:
         run: |
           set -o pipefail
           python audit_site.py --external 2>&1 | tee external-audit.txt
+      - name: Audit AdSense readiness and county source quality
+        id: adsense_audit
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python adsense_audit.py 2>&1 | tee adsense-audit.txt
       - name: Upload audit diagnostics
         if: always()
         uses: actions/upload-artifact@v4
@@ -48,9 +54,11 @@ jobs:
           path: |
             internal-audit.txt
             external-audit.txt
+            adsense-audit.txt
           retention-days: 7
       - name: Enforce audit results
         if: always()
         run: |
           test "${{ steps.internal_audit.outcome }}" = "success"
           test "${{ steps.external_audit.outcome }}" = "success"
+          test "${{ steps.adsense_audit.outcome }}" = "success"
