@@ -23,4 +23,12 @@ if '18 verified counties' not in hub_text:
     raise RuntimeError('Washington hub verified-county count was not refreshed')
 
 print('Washington hub refreshed for 18 verified county guides')
-exec((ROOT / 'washington_fifth_expansion.py').read_text(encoding='utf-8'), globals())
+
+# Lewis County retired its 2025 fee PDF. Execute the fifth batch with the current
+# county fee-schedule landing page so generated production pages never emit the stale URL.
+wa5_code = (ROOT / 'washington_fifth_expansion.py').read_text(encoding='utf-8')
+wa5_code = wa5_code.replace(
+    "('Lewis County — 2025 Public Health Fee Schedule', 'https://lewiscountywa.gov/media/documents/Exhibit_A_-_2025_Fee_Schedule_Final_Version.pdf')",
+    "('Lewis County — 2026 Public Health Fee Schedule', 'https://lewiscountywa.gov/departments/public-health/fee-schedule/')"
+)
+exec(wa5_code, globals())
