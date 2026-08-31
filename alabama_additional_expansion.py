@@ -19,14 +19,16 @@ AL2_COUNTIES={
         ],
     },
     'Mobile': {
-        'authority':'Mobile County Health Department — Environmental Health, Onsite Services',
-        'contact':'Mobile County Health Department Environmental Health: 251 North Bayou Street, Mobile, AL 36603. MCHD main phone: 251-690-8158.',
+        'authority':'Mobile County Health Department — Bureau of Environmental Health, Onsite Services Division',
+        'contact':'Mobile County Health Department Onsite Services: 251-634-9801; 1110 Schillinger Road North, Suite 200, Mobile, AL 36608. Published office hours: 7:30 a.m.–4:30 p.m.',
         'sources':[
             ('Mobile County Health Department — Environmental Health / Onsite Services','https://mchd.org/environmental-health/'),
             ('ADPH — County Health Department Locations','https://www.alabamapublichealth.gov/about/locations.html'),
         ],
         'sections':[
             ('County onsite division is the permitting authority','Mobile County Health Department states that its Onsite Sewage division regulates permitting, installation, and inspection of residential and commercial onsite sewage disposal systems in Mobile County under the ADPH Onsite Sewage Treatment and Disposal Rules.'),
+            ('Current published onsite fees','Mobile County Health Department currently lists a $200 residential application/inspection fee and $270 commercial application/inspection fee. It also publishes a $410 site-evaluation fee, $95 system verification/certification fee, $65 onsite reinspection fee, and $375 onsite rush fee. Fees can change, so applicants should confirm the amount shown on the county page when filing.'),
+            ('Existing-system records','The Onsite Services page says property owners can request records including existing septic-system locations and approved Applications to Install (perc tests). The department currently lists a $30 Request for Information fee.'),
             ('Industry licensing and pumper oversight','Mobile County states that persons involved in the onsite sewage disposal industry must be licensed by the Alabama Onsite Wastewater Board. Its Onsite division also regulates septic and sewage tank pumpers and requires annual inspection of pumper trucks before use.'),
         ],
     },
@@ -38,7 +40,7 @@ AL2_COUNTIES={
             ('Etowah County — Contact Us','https://www.alabamapublichealth.gov/Etowah/contact.html'),
         ],
         'sections':[
-            ('County publishes separate onsite permit categories','Etowah County publishes separate local fee categories for conventional and engineered residential sewage permits, commercial conventional and engineered permits, and expedited review. The county has announced a revised fee schedule effective September 1, 2026; applicants should verify the fee in effect on the filing date rather than relying on an older amount.'),
+            ('Revised onsite fees take effect September 1, 2026','Etowah County Health Department says its revised Environmental Health fee schedule is effective September 1, 2026. The published onsite schedule lists $200 for a residential conventional sewage-permit application, $200 for a residential engineered application, $300 for a commercial conventional application, $300 for a commercial engineered application, and a $150 additional expedited-review fee for residential or commercial applications. Applicants filing before or after the effective date should use the fee in effect on the filing date.'),
             ('Environmental Office handles septic requests','The current Etowah County Health Department contact page directs septic-tank requests to the Environmental Office and provides a dedicated environmental phone number.'),
         ],
     },
@@ -68,7 +70,7 @@ for county,data in AL2_COUNTIES.items():
         ('ADPH — Before Construction',AL2_BEFORE),
         ('ADPH — Septic Tank Systems and Records',AL2_RECORDS),
     ] + data['sources']
-    url=write_county_page('Alabama','alabama',county,data['authority'],data['contact'],sections,sources,verified='August 29, 2026')
+    url=write_county_page('Alabama','alabama',county,data['authority'],data['contact'],sections,sources,verified='August 31, 2026')
     al2_urls.append(url)
     if county not in al_links: al_links.append(county)
 
@@ -87,7 +89,7 @@ if county_index.exists():
 sitemap=OUTPUT/'sitemap.xml'
 if sitemap.exists(): sm=sitemap.read_text(encoding='utf-8')
 else: sm='<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>'
-entries=''.join(f'<url><loc>{u}</loc><lastmod>2026-08-29</lastmod></url>' for u in al2_urls if u not in sm)
+entries=''.join(f'<url><loc>{u}</loc><lastmod>2026-08-31</lastmod></url>' for u in al2_urls if u not in sm)
 if entries:
     sm=sm.replace('</urlset>',entries+'</urlset>')
     sitemap.write_text(sm,encoding='utf-8')
