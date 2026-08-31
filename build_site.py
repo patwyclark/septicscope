@@ -25,6 +25,7 @@ POST_BUILD_SCRIPTS = (
     "septic_winter_guide.py",
     "septic_inspection_checklist.py",
     "septic_system_lifespan_guide.py",
+    "site_quality_polish.py",
 )
 
 

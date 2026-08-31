@@ -25,6 +25,7 @@ jobs:
           python - <<'PY'
           import json
           import os
+          import re
           import time
           from urllib.error import HTTPError, URLError
           from urllib.request import Request, urlopen
@@ -58,12 +59,16 @@ jobs:
           checks = {
               "/": ("SepticScope", "verified county guides"),
               "/counties/": ("3,144", "county"),
+              "/counties/virginia/fairfax/": ("Fairfax County", "Official sources"),
+              "/counties/virginia/fairfax-city/": ("Fairfax City", "Local guide in progress"),
               "/guides/": ("septic-system-lifespan", "septic-inspection-checklist"),
+              "/guides/septic-system-lifespan/": ("Septic system lifespan: what lasts, what fails, and when", "Official and Extension sources"),
               "/faq/": ("Septic", "FAQ"),
               "/providers/": ("provider directory", "Directory standards"),
               "/sitemap.xml": ("https://septicscope.com/counties/", "https://septicscope.com/guides/septic-system-lifespan/"),
               "/robots.txt": ("Sitemap:", "septicscope.com/sitemap.xml"),
           }
+          bodies = {}
           for path, needles in checks.items():
               request = Request(
                   f"{base}{path}?v={int(time.time())}",
@@ -76,11 +81,31 @@ jobs:
               missing = [needle for needle in needles if needle.lower() not in body.lower()]
               if missing:
                   raise SystemExit(f"{path} is missing expected production content: {missing}")
+              bodies[path] = body
               print(f"PASS {path}")
 
           if info.get("quality_gate") != "pass":
               raise SystemExit(f"Production build quality gate is not passing: {info}")
           if int(info.get("published_county_or_equivalent_pages", 0)) != 3144:
               raise SystemExit(f"Production county coverage is incomplete: {info}")
-          print("PASS: SepticScope production deployment matches the validated commit")
+
+          home_visible = re.sub(r"<[^>]+>", " ", bodies["/"])
+          home_visible = re.sub(r"\s+", " ", home_visible)
+          home_stats = {
+              "verified county guides": int(info.get("verified_county_guides", -1)),
+              "FAQ articles": int(info.get("faq_articles", -1)),
+              "septic guides": int(info.get("guide_articles_and_tools", -1)),
+          }
+          for label, value in home_stats.items():
+              if value < 0 or not re.search(rf"\b{value:,}\s+{re.escape(label)}\b", home_visible, flags=re.I):
+                  raise SystemExit(f"Homepage does not match build-info metric: {value:,} {label}")
+
+          if int(info.get("provider_listings", -1)) == 0 and "noindex,follow" not in bodies["/providers/"].replace(" ", "").lower():
+              raise SystemExit("Empty provider directory must remain noindex,follow")
+          if "noindex,follow" not in bodies["/counties/virginia/fairfax-city/"].replace(" ", "").lower():
+              raise SystemExit("In-progress county-equivalent page must remain noindex,follow")
+          if "noindex" in bodies["/counties/virginia/fairfax/"].lower():
+              raise SystemExit("Verified Fairfax County guide is unexpectedly noindex")
+
+          print("PASS: SepticScope production deployment matches the validated commit and reported metrics")
           PY

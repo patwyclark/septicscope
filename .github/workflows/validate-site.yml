@@ -67,6 +67,40 @@ jobs:
           test -f site/guides/septic-inspection-checklist/index.html
           test -f site/guides/septic-system-lifespan/index.html
           python site_inventory.py --check
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          summary = json.loads(Path('site/data/project-audit-summary.json').read_text())
+          counts = summary['counts']
+          required_zero = {
+              'pages_without_primary_keywords',
+              'duplicate_title_groups',
+              'duplicate_h1_groups',
+              'duplicate_meta_description_groups',
+              'canonical_errors',
+              'canonical_domain_conflicts',
+              'accessibility_warnings',
+              'legacy_brand_occurrences',
+          }
+          failures = {key: counts[key] for key in required_zero if counts[key] != 0}
+          if failures:
+              raise SystemExit(f'Final metadata/SEO quality counts are not zero: {failures}')
+
+          home = Path('site/index.html').read_text(encoding='utf-8')
+          visible = re.sub(r'<[^>]+>', ' ', home)
+          visible = re.sub(r'\s+', ' ', visible)
+          expected = {
+              'verified county guides': counts['verified_county_guides'],
+              'FAQ articles': counts['faq_articles'],
+              'septic guides': counts['guide_articles_and_tools'],
+          }
+          for label, value in expected.items():
+              if not re.search(rf'\b{value:,}\s+{re.escape(label)}\b', visible, flags=re.I):
+                  raise SystemExit(f'Homepage does not show current metric: {value:,} {label}')
+          print('PASS: homepage metrics and final metadata quality totals are current')
+          PY
 
       - name: Audit every generated page and internal link
         id: internal_audit
@@ -92,7 +126,7 @@ jobs:
           set -o pipefail
           python adsense_audit.py 2>&1 | tee adsense-audit.txt
 
-      - name: Upload audit diagnostics and inventories
+      - name: Upload audit diagnostics, inventories, and representative pages
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -101,6 +135,13 @@ jobs:
             internal-audit.txt
             external-audit.txt
             adsense-audit.txt
+            site/index.html
+            site/counties/index.html
+            site/counties/virginia/fairfax/index.html
+            site/counties/virginia/fairfax-city/index.html
+            site/guides/index.html
+            site/guides/septic-system-lifespan/index.html
+            site/providers/index.html
             site/build-info.json
             site/data/national-coverage-manifest.json
             site/data/keyword-map.json
