@@ -63,3 +63,4 @@ if 'Local septic rules not yet verified' in text:
     raise RuntimeError('Collin verified page was overwritten by an unverified fallback')
 
 print('Texas seventh expansion complete: +1 verified Collin County guide')
+exec((ROOT / 'texas_eighth_expansion.py').read_text(encoding='utf-8'), globals())
