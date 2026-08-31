@@ -65,3 +65,4 @@ if 'Local septic rules not yet verified' in text:
     raise RuntimeError('Denton verified page was overwritten by an unverified fallback')
 
 print('Texas eighth expansion complete: +1 verified Denton County guide')
+exec((ROOT / 'texas_ninth_expansion.py').read_text(encoding='utf-8'), globals())
