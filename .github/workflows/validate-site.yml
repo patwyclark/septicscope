@@ -59,9 +59,12 @@ jobs:
             external-audit.txt
             adsense-audit.txt
           retention-days: 7
-      - name: Enforce audit results
+      - name: Enforce internal audit
         if: always()
-        run: |
-          test "${{ steps.internal_audit.outcome }}" = "success"
-          test "${{ steps.external_audit.outcome }}" = "success"
-          test "${{ steps.adsense_audit.outcome }}" = "success"
+        run: test "${{ steps.internal_audit.outcome }}" = "success"
+      - name: Enforce external audit
+        if: always()
+        run: test "${{ steps.external_audit.outcome }}" = "success"
+      - name: Enforce AdSense audit
+        if: always()
+        run: test "${{ steps.adsense_audit.outcome }}" = "success"
