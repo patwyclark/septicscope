@@ -32,6 +32,12 @@ def _finalize_generated_site() -> None:
             "https://www.deschutes.org/cd/page/onsite-permit-repairs-existing-systems-application-guide",
         "https://www.deschutes.org/sites/default/files/fileattachments/community_development/page/731/onsite_wastewater_systems_application_requirements.pdf":
             "https://www.deschutes.org/cd/page/onsite-permit-repairs-existing-systems-application-guide",
+        # Lewis County retired the 2025 fee PDF. Keep generated pages pointed at the
+        # live fee-schedule landing page, which currently identifies the 2026 schedule.
+        "https://lewiscountywa.gov/media/documents/Exhibit_A_-_2025_Fee_Schedule_Final_Version.pdf":
+            "https://lewiscountywa.gov/departments/public-health/fee-schedule/",
+        "Lewis County — 2025 Public Health Fee Schedule":
+            "Lewis County — 2026 Public Health Fee Schedule",
     }
 
     for html_file in SITE.rglob("*.html"):
