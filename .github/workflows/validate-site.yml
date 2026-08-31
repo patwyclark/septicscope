@@ -29,6 +29,28 @@ jobs:
           test -f site/counties/tennessee/bedford/index.html
           test -f site/counties/idaho/ada/index.html
       - name: Audit every generated page and internal link
-        run: python audit_site.py
+        id: internal_audit
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python audit_site.py 2>&1 | tee internal-audit.txt
       - name: Check external government and source links
-        run: python audit_site.py --external
+        id: external_audit
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python audit_site.py --external 2>&1 | tee external-audit.txt
+      - name: Upload audit diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-audit-diagnostics
+          path: |
+            internal-audit.txt
+            external-audit.txt
+          retention-days: 7
+      - name: Enforce audit results
+        if: always()
+        run: |
+          test "${{ steps.internal_audit.outcome }}" = "success"
+          test "${{ steps.external_audit.outcome }}" = "success"
