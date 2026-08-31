@@ -59,11 +59,11 @@ page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name
 <ul><li>Tank condition, liquid levels, inlet and outlet piping, and evidence of backup or leakage.</li><li>Distribution box or other distribution components.</li><li>Pumps, alarms, controls and wiring where the system uses them.</li><li>Drain lines for blockage or collapse when camera inspection is appropriate.</li><li>The drainfield for surfacing, unequal drainage, ponding, groundwater impacts or other failure evidence.</li><li>Existing permits, as-built drawings, prior repairs and maintenance records.</li><li>Whether the local authority requires a site evaluation, repair permit, replacement permit, reserve area or engineered design.</li></ul>
 <h2>What changes the cost</h2>
 <p>There is no reliable single national price for every drainfield repair or replacement. Current consumer cost publishers show that scope, field size, system type, excavation, site access and local labor materially change the total. The more useful distinction is whether the contractor is pricing a localized repair or a permitted replacement/redesign.</p>
-<p>Ask for a written scope that separates diagnosis, pumping if needed, excavation, components, soil/site evaluation, permit fees, restoration and any required final inspection. For broader budgeting context, see the <a href="/guides/septic-system-replacement-cost/">septic replacement cost guide</a>.</p>
+<p>Ask for a written scope that separates diagnosis, pumping if needed, excavation, components, soil/site evaluation, permit fees, restoration and any required final inspection. That makes competing quotes easier to compare without treating a national average as a local estimate.</p>
 <h2>How to reduce future drainfield stress</h2>
 <p>EPA recommends keeping vehicles off the drainfield, keeping roof drains and other rainwater drainage away from it, spacing out high water-use activities, and maintaining the tank so solids do not migrate into the field. Tree placement also matters because roots can damage septic components.</p>
 <h2>Check the local permit path before work begins</h2>
-<p>Repair and replacement rules vary by state and local jurisdiction. Before excavation or system alteration, use <a href="/counties/">SepticScope's county directory</a> to locate the permitting authority and official sources for your area. If you are troubleshooting symptoms, also review the <a href="/guides/septic-system-failure-signs/">septic failure symptom checker</a>.</p>
+<p>Repair and replacement rules vary by state and local jurisdiction. Before excavation or system alteration, use <a href="/counties/">SepticScope's county directory</a> to locate the permitting authority and official sources for your area.</p>
 <h2>Frequently asked questions</h2>{faq_html}
 <h2>Sources</h2><ul>
 <li><a href="https://www.epa.gov/septic/resolving-septic-system-malfunctions" rel="nofollow">U.S. EPA — Resolving Septic System Malfunctions</a></li>
@@ -82,18 +82,6 @@ if hub.exists():
         block = '<section><h2>Drainfield repair or replacement?</h2><p>Learn which septic drainfield problems may be localized repairs, what can point toward replacement, and what should be inspected before approving major work. <a href="/guides/septic-drainfield-repair-replacement/">Read the drainfield repair vs. replacement guide →</a></p></section>'
         text = text.replace('</main>', block + '</main>', 1) if '</main>' in text else text.replace('</body>', block + '</body>', 1)
         hub.write_text(text, encoding="utf-8")
-
-# Add contextually relevant links from existing national guides when those pages exist.
-for rel, anchor in [
-    ("guides/septic-system-failure-signs/index.html", '<p><strong>Drainfield-specific problem?</strong> See <a href="/guides/septic-drainfield-repair-replacement/">how to distinguish potential drainfield repairs from replacement scenarios</a>.</p>'),
-    ("guides/septic-system-replacement-cost/index.html", '<p>Before assuming the entire system must be replaced, review the <a href="/guides/septic-drainfield-repair-replacement/">drainfield repair vs. replacement guide</a>.</p>')
-]:
-    path = SITE / rel
-    if path.exists():
-        text = path.read_text(encoding="utf-8")
-        if "/guides/septic-drainfield-repair-replacement/" not in text:
-            text = text.replace('</main>', anchor + '</main>', 1) if '</main>' in text else text
-            path.write_text(text, encoding="utf-8")
 
 sitemap = SITE / "sitemap.xml"
 if sitemap.exists():
