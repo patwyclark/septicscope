@@ -33,6 +33,7 @@ jobs:
           test -f site/counties/idaho/ada/index.html
           test -f site/guides/septic-drainfield-repair-replacement/index.html
           test -f site/guides/septic-tank-size-calculator/index.html
+          test -f site/guides/septic-maintenance-checklist/index.html
       - name: Audit every generated page and internal link
         id: internal_audit
         continue-on-error: true
