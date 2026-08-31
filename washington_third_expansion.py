@@ -1,5 +1,5 @@
 # SepticScope Washington expansion — third validated county batch.
-# Verified from Washington/local government health-agency sources on 2026-08-29.
+# Verified from Washington/local government health-agency sources on 2026-08-29; Whatcom and Yakima re-audited 2026-08-31.
 
 WA3_STATE_ROLE = 'https://doh.wa.gov/community-and-environment/wastewater-management/onsite-sewage-systems-oss'
 WA3_COUNTIES = {
@@ -66,21 +66,26 @@ WA3_COUNTIES = {
     'Whatcom': {
         'authority': 'Whatcom County Health and Community Services — Onsite Sewage Program',
         'contact': 'Health and Community Services: 360-778-6000; 509 Girard Street, Bellingham, WA 98225.',
+        'verified': 'August 31, 2026',
         'sources': [
             ('Whatcom County — Onsite Sewage', 'https://www.whatcomcounty.us/891/On-Site-Sewage'),
-            ('Whatcom County — OSS Permit Process', 'https://www.whatcomcounty.us/DocumentCenter/View/2051/OSS-Permit-Process-PDF'),
+            ('Whatcom County — WCC 24.05 Code Update', 'https://www.whatcomcounty.us/4605/WCC-2405-Code-Update'),
+            ('Whatcom County — Current WCC 24.05 OSS Regulations', 'https://www.whatcomcounty.us/DocumentCenter/View/96621/Revised-WCC-2405-Clean'),
             ('Whatcom County — Licensed On Site Sewage Installers', 'https://www.whatcomcounty.us/1917/Licensed-On-Site-Sewage-Installers'),
+            ('Whatcom County — Septic and Drinking Water Records', 'https://www.whatcomcounty.us/3312/Septic-Drinking-Water-Records'),
         ],
         'sections': [
             ('Permit required for most septic construction or changes', 'Whatcom County states that an OSS permit is required when constructing, repairing, replacing, modifying, connecting to, or expanding a septic system. Limited component maintenance, such as replacing certain lids, risers, floats, or a septic pump, is listed separately as work that does not require an OSS permit.'),
             ('Licensed designer or engineer', 'County rules require the OSS to be designed by a licensed onsite sewage designer or registered professional engineer. The designer or engineer submits the design and permit application for county review and site inspection.'),
-            ('Three-year construction permit', 'Whatcom County’s published permit process states that an approved construction permit is valid for three years from the date of issuance.'),
+            ('Current permit term is four years', 'Current Whatcom County Code 24.05 states that an OSS permit expires four years from the issue date and may be renewed for one additional year with health-officer approval. This supersedes older county permit-process material that described a three-year construction-permit term.'),
             ('County-licensed installer, with a narrow homeowner exemption', 'Whatcom County requires OSS installation by a county-licensed installer. An owner who will live in the home served by the system may request an exemption from installer-certification requirements; the exemption is reviewed by the county and is not automatic.'),
+            ('Ongoing inspection and maintenance obligations', 'Current county rules make the owner responsible for operating and maintaining the OSS, obtaining approval before repairing, altering, or expanding it, and completing periodic inspections. Unless the local health officer requires more frequent inspection, systems consisting only of a sewage tank and gravity soil-dispersal component must be inspected at least once every three years; other OSS must be inspected annually.'),
         ],
     },
     'Yakima': {
         'authority': 'Yakima Health District — On-Site Sewage System Program',
         'contact': 'Environmental Health Help Desk: 509-249-6508; YHD.HelpDesk@co.yakima.wa.us; 1210 Ahtanum Ridge Drive, Union Gap, WA 98903.',
+        'verified': 'August 31, 2026',
         'sources': [
             ('Yakima County / Yakima Health District — Septic Systems', 'https://yakimacounty.us/3117/Septic-Systems'),
             ('Yakima County / Yakima Health District — Building a New Septic System', 'https://yakimacounty.us/3115/Building-a-New-Septic-System'),
@@ -92,6 +97,7 @@ WA3_COUNTIES = {
             ('Site and soil evaluation starts the new-system process', 'For a new system, the county directs applicants to submit an onsite sewage application for a site and soil evaluation and prepare test holes in the proposed drainfield area. The Health District evaluates the site and soils to determine suitability and treatment requirements.'),
             ('Licensed design and final inspection', 'After the site and soil evaluation, a licensed septic designer or professional engineer normally prepares the design for Health District review. Before the installed system is covered, Yakima Health District performs a final inspection to verify that it matches the approved design and as-built record.'),
             ('Limited owner-builder option for conventional systems', 'Yakima County states that an owner may design and install a conventional gravity system for the owner’s primary single-family residence under the county homeowner process. That option does not extend to accessory dwelling units, rentals, non-owner-occupied homes, or other septic-system types.'),
+            ('Repair permits and replacement-system review', 'Yakima Health District directs owners of failed or damaged systems to apply for an OSS Repair Permit. The repair process includes identifying existing components, preparing at least one test hole in the proposed replacement area, a Health District site and soil evaluation, design review, installation by a licensed septic-system installer, an as-built record, and a final inspection.'),
             ('Septic clearance for some building projects', 'The Health District uses a septic-clearance review as part of building-permit processing for projects such as additions, sheds, pools, or changes that could affect the existing septic system, setbacks, or permitted capacity.'),
         ],
     },
@@ -107,7 +113,7 @@ for county, data in WA3_COUNTIES.items():
     url = write_county_page(
         'Washington', 'washington', county,
         data['authority'], data['contact'], sections, sources,
-        verified='August 29, 2026'
+        verified=data.get('verified', 'August 29, 2026')
     )
     wa3_urls.append(url)
     existing_wa[county] = data['authority']
@@ -130,7 +136,7 @@ if sitemap.exists():
     sm = sitemap.read_text(encoding='utf-8')
 else:
     sm = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>'
-entries = ''.join(f'<url><loc>{u}</loc><lastmod>2026-08-29</lastmod></url>' for u in wa3_urls if u not in sm)
+entries = ''.join(f'<url><loc>{u}</loc><lastmod>2026-08-31</lastmod></url>' for u in wa3_urls if u not in sm)
 if entries:
     sm = sm.replace('</urlset>', entries + '</urlset>')
     sitemap.write_text(sm, encoding='utf-8')
