@@ -13,8 +13,8 @@ import xml.etree.ElementTree as ET
 DOMAIN = "https://septicscope.com"
 FEEDBACK_EMAIL = "feedback@septicscope.com"
 ADSENSE_CLIENT = "ca-pub-8782868222380999"
-GA_ID = "G-F6RB8YERCM"
 LASTMOD = "2026-08-31"
+TRUST_MARKER = "septicscope-trust-links-v1"
 
 STYLE = r''':root{--ink:#17212b;--muted:#5b6672;--line:#dce3e8;--panel:#f7fafb;--accent:#176b5b;--soft:#eaf5f1}*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);line-height:1.68}header{border-bottom:1px solid var(--line)}.nav,main,footer div{max-width:1000px;margin:auto;padding:20px 24px}.brand{font-weight:800;color:var(--ink);text-decoration:none}main{padding-top:42px;padding-bottom:70px}.crumb{font-size:.92rem;color:var(--muted)}h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.08}h2{margin-top:1.9em}a{color:var(--accent)}.card,.note{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin:22px 0}.note{background:var(--soft)}label{font-weight:700;display:block;margin-top:16px}input,select,textarea{width:100%;padding:12px 13px;margin-top:6px;border:1px solid #bdc9ce;border-radius:9px;font:inherit;color:var(--ink);background:#fff}textarea{min-height:180px;resize:vertical}button{margin-top:18px;padding:12px 17px;border:0;border-radius:9px;background:var(--accent);color:#fff;font:700 1rem/1.2 inherit;cursor:pointer}button:hover,button:focus{filter:brightness(.92)}small,.muted{color:var(--muted)}footer{border-top:1px solid var(--line);color:var(--muted)}'''
 
@@ -79,9 +79,14 @@ def _is_verified_county(path: Path, site: Path, text: str) -> bool:
 
 
 def _harden_existing_pages(site: Path) -> tuple[int, int, int]:
-    footer_updates = 0
+    trust_updates = 0
     county_updates = 0
     ad_suppressed = 0
+    trust_block = (
+        f'<div id="{TRUST_MARKER}" style="max-width:1000px;margin:0 auto;padding:12px 24px 20px;color:#5b6672">'
+        '<a href="/privacy/">Privacy</a> · <a href="/about/">About</a> · '
+        '<a href="/contact/">Contact &amp; Feedback</a></div>'
+    )
     for html_file in site.rglob("*.html"):
         text = html_file.read_text(encoding="utf-8", errors="replace")
         original = text
@@ -98,15 +103,20 @@ def _harden_existing_pages(site: Path) -> tuple[int, int, int]:
                 text = stripped
 
         # Add the public feedback route to the fixed menu created by site_ui_fix.py.
-        menu_anchor = '<a href="/about/">About</a>'
-        menu_contact = '<a href="/contact/">Contact &amp; Feedback</a>'
-        if "septicscope-fixed-menu" in text and menu_contact not in text and menu_anchor in text:
-            text = text.replace(menu_anchor, menu_anchor + menu_contact, 1)
+        menu_before = "p.innerHTML='<a href=\"/\">Home</a><a href=\"/counties/\">County Guides</a><a href=\"/guides/\">Guides</a><a href=\"/faq/\">FAQ</a><a href=\"/about/\">About</a>';"
+        menu_after = "p.innerHTML='<a href=\"/\">Home</a><a href=\"/counties/\">County Guides</a><a href=\"/guides/\">Guides</a><a href=\"/faq/\">FAQ</a><a href=\"/about/\">About</a><a href=\"/contact/\">Contact &amp; Feedback</a>';"
+        if menu_before in text:
+            text = text.replace(menu_before, menu_after, 1)
 
-        # Make Contact & Feedback discoverable from every page that already has a footer.
-        if "</footer>" in text and 'href="/contact/"' not in text[text.rfind("<footer"):]:
-            text = text.replace("</footer>", '<p style="max-width:1000px;margin:0 auto;padding:0 24px 18px"><a href="/contact/">Contact &amp; Feedback</a></p></footer>', 1)
-            footer_updates += 1
+        # Expose Privacy, About, and Contact on every currently generated page,
+        # including the homepage even when its original template has no footer links.
+        if TRUST_MARKER not in text:
+            if "</footer>" in text:
+                text = text.replace("</footer>", trust_block + "</footer>", 1)
+                trust_updates += 1
+            elif "</body>" in text:
+                text = text.replace("</body>", '<footer style="border-top:1px solid #dce3e8">' + trust_block + "</footer></body>", 1)
+                trust_updates += 1
 
         if _is_verified_county(html_file, site, text) and "Report outdated county information" not in text:
             feedback = '<div class="note"><strong>Report outdated county information</strong><p>Septic rules, forms and agency pages can change. If you find a broken official link or a county requirement that has changed, <a href="/contact/">send SepticScope feedback</a> and include the current local government source.</p></div>'
@@ -117,7 +127,7 @@ def _harden_existing_pages(site: Path) -> tuple[int, int, int]:
         if text != original:
             html_file.write_text(text, encoding="utf-8")
 
-    return footer_updates, county_updates, ad_suppressed
+    return trust_updates, county_updates, ad_suppressed
 
 
 def _ensure_sitemap(site: Path) -> None:
@@ -146,14 +156,14 @@ def finalize(root: Path | str | None = None) -> None:
         return
     _write_privacy(site)
     _write_contact(site)
-    footer_updates, county_updates, ad_suppressed = _harden_existing_pages(site)
+    trust_updates, county_updates, ad_suppressed = _harden_existing_pages(site)
     # Re-write policy/contact pages after the global pass so they stay deliberately ad-free.
     _write_privacy(site)
     _write_contact(site)
     _ensure_sitemap(site)
     print(
         "AdSense hardening complete: "
-        f"feedback links on {footer_updates} pages; "
+        f"trust links on {trust_updates} pages; "
         f"county feedback prompts on {county_updates} verified guides; "
         f"AdSense suppressed on {ad_suppressed} non-content/noindex pages"
     )
