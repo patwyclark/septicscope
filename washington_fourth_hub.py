@@ -23,3 +23,4 @@ if '18 verified counties' not in hub_text:
     raise RuntimeError('Washington hub verified-county count was not refreshed')
 
 print('Washington hub refreshed for 18 verified county guides')
+exec((ROOT / 'washington_fifth_expansion.py').read_text(encoding='utf-8'), globals())
