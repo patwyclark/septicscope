@@ -1,5 +1,11 @@
 # SepticScope Georgia expansion — official-source county pages
 # Executed by the root build_site.py after the national bundle and prior expansions are built.
+import atexit
+import adsense_hardening
+
+# Register this during the build chain so the hardening pass runs after normal page
+# generation and before the Python process exits.
+atexit.register(adsense_hardening.finalize, ROOT)
 
 GA_STATE = 'https://dph.georgia.gov/environmental-health/onsite-sewage'
 GA_CONTACT = 'https://dph.georgia.gov/environmental-health/make-complaint-contact-your-county'
