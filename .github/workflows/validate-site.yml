@@ -19,7 +19,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Build site
-        run: python build_site.py
+        run: |
+          python build_site.py
+          python drainfield_guide.py
       - name: Verify expansion manifest
         run: |
           test -f site/deployment-manifest.txt
@@ -28,6 +30,7 @@ jobs:
           test -f site/counties/alabama/mobile/index.html
           test -f site/counties/tennessee/bedford/index.html
           test -f site/counties/idaho/ada/index.html
+          test -f site/guides/septic-drainfield-repair-replacement/index.html
       - name: Audit every generated page and internal link
         id: internal_audit
         continue-on-error: true
