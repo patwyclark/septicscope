@@ -2,10 +2,12 @@
 # Executed by the root build_site.py after the national bundle and prior expansions are built.
 import atexit
 import adsense_hardening
+import trust_routes
 
-# Register this during the build chain so the hardening pass runs after normal page
-# generation and before the Python process exits.
+# Register these during the build chain so the compatibility pass runs first at process
+# exit, followed by the final AdSense/trust hardening pass.
 atexit.register(adsense_hardening.finalize, ROOT)
+atexit.register(trust_routes.finalize, ROOT)
 
 GA_STATE = 'https://dph.georgia.gov/environmental-health/onsite-sewage'
 GA_CONTACT = 'https://dph.georgia.gov/environmental-health/make-complaint-contact-your-county'
@@ -17,7 +19,7 @@ GA_COUNTIES = {
     'Carroll': ('770-836-6781', '423 College Street, Carrollton, GA 30117', 'https://www.district4health.org/locations/carroll-county/'),
     'Coweta': ('770-683-7345', '22 E. Broad Street, Newnan, GA 30263', 'https://www.district4health.org/locations/coweta-county/'),
     'Fayette': ('943-209-8057', '245 Booker Avenue, Suite E, Fayetteville, GA 30215', 'https://www.district4health.org/locations/fayette-county/'),
-    'Heard': ('706-675-3456', '1191 Franklin Parkway, Franklin, GA 30217', 'https://www.district4health.org/locations/heard-county/'),
+    'Heard': ('706-675-3456', '1191 Franklin Parkway, Franklin, GA 30222', 'https://www.district4health.org/locations/heard-county/'),
     'Henry': ('470-661-0044', '137 Henry Parkway, McDonough, GA 30253', 'https://www.district4health.org/locations/henry-county/'),
     'Meriwether': ('706-672-4974', '51 Gay Connector, Greenville, GA 30222', 'https://www.district4health.org/locations/meriwether-county/'),
     'Spalding': ('770-467-4230', '1007 Memorial Drive, Griffin, GA 30224', 'https://www.district4health.org/locations/spalding-county/'),
