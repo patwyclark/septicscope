@@ -1,4 +1,4 @@
-# SepticScope Georgia additional expansion — validated from official government/public-health sources on 2026-08-29.
+# SepticScope Georgia additional expansion — validated from official government/public-health sources.
 
 GA_ADD_STATE = 'https://dph.georgia.gov/environmental-health/onsite-sewage'
 GA_ADD_COUNTIES = {
@@ -14,9 +14,10 @@ GA_ADD_COUNTIES = {
             ('Environmental Health issues permits and performs final inspections', 'Forsyth County Environmental Health states that its Land Use Section issues onsite sewage management system permits and performs final inspections. Septic approval is required before a building permit for a septic-served property when building or remodeling a home or adding a building or pool.'),
             ('New systems, repairs, additions and existing-system reviews use separate processes', 'The county publishes separate application and requirement materials for new septic systems, repairs, additions or modifications, commercial systems, pool-related performance evaluations and other existing-system evaluations. Applicants should use the form that matches the proposed work rather than assuming a new-system application covers a repair or modification.'),
             ('Allow time for review', 'Forsyth County Environmental Health warns that an application or review may take twenty business days or more. Completed forms and required documents can be submitted to Environmental Health using the county instructions.'),
-            ('Published 2024 residential septic fees', 'The county fee schedule lists a new residential septic permit at $350 for seven rooms or fewer and $550 for eight rooms or more; residential repair is $150, and a residential addition or modification is $350. Because fee schedules can change, confirm the current amount before payment.'),
+            ('Published residential septic fees', 'The county fee schedule lists a new residential septic permit at $350 for seven rooms or fewer and $550 for eight rooms or more; residential repair is $150, and a residential addition or modification is $350. Because fee schedules can change, confirm the current amount before payment.'),
             ('Use state-certified professionals where required', 'Forsyth links directly to Georgia DPH lists of approved soil classifiers, certified septic installers and certified pumpers. Verify current certification before hiring a contractor or soil professional.'),
         ],
+        'verified': 'August 29, 2026',
     },
     'Hall': {
         'authority': 'Hall County Environmental Health',
@@ -32,6 +33,7 @@ GA_ADD_COUNTIES = {
             ('Well permitting can run with the septic application', 'If public water is unavailable and there is no existing well, Hall County instructs the applicant to apply for a well permit at the same time as the septic permit. The well location must be shown on the property plan according to the county checklist.'),
             ('Installation inspection is coordinated through Environmental Health', 'Hall County tells certified septic contractors to request septic installation inspections through Environmental Health. The county page currently directs same-day inspection requests to be called in between 8:00 and 9:00 a.m.; later requests are scheduled for the next working day.'),
         ],
+        'verified': 'August 29, 2026',
     },
     'Cherokee': {
         'authority': 'Cherokee County Environmental Health — North Georgia Health District',
@@ -48,6 +50,62 @@ GA_ADD_COUNTIES = {
             ('Soil information and existing septic drawings are handled through Environmental Health', 'The district directs owners needing a soil test, existing soil information, septic permit application or septic drawing to the county Environmental Health office. Existing septic drawings are not presented as a public online database; the office can provide available property records on request.'),
             ('Use Georgia-certified septic professionals', 'Georgia DPH maintains statewide certification lists for septic installers, pumpers and soil classifiers. The district directs property owners to those lists when septic professional services are needed.'),
         ],
+        'verified': 'August 29, 2026',
+    },
+    'Gwinnett': {
+        'authority': 'GNR Public Health — Gwinnett Environmental Health Department',
+        'contact': 'Gwinnett Environmental Health: 770-963-5132; 455 Grayson Highway, Suite 600, Lawrenceville, GA 30046.',
+        'sources': [
+            ('GNR Public Health — Septic Systems', 'https://www.gnrhealth.com/septic-systems/'),
+            ('GNR Public Health — Gwinnett Environmental Health Department', 'https://www.gnrhealth.com/location/gwinnett-environmental-health-department/'),
+            ('Gwinnett County — Septic Tanks and Records', 'https://www.gwinnettcounty.com/government/departments/water/get-educated/septic-tanks'),
+            ('GNR Public Health — Gwinnett Environmental Health Fee Schedule', 'https://www.gnrhealth.com/wp-content/uploads/2026/03/EH-Gwinnett-Fee-Schedule_Updated-021226.pdf'),
+        ],
+        'sections': [
+            ('Gwinnett Environmental Health handles septic permitting and inspections', 'GNR Public Health identifies its Gwinnett Environmental Health office as the local Environmental Health department and publishes residential and commercial septic applications, repair and addition forms, inspection scheduling procedures, and land-use regulations. GNR states that Environmental Health involvement begins before a septic-served lot is created and continues until the property is connected to sewer.'),
+            ('A Level 3 soil report is required before septic permitting', 'GNR Public Health states that all of its Environmental Health departments require a Level 3 soil report before issuing septic permits for new systems, repairs, and additions that require modification of the existing septic system. Applicants should obtain the report from an appropriately qualified soil professional and submit the correct project-specific application.'),
+            ('New construction, repairs, additions, and existing-system evaluations have separate forms', 'GNR publishes separate residential applications for new construction, repair, and addition work, plus an existing septic system evaluation application. This distinction matters because a repair or building addition should not be treated as a new-system permit without Environmental Health review.'),
+            ('Current Gwinnett land-use fees are published', 'The Gwinnett Environmental Health fee schedule linked by GNR lists $275 for residential site evaluation, permit, and initial inspection; $600 for the commercial equivalent; $145 for a visual existing-system evaluation; $175 for reinspection; and double the applicable permit fee for installation without a permit. Confirm the live schedule before payment because fees may be amended.'),
+            ('Septic records and repair history can be researched', 'Gwinnett County states that Environmental Health maintains septic records dating to 1959. The county GIS Data Browser can show a septic-system sketch and, when available, past repair applications and permits, while copies of septic records can also be requested from Environmental Health.'),
+            ('Use Georgia-certified septic professionals', 'Georgia DPH maintains certification lists for septic installers, pumpers, and soil classifiers. GNR links those state resources from its septic page; verify current certification before hiring a contractor or soil professional.'),
+        ],
+        'verified': 'August 31, 2026',
+    },
+    'Newton': {
+        'authority': 'GNR Public Health — Newton Environmental Health Department',
+        'contact': 'Newton Environmental Health: 770-784-2121; 1113 Usher Street, Suite 303, Covington, GA 30014.',
+        'sources': [
+            ('GNR Public Health — Septic Systems', 'https://www.gnrhealth.com/septic-systems/'),
+            ('GNR Public Health — Newton Environmental Health Department', 'https://www.gnrhealth.com/location/newton-environmental-health-department/'),
+            ('GNR Public Health — Newton Environmental Health Fee Schedule', 'https://www.gnrhealth.com/wp-content/uploads/2026/03/EH-Newton-Fee-Schedule_Updated-021226.pdf'),
+        ],
+        'sections': [
+            ('Newton Environmental Health administers the local septic process', 'GNR Public Health identifies its Newton Environmental Health office as the local Environmental Health department and publishes septic regulations, applications, inspection scheduling procedures, and complaint resources for Newton County.'),
+            ('A Level 3 soil report is required before septic permitting', 'GNR Public Health states that all of its Environmental Health departments require a Level 3 soil report before septic permits for new systems, repairs, and additions that modify the existing septic system. Applicants should complete the soil work before expecting a permit decision.'),
+            ('Use the application that matches the work', 'GNR publishes separate residential applications and requirements for new septic construction, repairs, and additions, along with an existing-system evaluation application. Owners should identify the project category before filing because the required review can differ.'),
+            ('Newton publishes current septic-related land-use fees', 'The Newton Environmental Health fee schedule linked by GNR lists $275 for residential site evaluation, permit, and initial inspection; $600 for the commercial equivalent; $145 for a visual existing-system evaluation; $175 for reinspection; and double the applicable permit fee for installation without a permit. Confirm the live fee schedule before payment.'),
+            ('Environmental Health inspects septic development and failures', 'GNR states that Environmental Health inspects development related to septic-served properties and investigates complaints involving failing septic systems. Contractors should follow GNR’s published inspection scheduling procedure and keep work available for required inspection.'),
+            ('Use Georgia-certified septic professionals', 'Georgia DPH maintains statewide certification lists for septic installers, pumpers and soil classifiers, which GNR links from its septic resources. Verify current credentials before hiring.'),
+        ],
+        'verified': 'August 31, 2026',
+    },
+    'Rockdale': {
+        'authority': 'GNR Public Health — Rockdale Environmental Health Department',
+        'contact': 'Rockdale Environmental Health: 770-278-7340; 1329 Portman Drive, Suite F, Conyers, GA 30094.',
+        'sources': [
+            ('GNR Public Health — Septic Systems', 'https://www.gnrhealth.com/septic-systems/'),
+            ('GNR Public Health — Rockdale Environmental Health Department', 'https://www.gnrhealth.com/location/rockdale-environmental-health-department/'),
+            ('GNR Public Health — Rockdale Environmental Health Fee Schedule', 'https://www.gnrhealth.com/wp-content/uploads/2026/03/EH-Rockdale-Fee-Schedule_Updated-021226.pdf'),
+        ],
+        'sections': [
+            ('Rockdale Environmental Health administers the local septic process', 'GNR Public Health identifies its Rockdale Environmental Health office as the local Environmental Health department and provides septic applications, regulations, inspection scheduling procedures, and complaint resources for Rockdale County.'),
+            ('A Level 3 soil report is required before septic permitting', 'GNR Public Health states that all of its Environmental Health departments require a Level 3 soil report before septic permits for new systems, repairs, and additions that require modification of the existing septic system.'),
+            ('Repairs and additions are separately reviewed', 'GNR publishes distinct residential septic applications and requirements for new construction, repair, and addition work, as well as an existing-system evaluation application. Property owners should use the form matching the work rather than assuming a prior septic approval covers a repair or expansion.'),
+            ('Rockdale publishes current septic-related land-use fees', 'The Rockdale Environmental Health fee schedule linked by GNR lists $275 for residential site evaluation, permit, and initial inspection; $600 for the commercial equivalent; $145 for a visual existing-system evaluation; $175 for reinspection; and double the applicable permit fee for installation without a permit. Confirm the live schedule before payment.'),
+            ('Environmental Health inspects septic development and investigates failures', 'GNR states that Environmental Health inspects development related to septic-served property and investigates complaints about failing systems. Contractors should follow GNR’s published inspection scheduling procedures and keep installations accessible until the required inspection is complete.'),
+            ('Use Georgia-certified septic professionals', 'Georgia DPH maintains statewide certification lists for septic installers, pumpers, and soil classifiers. GNR links these lists from its septic page so owners can verify current credentials.'),
+        ],
+        'verified': 'August 31, 2026',
     },
 }
 
@@ -61,7 +119,7 @@ for county, data in GA_ADD_COUNTIES.items():
     url = write_county_page(
         'Georgia', 'georgia', county,
         data['authority'], data['contact'], sections, sources,
-        verified='August 29, 2026'
+        verified=data.get('verified', 'August 29, 2026')
     )
     ga_add_urls.append(url)
     existing_ga_names.add(county)
@@ -87,7 +145,7 @@ if sitemap.exists():
     sm = sitemap.read_text(encoding='utf-8')
 else:
     sm = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>'
-entries = ''.join(f'<url><loc>{u}</loc><lastmod>2026-08-29</lastmod></url>' for u in ga_add_urls if u not in sm)
+entries = ''.join(f'<url><loc>{u}</loc><lastmod>2026-08-31</lastmod></url>' for u in ga_add_urls if u not in sm)
 if entries:
     sm = sm.replace('</urlset>', entries + '</urlset>')
     sitemap.write_text(sm, encoding='utf-8')
