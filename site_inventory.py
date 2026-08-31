@@ -5,75 +5,75 @@ import argparse
 from collections import Counter
 import json
 from pathlib import Path
-import runpy
 
 ROOT = Path(__file__).resolve().parent
 CORE = ROOT / "site_inventory_core.py"
 
 
-def _route_for_path(path: Path, site: Path) -> str:
-    relative = path.relative_to(site).as_posix()
-    if relative == "index.html":
-        return "/"
-    if relative.endswith("/index.html"):
-        return "/" + relative[:-10]
-    return "/" + relative
+def _patched_namespace() -> dict:
+    source = CORE.read_text(encoding="utf-8")
 
+    row_needle = "    county_rows = load_county_rows()\n"
+    row_patch = row_needle + """    # Census data contains six same-name county/city pairs. Preserve the
+    # long-standing county slug and append the legal-area label to the non-county
+    # equivalent so every FIPS entity has its own canonical page.
+    collision_counts = Counter((row[0], slugify(row[1])) for row in county_rows)
+    collision_safe_rows = []
+    for abbr, name, lsad, fips in county_rows:
+        if collision_counts[(abbr, slugify(name))] > 1 and str(lsad).lower() != "county":
+            label = "Census Area" if lsad == "CA" else lsad
+            if str(label).lower() not in name.lower():
+                name = f"{name} {label}"
+        collision_safe_rows.append([abbr, name, lsad, fips])
+    county_rows = collision_safe_rows
+"""
+    if source.count(row_needle) != 1:
+        raise RuntimeError("County-row compatibility patch no longer matches the inventory core")
+    source = source.replace(row_needle, row_patch, 1)
 
-def _redirect_sources(site: Path) -> set[str]:
-    redirects = site / "_redirects"
-    result: set[str] = set()
-    if not redirects.exists():
-        return result
-    for line in redirects.read_text(encoding="utf-8", errors="replace").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
+    scan_needle = """        relative_parts = path.relative_to(ROOT).parts
+        if any(part in excluded_roots for part in relative_parts):
             continue
-        fields = line.split()
-        if len(fields) < 3 or fields[2] not in {"301", "302", "307", "308"}:
+"""
+    scan_patch = """        relative = path.relative_to(ROOT)
+        relative_parts = relative.parts
+        if relative.as_posix() in {"site_inventory.py", "site_inventory_core.py"}:
             continue
-        source = fields[0]
-        if source.startswith("/") and "*" not in source and ":" not in source:
-            result.add(source)
-    return result
+        if any(part in excluded_roots for part in relative_parts):
+            continue
+"""
+    if source.count(scan_needle) != 1:
+        raise RuntimeError("Legacy-brand scanner compatibility patch no longer matches the inventory core")
+    source = source.replace(scan_needle, scan_patch, 1)
 
+    pages_needle = "    html_pages = sorted(SITE.rglob(\"*.html\"))\n"
+    pages_patch = pages_needle + """    redirected_page_urls = set()
+    redirects_file = SITE / "_redirects"
+    if redirects_file.exists():
+        for redirect_line in redirects_file.read_text(encoding="utf-8", errors="replace").splitlines():
+            redirect_line = redirect_line.strip()
+            if not redirect_line or redirect_line.startswith("#"):
+                continue
+            fields = redirect_line.split()
+            if len(fields) >= 3 and fields[0].startswith("/") and fields[2] in {"301", "302", "307", "308"}:
+                if "*" not in fields[0] and ":" not in fields[0]:
+                    redirected_page_urls.add(f"{DOMAIN}{fields[0]}")
+"""
+    if source.count(pages_needle) != 1:
+        raise RuntimeError("Redirect inventory patch no longer matches the inventory core")
+    source = source.replace(pages_needle, pages_patch, 1)
 
-def _load_namespace() -> dict:
-    namespace = runpy.run_path(str(CORE), run_name="septicscope_inventory_core")
-    original_load_rows = namespace["load_county_rows"]
-    original_parse_page = namespace["parse_page"]
-    original_legacy_scan = namespace["repository_legacy_scan"]
-    site = namespace["SITE"]
+    indexable_needle = "        indexable = not is_noindex(parser) and page_type != \"error_page\"\n"
+    indexable_patch = "        indexable = not is_noindex(parser) and page_type != \"error_page\" and url not in redirected_page_urls\n"
+    if source.count(indexable_needle) != 1:
+        raise RuntimeError("Redirect indexability patch no longer matches the inventory core")
+    source = source.replace(indexable_needle, indexable_patch, 1)
 
-    def load_collision_safe_rows():
-        rows = original_load_rows()
-        counts = Counter((abbr, namespace["slugify"](name)) for abbr, name, lsad, fips in rows)
-        fixed = []
-        for abbr, name, lsad, fips in rows:
-            if counts[(abbr, namespace["slugify"](name))] > 1 and str(lsad).lower() != "county":
-                label = "Census Area" if lsad == "CA" else lsad
-                name = name if str(label).lower() in name.lower() else f"{name} {label}"
-            fixed.append([abbr, name, lsad, fips])
-        return fixed
-
-    redirect_sources = _redirect_sources(site)
-
-    def parse_redirect_aware_page(path):
-        parser, raw = original_parse_page(path)
-        if _route_for_path(path, site) in redirect_sources:
-            parser.robots = (parser.robots + ",noindex").strip(",")
-        return parser, raw
-
-    def scan_without_scanner_self_matches():
-        ignored = {"site_inventory.py", "site_inventory_core.py"}
-        return [
-            finding for finding in original_legacy_scan()
-            if finding.get("path") not in ignored
-        ]
-
-    namespace["load_county_rows"] = load_collision_safe_rows
-    namespace["parse_page"] = parse_redirect_aware_page
-    namespace["repository_legacy_scan"] = scan_without_scanner_self_matches
+    namespace = {
+        "__name__": "septicscope_inventory_core",
+        "__file__": str(CORE),
+    }
+    exec(compile(source, str(CORE), "exec"), namespace)
     return namespace
 
 
@@ -110,7 +110,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
-    namespace = _load_namespace()
+    namespace = _patched_namespace()
     if args.check:
         namespace["check"]()
     else:
