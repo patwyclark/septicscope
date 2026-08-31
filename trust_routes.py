@@ -4,8 +4,6 @@ from __future__ import annotations
 from pathlib import Path
 import re
 
-DOMAIN = "https://septicscope.com"
-
 
 def _verified_count(site: Path) -> int:
     total = 0
@@ -53,21 +51,6 @@ def _refresh_home_metric(site: Path, verified: int) -> None:
         home.write_text(text, encoding="utf-8")
 
 
-def _write_legacy_redirect(path: Path, destination: str, title: str) -> None:
-    canonical = f"{DOMAIN}{destination}"
-    path.write_text(
-        '<!doctype html><html lang="en"><head><meta charset="utf-8">'
-        '<meta name="viewport" content="width=device-width,initial-scale=1">'
-        '<meta name="robots" content="noindex,follow">'
-        f'<link rel="canonical" href="{canonical}">'
-        f'<meta http-equiv="refresh" content="0;url={destination}">'
-        f'<title>{title} | SepticScope</title></head><body>'
-        f'<p>This page moved to <a href="{destination}">{title}</a>.</p>'
-        '</body></html>',
-        encoding="utf-8",
-    )
-
-
 def _ensure_redirects(site: Path) -> None:
     redirects = site / "_redirects"
     existing = redirects.read_text(encoding="utf-8", errors="replace") if redirects.exists() else ""
@@ -92,10 +75,9 @@ def finalize(root: Path | str | None = None) -> None:
     verified = _verified_count(site)
     _refresh_home_metric(site, verified)
 
-    # Preserve old public URLs while making /privacy/ and /contact/ the canonical
-    # destinations. The files are also safe fallbacks for hosts that ignore _redirects.
-    _write_legacy_redirect(site / "privacy.html", "/privacy/", "Privacy Policy")
-    _write_legacy_redirect(site / "corrections.html", "/contact/", "Contact & Feedback")
+    # Preserve the old public URLs with server-level 301s while leaving the original
+    # generated files untouched for static integrity checks. Cloudflare Pages applies
+    # these redirects before serving those legacy files.
     _ensure_redirects(site)
 
-    print(f"Trust-route compatibility complete: homepage count={verified}; legacy privacy/corrections redirected")
+    print(f"Trust-route compatibility complete: homepage count={verified}; legacy privacy/corrections redirect rules installed")
