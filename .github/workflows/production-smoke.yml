@@ -1,0 +1,86 @@
+name: Verify SepticScope production deployment
+
+on:
+  workflow_run:
+    workflows: ["Validate SepticScope site"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production-smoke:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - name: Wait for Cloudflare Pages and verify the deployed commit
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import time
+          from urllib.error import HTTPError, URLError
+          from urllib.request import Request, urlopen
+
+          base = "https://septicscope.com"
+          expected = os.environ["EXPECTED_SHA"].strip()
+          info = None
+          last_error = "not checked"
+
+          for attempt in range(40):
+              cache_buster = int(time.time())
+              try:
+                  request = Request(
+                      f"{base}/build-info.json?v={cache_buster}",
+                      headers={"User-Agent": "SepticScope production smoke test", "Cache-Control": "no-cache"},
+                  )
+                  with urlopen(request, timeout=20) as response:
+                      info = json.load(response)
+                  deployed = str(info.get("commit_sha", ""))
+                  if deployed == expected:
+                      print(f"Cloudflare deployment confirmed at commit {deployed}")
+                      break
+                  last_error = f"deployed commit is {deployed or 'unknown'}, expected {expected}"
+              except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
+                  last_error = repr(exc)
+              print(f"Waiting for deployment ({attempt + 1}/40): {last_error}")
+              time.sleep(15)
+          else:
+              raise SystemExit(f"Production did not reach expected commit: {last_error}")
+
+          checks = {
+              "/": ("SepticScope", "verified county guides"),
+              "/counties/": ("3,144", "county"),
+              "/guides/": ("septic-system-lifespan", "septic-inspection-checklist"),
+              "/faq/": ("Septic", "FAQ"),
+              "/providers/": ("provider directory", "Directory standards"),
+              "/sitemap.xml": ("https://septicscope.com/counties/", "https://septicscope.com/guides/septic-system-lifespan/"),
+              "/robots.txt": ("Sitemap:", "septicscope.com/sitemap.xml"),
+          }
+          for path, needles in checks.items():
+              request = Request(
+                  f"{base}{path}?v={int(time.time())}",
+                  headers={"User-Agent": "SepticScope production smoke test", "Cache-Control": "no-cache"},
+              )
+              with urlopen(request, timeout=30) as response:
+                  body = response.read().decode("utf-8", errors="replace")
+                  if response.status != 200:
+                      raise SystemExit(f"{path} returned {response.status}")
+              missing = [needle for needle in needles if needle.lower() not in body.lower()]
+              if missing:
+                  raise SystemExit(f"{path} is missing expected production content: {missing}")
+              print(f"PASS {path}")
+
+          if info.get("quality_gate") != "pass":
+              raise SystemExit(f"Production build quality gate is not passing: {info}")
+          if int(info.get("published_county_or_equivalent_pages", 0)) != 3144:
+              raise SystemExit(f"Production county coverage is incomplete: {info}")
+          print("PASS: SepticScope production deployment matches the validated commit")
+          PY

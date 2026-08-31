@@ -3,7 +3,15 @@ name: Validate SepticScope site
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: "17 8 * * *"
+
+concurrency:
+  group: validate-septicscope-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -11,27 +19,34 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-      - name: Build site
-        run: |
-          python build_site.py
-          python drainfield_guide.py
-          python tank_size_calculator.py
-          python septic_maintenance_checklist.py
-          python system_types_guide.py
-          python septic_winter_guide.py
-          python septic_inspection_checklist.py
-          python septic_system_lifespan_guide.py
-      - name: Verify expansion manifest
+          python-version: "3.12"
+
+      - name: Compile Python sources
+        run: python -m compileall -q -x '(^|/)(site|\.septicscope-build)/' .
+
+      - name: Build complete production site
+        run: python build_site.py
+
+      - name: Verify production pages and machine-readable manifests
         run: |
           test -f site/deployment-manifest.txt
           cat site/deployment-manifest.txt
+          test -f site/build-info.json
+          test -f site/data/national-coverage-manifest.json
+          test -f site/data/keyword-map.json
+          test -f site/data/source-catalog.json
+          test -f site/data/provider-directory.json
+          test -f site/data/project-audit-summary.json
+          test -f site/data/project-audit-summary.txt
+          test -f site/providers/index.html
           test -f site/counties/north-carolina/guilford/index.html
           test -f site/counties/alabama/mobile/index.html
           test -f site/counties/tennessee/bedford/index.html
@@ -43,25 +58,30 @@ jobs:
           test -f site/guides/septic-system-winter-care/index.html
           test -f site/guides/septic-inspection-checklist/index.html
           test -f site/guides/septic-system-lifespan/index.html
+          python site_inventory.py --check
+
       - name: Audit every generated page and internal link
         id: internal_audit
         continue-on-error: true
         run: |
           set -o pipefail
           python audit_site.py 2>&1 | tee internal-audit.txt
+
       - name: Check external government and source links
         id: external_audit
         continue-on-error: true
         run: |
           set -o pipefail
           python audit_site.py --external 2>&1 | tee external-audit.txt
+
       - name: Audit AdSense readiness and county source quality
         id: adsense_audit
         continue-on-error: true
         run: |
           set -o pipefail
           python adsense_audit.py 2>&1 | tee adsense-audit.txt
-      - name: Upload audit diagnostics
+
+      - name: Upload audit diagnostics and inventories
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -70,13 +90,23 @@ jobs:
             internal-audit.txt
             external-audit.txt
             adsense-audit.txt
-          retention-days: 7
+            site/build-info.json
+            site/data/national-coverage-manifest.json
+            site/data/keyword-map.json
+            site/data/source-catalog.json
+            site/data/provider-directory.json
+            site/data/project-audit-summary.json
+            site/data/project-audit-summary.txt
+          retention-days: 14
+
       - name: Enforce internal audit
         if: always()
         run: test "${{ steps.internal_audit.outcome }}" = "success"
+
       - name: Enforce external audit
         if: always()
         run: test "${{ steps.external_audit.outcome }}" = "success"
+
       - name: Enforce AdSense audit
         if: always()
         run: test "${{ steps.adsense_audit.outcome }}" = "success"
