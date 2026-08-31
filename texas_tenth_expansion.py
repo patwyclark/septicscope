@@ -69,3 +69,4 @@ if 'Local septic rules not yet verified' in text:
     raise RuntimeError('Hays verified page was overwritten by an unverified fallback')
 
 print('Texas tenth expansion complete: +1 verified Hays County guide')
+exec((ROOT / 'texas_eleventh_expansion.py').read_text(encoding='utf-8'), globals())
