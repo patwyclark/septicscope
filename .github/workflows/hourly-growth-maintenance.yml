@@ -1,6 +1,15 @@
 name: Hourly provider growth, link and SEO audit
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/hourly-growth-maintenance.yml"
+      - "tools/provider_discovery.py"
+      - "tools/provider_discovery_parts/**"
+      - "tools/seo_hourly_audit.py"
+      - "tools/indexnow_submit.py"
+      - "provider_experience.py"
   schedule:
     - cron: "23 * * * *"
   workflow_dispatch:
