@@ -122,15 +122,30 @@ def _polish_lifespan_guide() -> None:
     page.write_text(text, encoding="utf-8")
 
 
+def _polish_faq_hub() -> None:
+    page = SITE / "faq" / "index.html"
+    if not page.exists():
+        raise RuntimeError("Generated FAQ hub is missing")
+    text = page.read_text(encoding="utf-8", errors="replace")
+    old = "<h1>Septic Questions, Answered</h1>"
+    new = "<h1>Septic System Frequently Asked Questions</h1>"
+    if old in text:
+        text = text.replace(old, new, 1)
+    elif new not in text:
+        raise RuntimeError("FAQ hub H1 no longer matches the expected source")
+    page.write_text(text, encoding="utf-8")
+
+
 def main() -> None:
     if not SITE.is_dir():
         raise RuntimeError("site/ does not exist; run the core build first")
     _polish_lifespan_guide()
+    _polish_faq_hub()
     verified, faq_count, guide_count = _polish_homepage()
     print(
         "Site quality polish complete: "
         f"homepage={verified} verified counties/{faq_count} FAQs/{guide_count} guides; "
-        "lifespan guide H1 de-duplicated"
+        "lifespan and FAQ hub H1s aligned to distinct search intent"
     )
 
 
