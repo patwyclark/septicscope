@@ -10,16 +10,13 @@ on:
       - "tools/seo_hourly_audit.py"
       - "tools/indexnow_submit.py"
       - "provider_experience.py"
+      - "data/providers.json"
   schedule:
     - cron: "23 * * * *"
   workflow_dispatch:
     inputs:
       county_limit:
-        description: "Counties to research this run"
-        required: false
-        default: "100"
-      search_budget:
-        description: "Maximum Brave Search requests this run"
+        description: "Counties to review this run"
         required: false
         default: "100"
       dry_run:
@@ -41,8 +38,6 @@ jobs:
     timeout-minutes: 55
     env:
       COUNTY_LIMIT: ${{ github.event.inputs.county_limit || '100' }}
-      SEARCH_BUDGET: ${{ github.event.inputs.search_budget || '100' }}
-      BRAVE_SEARCH_API_KEY: ${{ secrets.BRAVE_SEARCH_API_KEY }}
     steps:
       - name: Checkout production branch
         uses: actions/checkout@v4
@@ -61,10 +56,10 @@ jobs:
           python tools/seo_hourly_audit.py --self-test
           python tools/indexnow_submit.py /dev/null --self-test
 
-      - name: Build current production site for county/source discovery
+      - name: Build current production site for county and source review
         run: python build_site.py
 
-      - name: Research a rotating batch of 100 counties
+      - name: Review free official provider sources for a rotating batch of 100 counties
         id: provider_research
         run: |
           DRY_FLAG=""
@@ -74,7 +69,7 @@ jobs:
           python tools/provider_discovery.py \
             --county-limit "$COUNTY_LIMIT" \
             --max-additions "$COUNTY_LIMIT" \
-            --search-budget "$SEARCH_BUDGET" \
+            --search-budget 0 \
             --report hourly-provider-report.json \
             $DRY_FLAG
           if git diff --quiet -- data/providers.json; then
@@ -138,7 +133,7 @@ jobs:
           test "${{ steps.external_audit.outcome }}" = "success"
           test "${{ steps.adsense_audit.outcome }}" = "success"
 
-      - name: Commit source-checked provider changes
+      - name: Commit source-checked provider changes from official directories
         id: commit
         if: >-
           steps.provider_research.outputs.provider_data_changed == 'true' &&
