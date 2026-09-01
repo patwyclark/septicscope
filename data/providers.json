@@ -1,8 +1,300 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-08-31",
+  "last_updated": "2026-09-01",
   "ordering_policy": "Ordinary listings use neutral ordering. Sponsored or promoted placement must be clearly labeled and paid links must use rel=sponsored.",
-  "verification_policy": "Only verifiable public business information may be published. Do not infer service areas, copy reviews, or display ratings that cannot be maintained accurately.",
+  "verification_policy": "Only verifiable public business information may be published. Google Search may be used manually to discover a business, but the published facts must be confirmed on the company-owned website or an official public-agency directory. Do not infer service areas, copy reviews, or display ratings that cannot be maintained accurately.",
   "correction_process": "Business owners and users may report corrections, closures, removals, or listing claims through https://septicscope.com/contact/.",
-  "providers": []
+  "providers": [
+    {
+      "id": "aerobic-systems-inc-kaufman-tx",
+      "business_name": "Aerobic Systems, Inc.",
+      "website": "https://asi-im.com/",
+      "public_phone": "972-962-2222",
+      "city": "Kaufman",
+      "state": "TX",
+      "zip_code": "75142",
+      "counties_served": [
+        "48257"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "installation",
+        "maintenance",
+        "aerobic"
+      ],
+      "license_information": "Listed by Kaufman County as an installer and maintenance provider; current credentials should be reconfirmed before hiring.",
+      "source_urls": [
+        "https://asi-im.com/",
+        "https://www.kaufmancoconstablepct2.net/DocumentCenter/View/7608"
+      ],
+      "date_added": "2026-09-01",
+      "date_last_verified": "2026-09-01",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company website states that it serves Kaufman County and provides aerobic-system installation and maintenance."
+    },
+    {
+      "id": "bumblebee-septics-parker-tx",
+      "business_name": "Bumblebee Septics",
+      "website": "https://bumblebeeseptics.com/",
+      "public_phone": "817-771-8644",
+      "city": "",
+      "state": "TX",
+      "zip_code": "",
+      "counties_served": [
+        "48367"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "repair",
+        "installation",
+        "emergency"
+      ],
+      "license_information": "Verify current Texas licensing, registration, and insurance directly before hiring.",
+      "source_urls": [
+        "https://bumblebeeseptics.com/"
+      ],
+      "date_added": "2026-09-01",
+      "date_last_verified": "2026-09-01",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly states service throughout Parker County and advertises septic pumping, repair, installation, and emergency service."
+    },
+    {
+      "id": "burleson-septic-cleaning-north-texas",
+      "business_name": "Burleson Septic Cleaning",
+      "website": "https://www.burlesonsepticcleaning.com/",
+      "public_phone": "817-295-4270",
+      "city": "Burleson",
+      "state": "TX",
+      "zip_code": "76028",
+      "counties_served": [
+        "48139",
+        "48251",
+        "48367",
+        "48439"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "maintenance",
+        "installation",
+        "repair",
+        "inspection",
+        "aerobic",
+        "emergency"
+      ],
+      "license_information": "Company website displays TCEQ #20584; confirm current scope and status before hiring.",
+      "source_urls": [
+        "https://www.burlesonsepticcleaning.com/service-area/"
+      ],
+      "date_added": "2026-09-01",
+      "date_last_verified": "2026-09-01",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company service-area page explicitly names Johnson, Tarrant, Ellis, and Parker counties and lists pumping, cleaning, maintenance, installation, repair, monitoring, and inspection-related services."
+    },
+    {
+      "id": "collin-county-septic-design-evaluation",
+      "business_name": "Collin County Septic Design & Evaluation",
+      "website": "https://www.collincountyseptic.com/",
+      "public_phone": "903-203-8250",
+      "city": "",
+      "state": "TX",
+      "zip_code": "",
+      "counties_served": [
+        "48085",
+        "48113",
+        "48147",
+        "48181",
+        "48231",
+        "48257",
+        "48379",
+        "48397"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "design",
+        "site_evaluation",
+        "inspection"
+      ],
+      "license_information": "Website identifies Jim Adams as Site Evaluator OS0028299 and Nathan Adams as Site Evaluator OS0036228 and Registered Sanitarian RS5082; verify current status before hiring.",
+      "source_urls": [
+        "https://www.collincountyseptic.com/",
+        "https://www.collincountyseptic.com/contact-us-septic-design"
+      ],
+      "date_added": "2026-09-01",
+      "date_last_verified": "2026-09-01",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly lists Collin, Dallas, Fannin, Grayson, Hunt, Kaufman, Rains, and Rockwall counties for septic design and site-evaluation work."
+    },
+    {
+      "id": "dulworth-septic-north-texas",
+      "business_name": "Dulworth Septic",
+      "website": "https://dulworthseptic.com/",
+      "public_phone": "972-617-4100",
+      "city": "",
+      "state": "TX",
+      "zip_code": "",
+      "counties_served": [
+        "48113",
+        "48139",
+        "48161",
+        "48217",
+        "48251",
+        "48257",
+        "48349",
+        "48439"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "installation",
+        "maintenance",
+        "repair",
+        "aerobic"
+      ],
+      "license_information": "Company states that it performs TCEQ-compliant septic work; verify current individual and business credentials before hiring.",
+      "source_urls": [
+        "https://dulworthseptic.com/"
+      ],
+      "date_added": "2026-09-01",
+      "date_last_verified": "2026-09-01",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly lists Ellis, Kaufman, Johnson, Navarro, Dallas, Hill, Freestone, and Tarrant counties and advertises installation, monitoring contracts, pumping, cleaning, and repairs."
+    },
+    {
+      "id": "environmental-septic-services-ovilla-tx",
+      "business_name": "Environmental Septic Services LLC",
+      "website": "https://www.septictx.com/",
+      "public_phone": "214-325-8028",
+      "city": "Ovilla",
+      "state": "TX",
+      "zip_code": "75154",
+      "counties_served": [
+        "48113",
+        "48139",
+        "48251"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "inspection",
+        "maintenance",
+        "repair",
+        "installation",
+        "aerobic"
+      ],
+      "license_information": "Company states that it is registered with TCEQ and county authorities; verify current registration and service scope before hiring.",
+      "source_urls": [
+        "https://www.septictx.com/"
+      ],
+      "date_added": "2026-09-01",
+      "date_last_verified": "2026-09-01",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly states service for aerobic septic systems in Dallas, Johnson, and Ellis counties and lists inspections, contracts, maintenance, service, and repair."
+    },
+    {
+      "id": "l-and-d-septic-services-ellis-tx",
+      "business_name": "L & D Septic Services",
+      "website": "https://www.ldseptic.com/",
+      "public_phone": "972-449-3342",
+      "city": "",
+      "state": "TX",
+      "zip_code": "",
+      "counties_served": [
+        "48139"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "inspection",
+        "maintenance",
+        "installation",
+        "aerobic"
+      ],
+      "license_information": "Verify current Texas licensing, registration, and insurance directly before hiring.",
+      "source_urls": [
+        "https://www.ldseptic.com/"
+      ],
+      "date_added": "2026-09-01",
+      "date_last_verified": "2026-09-01",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly markets service in Ellis County and lists tank pumping, cleaning, inspection, maintenance, installation, and aerobic treatment."
+    },
+    {
+      "id": "navarro-county-septic-pumping",
+      "business_name": "Navarro County Septic Pumping",
+      "website": "https://www.navarrocountyseptic.com/",
+      "public_phone": "903-875-5746",
+      "city": "Frost",
+      "state": "TX",
+      "zip_code": "76641",
+      "counties_served": [
+        "48139",
+        "48349"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "inspection",
+        "locating",
+        "emergency"
+      ],
+      "license_information": "Company states that it is licensed and insured in Texas; verify current license scope and status before hiring.",
+      "source_urls": [
+        "https://www.navarrocountyseptic.com/"
+      ],
+      "date_added": "2026-09-01",
+      "date_last_verified": "2026-09-01",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly states septic pumping service throughout Navarro and Ellis counties and also describes inspections and tank-location services."
+    },
+    {
+      "id": "weaver-excavating-septic-ennis-tx",
+      "business_name": "Weaver Excavating & Septic",
+      "website": "https://weaverexcavating.net/excavating/ennis/",
+      "public_phone": "903-603-2200",
+      "city": "Eustace",
+      "state": "TX",
+      "zip_code": "75124",
+      "counties_served": [
+        "48139"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "installation",
+        "repair",
+        "excavation"
+      ],
+      "license_information": "Company website describes the business as TCEQ licensed; verify current credentials and scope before hiring.",
+      "source_urls": [
+        "https://weaverexcavating.net/excavating/ennis/"
+      ],
+      "date_added": "2026-09-01",
+      "date_last_verified": "2026-09-01",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned Ennis service page explicitly advertises septic pumping, installation, repair, and excavation in the Ellis County area."
+    }
+  ]
 }
