@@ -6,31 +6,31 @@ The `Hourly provider growth, link and SEO audit` GitHub Actions workflow runs at
 
 1. Builds the same production output used by Cloudflare Pages.
 2. Reviews a rotating batch of 100 county or county-equivalent records.
-3. Checks county-linked official installer, pumper, hauler, maintenance-provider, and licensed-professional directories.
-4. When `BRAVE_SEARCH_API_KEY` is configured, uses up to 100 Brave Search API requests to locate company-owned local septic business pages.
-5. Publishes at most one new evidence-qualified provider per reviewed county per run, then rebuilds the affected directory and county modules.
-6. Reviews every indexable page against its mapped primary keyword, title, H1, description, canonical, and internal anchor text.
-7. Audits every generated page and internal link, checks external government/source/provider links, and enforces AdSense and source-quality gates.
-8. Commits `data/providers.json` only when new evidence-qualified records were added or existing records gained new supported county coverage.
-9. Submits changed public URLs to IndexNow after a successful source-data commit.
+3. Checks county-linked official installer, pumper, hauler, maintenance-provider, and licensed-professional directories that can be accessed without a paid search API.
+4. Publishes at most one new evidence-qualified provider per reviewed county per run, then rebuilds the affected directory and county modules.
+5. Reviews every indexable page against its mapped primary keyword, title, H1, description, canonical, and internal anchor text.
+6. Audits every generated page and internal link, checks external government/source/provider links, and enforces AdSense and source-quality gates.
+7. Commits `data/providers.json` only when new evidence-qualified records were added or existing records gained new supported county coverage.
+8. Submits changed public URLs to IndexNow after a successful source-data commit.
 
-Reviewing 100 counties is a throughput target, not a promise to publish 100 businesses. A business is published only when the source evidence passes the automated quality threshold. Ambiguous results are retained in the workflow artifact for later review and are not exposed publicly.
+Reviewing 100 counties is a throughput target, not a promise to publish 100 businesses. A business is published only when the source evidence passes the quality threshold. Ambiguous results are retained in the workflow artifact for later review and are not exposed publicly.
 
-## Search API setup
+## Google Search research process
 
-Automated company-site discovery is optional and disabled unless the repository has an Actions secret named:
+Google Search may be used manually during SepticScope research sessions to discover local septic companies. The search result itself is never treated as sufficient evidence. Before publication, the researcher opens the company-owned website or an official public-agency directory and confirms:
 
-```text
-BRAVE_SEARCH_API_KEY
-```
+- Business name
+- Public phone number
+- Septic or onsite-wastewater services
+- The stated county, city, or service area
+- A source URL and review date
+- Any public license or registration information that can be supported
 
-Without that secret, the workflow still reviews official directories and runs all link, SEO, and AdSense audits every hour.
-
-Brave Search API usage is billable beyond any account credits. At 100 requests per hour, a continuously running workflow can make about 72,000 search requests in a 30-day month. Review current Brave pricing and account limits before enabling the secret.
+The project does not scrape Google Search results from GitHub Actions. Google does not provide a free, unrestricted server-side search feed for this use, and automated scraping would be unreliable and prone to blocking. Hourly automation therefore uses free official public sources, while Google-discovered company records are added in reviewed batches through `data/providers.json`.
 
 ## Publication evidence rules
 
-Ordinary provider records are neutrally ordered and are not endorsements. The automation does not copy reviews, publish star ratings, infer a county from a nearby city, or treat a search-result snippet as evidence.
+Ordinary provider records are neutrally ordered and are not endorsements. The system does not copy reviews, publish star ratings, infer a county from a nearby city, or treat a search-result snippet as evidence.
 
 A company-site record requires all of the following:
 
@@ -54,9 +54,9 @@ Automatic edits are limited to missing essentials that can be repaired determini
 
 ```bash
 python build_site.py
-BRAVE_SEARCH_API_KEY=... python tools/provider_discovery.py \
+python tools/provider_discovery.py \
   --county-limit 100 \
-  --search-budget 100 \
+  --search-budget 0 \
   --dry-run \
   --report hourly-provider-report.json
 python tools/seo_hourly_audit.py --site site --report hourly-seo-report.json
