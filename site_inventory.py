@@ -1,4 +1,4 @@
-"""Run the national inventory with collision- and redirect-aware compatibility fixes."""
+"""Run the national inventory with collision-, redirect-, and provider-aware fixes."""
 from __future__ import annotations
 
 import argparse
@@ -68,6 +68,35 @@ def _patched_namespace() -> dict:
     if source.count(indexable_needle) != 1:
         raise RuntimeError("Redirect indexability patch no longer matches the inventory core")
     source = source.replace(indexable_needle, indexable_patch, 1)
+
+    provider_needle = "    write_provider_landing(provider_data)\n"
+    provider_patch = """    provider_page = SITE / "providers" / "index.html"
+    provider_ready = (
+        provider_page.exists()
+        and 'data-septicscope-provider-directory="1"'
+        in provider_page.read_text(encoding="utf-8", errors="replace")
+    )
+    # The first inventory pass creates the county manifest. A later provider rendering
+    # pass replaces the placeholder with a source-checked directory. Preserve that
+    # finished page when the inventory is regenerated from final production output.
+    if not provider_ready:
+        write_provider_landing(provider_data)
+"""
+    if source.count(provider_needle) != 1:
+        raise RuntimeError("Provider-directory compatibility patch no longer matches the inventory core")
+    source = source.replace(provider_needle, provider_patch, 1)
+
+    provider_status_needle = '        if str(provider.get("status", "active")).lower() == "closed":\n'
+    provider_status_patch = '        if str(provider.get("status", "active")).lower() not in {"active", "verified"}:\n'
+    if source.count(provider_status_needle) != 1:
+        raise RuntimeError("Provider-status compatibility patch no longer matches the inventory core")
+    source = source.replace(provider_status_needle, provider_status_patch, 1)
+
+    provider_count_needle = '            "provider_listings": len(provider_data.get("providers", [])),\n'
+    provider_count_patch = '            "provider_listings": sum(str(item.get("status", "active")).lower() in {"active", "verified"} for item in provider_data.get("providers", []) if isinstance(item, dict)),\n'
+    if source.count(provider_count_needle) != 1:
+        raise RuntimeError("Provider-count compatibility patch no longer matches the inventory core")
+    source = source.replace(provider_count_needle, provider_count_patch, 1)
 
     namespace = {
         "__name__": "septicscope_inventory_core",
