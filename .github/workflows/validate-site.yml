@@ -29,8 +29,12 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Compile Python sources
-        run: python -m compileall -q -x '(^|/)(site|\.septicscope-build)/' .
+      - name: Compile Python sources and self-test maintenance tooling
+        run: |
+          python -m compileall -q -x '(^|/)(site|\.septicscope-build)/' .
+          python tools/provider_discovery.py --self-test
+          python tools/seo_hourly_audit.py --self-test
+          python tools/indexnow_submit.py /dev/null --self-test
 
       - name: Build complete production site
         run: python build_site.py
@@ -48,6 +52,8 @@ jobs:
           test -f site/data/provider-directory.json
           test -f site/data/project-audit-summary.json
           test -f site/data/project-audit-summary.txt
+          test -f site/data/hourly-seo-build-report.json
+          test -f site/f1c5f33bc7de84c635e009f874dc4be9.txt
           test -f site/providers/index.html
           test -f site/counties/maryland/baltimore/index.html
           test -f site/counties/maryland/baltimore-city/index.html
@@ -67,6 +73,7 @@ jobs:
           test -f site/guides/septic-inspection-checklist/index.html
           test -f site/guides/septic-system-lifespan/index.html
           python site_inventory.py --check
+          python tools/seo_hourly_audit.py --site site --report validation-seo-report.json
           python - <<'PY'
           import json
           import re
@@ -99,7 +106,21 @@ jobs:
           for label, value in expected.items():
               if not re.search(rf'\b{value:,}\s+{re.escape(label)}\b', visible, flags=re.I):
                   raise SystemExit(f'Homepage does not show current metric: {value:,} {label}')
-          print('PASS: homepage metrics and final metadata quality totals are current')
+
+          provider = Path('site/providers/index.html').read_text(encoding='utf-8')
+          if 'data-septicscope-provider-directory="1"' not in provider:
+              raise SystemExit('Provider directory was overwritten after final rendering')
+          if counts['provider_listings'] == 0:
+              compact = provider.replace(' ', '').lower()
+              if 'noindex,follow' not in compact:
+                  raise SystemExit('Empty provider directory must remain noindex,follow')
+              if 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js' in provider:
+                  raise SystemExit('Empty provider directory must remain ad-free')
+
+          key = Path('site/f1c5f33bc7de84c635e009f874dc4be9.txt').read_text().strip()
+          if key != 'f1c5f33bc7de84c635e009f874dc4be9':
+              raise SystemExit('IndexNow key file is invalid')
+          print('PASS: homepage metrics, provider output, IndexNow key, and metadata quality totals are current')
           PY
 
       - name: Audit every generated page and internal link
@@ -135,6 +156,7 @@ jobs:
             internal-audit.txt
             external-audit.txt
             adsense-audit.txt
+            validation-seo-report.json
             site/index.html
             site/counties/index.html
             site/counties/virginia/fairfax/index.html
@@ -149,6 +171,7 @@ jobs:
             site/data/provider-directory.json
             site/data/project-audit-summary.json
             site/data/project-audit-summary.txt
+            site/data/hourly-seo-build-report.json
           retention-days: 14
 
       - name: Enforce all quality gates

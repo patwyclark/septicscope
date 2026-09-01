@@ -2,8 +2,8 @@
 
 Cloudflare Pages and GitHub Actions must both run only this file. The historical
 site generator is preserved as site_core_build.py; supplemental guides, trust
-hardening, and machine-readable inventories are executed here in a deterministic
-order so CI and production cannot drift.
+hardening, provider rendering, SEO safeguards and machine-readable inventories
+are executed here in a deterministic order so CI and production cannot drift.
 """
 from __future__ import annotations
 
@@ -27,6 +27,12 @@ POST_BUILD_SCRIPTS = (
     "septic_system_lifespan_guide.py",
     "site_quality_polish.py",
 )
+
+
+def _run_script(path: Path, *args: str, env: dict[str, str]) -> None:
+    if not path.is_file():
+        raise FileNotFoundError(f"Missing production build component: {path}")
+    subprocess.run([sys.executable, str(path), *args], cwd=ROOT, env=env, check=True)
 
 
 def _run() -> None:
@@ -56,28 +62,43 @@ def _run() -> None:
     env = os.environ.copy()
     env["SEPTICSCOPE_ORCHESTRATED_BUILD"] = "1"
     for script_name in POST_BUILD_SCRIPTS:
-        script = ROOT / script_name
-        if not script.is_file():
-            raise FileNotFoundError(f"Missing supplemental generator: {script}")
-        subprocess.run(
-            [sys.executable, str(script)],
-            cwd=ROOT,
-            env=env,
-            check=True,
-        )
+        _run_script(ROOT / script_name, env=env)
 
     # Match normal Python atexit ordering (last registered, first executed).
     for function, args, kwargs in reversed(captured_exit_handlers):
         function(*args, **kwargs)
 
     inventory = ROOT / "site_inventory.py"
-    if not inventory.is_file():
-        raise FileNotFoundError(f"Missing site inventory generator: {inventory}")
-    subprocess.run(
-        [sys.executable, str(inventory)],
-        cwd=ROOT,
+    provider_experience = ROOT / "provider_experience.py"
+    seo_review = ROOT / "tools" / "seo_hourly_audit.py"
+
+    # First inventory creates the national county manifest needed to map provider FIPS
+    # records to final county URLs. Provider rendering then enriches those pages.
+    _run_script(inventory, env=env)
+    _run_script(provider_experience, env=env)
+
+    # Safe SEO maintenance repairs only missing title/description/canonical essentials;
+    # it does not add meta-keywords or repeat phrases for ranking manipulation.
+    _run_script(
+        seo_review,
+        "--site",
+        str(ROOT / "site"),
+        "--report",
+        str(ROOT / "site" / "data" / "hourly-seo-build-report.json"),
+        "--apply-safe",
         env=env,
-        check=True,
+    )
+
+    # Rebuild inventories from the final enriched output. site_inventory.py preserves
+    # the detailed provider page when its marker is present.
+    _run_script(inventory, env=env)
+    _run_script(
+        seo_review,
+        "--site",
+        str(ROOT / "site"),
+        "--report",
+        str(ROOT / "site" / "data" / "hourly-seo-build-report.json"),
+        env=env,
     )
 
 
