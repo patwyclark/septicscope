@@ -1,7 +1,7 @@
 # SepticScope New Mexico expansion — official-source county pages
 # Executed after prior state expansions are built.
 
-NM_REG = 'https://www.env.nm.gov/wp-content/uploads/sites/14/2017/08/2073NMACIntegratedapprovedAL-2014.pdf'
+NM_REG = 'https://www.srca.nm.gov/parts/title20/20.007.0003.html'
 NM_APPLICATION = 'https://www.env.nm.gov/septic/wp-content/uploads/sites/14/2017/08/LW-Application-for-Liquid-Waste-Permit-or-Registration-Form-LW-401E-210127-1.pdf'
 NM_FIELD_OFFICES = 'https://www.env.nm.gov/wp-content/uploads/2025/09/Liquid-Waste-Permit-Search-Request-20210104-Auto-Fill-Pull-Down.pdf'
 NM_PERMIT_FINDER = 'https://lwop.waste.web.env.nm.gov/wwtspf/'
@@ -58,7 +58,7 @@ for county, (office, phone, address) in NM_COUNTIES.items():
          'NMED provides an online Wastewater Treatment System Permit Finder for older records. The agency warns that the public finder is only current through January 27, 2017; for newer records or an unsuccessful search, use the local Environmental Health Bureau field office and provide a legal description or proof of ownership when possible.')
     ]
     sources = [
-        ('New Mexico Liquid Waste Disposal and Treatment Regulations — 20.7.3 NMAC', NM_REG),
+        ('New Mexico Administrative Code — 20.7.3 Liquid Waste Disposal and Treatment', NM_REG),
         ('NMED Liquid Waste Permit or Registration application', NM_APPLICATION),
         ('NMED Liquid Waste Permit Search Request — current field-office list', NM_FIELD_OFFICES),
         ('NMED Wastewater Treatment System Permit Finder', NM_PERMIT_FINDER),
@@ -99,4 +99,4 @@ if entries:
     sitemap.write_text(sm, encoding='utf-8')
 
 print(f'New Mexico expansion complete: +{len(nm_urls)} verified county guides')
-exec((ROOT / 'idaho_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'new_mexico_completion_expansion.py').read_text(encoding='utf-8'), globals())
