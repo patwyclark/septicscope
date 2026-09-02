@@ -1,6 +1,21 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-09-01",
+  "last_updated": "2026-09-02",
   "policy": "Each record adds one contextual internal link chosen from the generated site's real page graph. Links must connect genuinely related SepticScope resources and may not be added merely to increase keyword frequency.",
-  "links": []
+  "links": [
+    {
+      "source_url": "https://septicscope.com/guides/septic-drainfield-repair-replacement/",
+      "target_url": "https://septicscope.com/guides/septic-inspection-checklist/",
+      "anchor_text": "Septic inspection checklist: what should actually be checked?",
+      "summary": "Use this related homeowner guide for the next practical decision, checklist, or maintenance step.",
+      "source_page_type": "guide",
+      "target_page_type": "guide",
+      "reason": "contextual_internal_link_for_underlinked_or_low-navigation_page",
+      "source_outgoing_internal_links": 6,
+      "target_inbound_internal_links": 2,
+      "relevance_score": 42.0,
+      "date_added": "2026-09-02",
+      "id": "septic-drainfield-repair-replacement-to-septic-inspection-checklist-0001"
+    }
+  ]
 }
