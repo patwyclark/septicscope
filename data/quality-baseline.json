@@ -1,6 +1,6 @@
 {
   "expected_county_equivalents": 3144,
-  "minimum_verified_counties": 442,
-  "established_at_commit": "82228c0144c98c99eb58534edb9ac65f2aa295be",
+  "minimum_verified_counties": 450,
+  "established_at_commit": "226152c4f85407415b2f82f5ebf7cca1941b5d5f",
   "established_date": "2026-09-02"
 }
