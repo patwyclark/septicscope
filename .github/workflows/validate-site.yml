@@ -19,7 +19,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,6 +36,7 @@ jobs:
           python tools/continuous_growth.py --self-test
           python tools/seo_hourly_audit.py --self-test
           python tools/indexnow_submit.py /dev/null --self-test
+          python tools/sync_curated_providers.py --self-test
 
       - name: Build complete production site
         run: python build_site.py
@@ -55,8 +56,12 @@ jobs:
           test -f site/data/project-audit-summary.txt
           test -f site/data/hourly-seo-build-report.json
           test -f site/data/continuous-growth-report.json
+          test -f site/data/septic-services-near-me.json
+          test -f site/assets/septic-services-near-me.css
+          test -f site/assets/septic-services-near-me.js
           test -f site/f1c5f33bc7de84c635e009f874dc4be9.txt
           test -f site/providers/index.html
+          test -f site/septic-services-near-me/index.html
           test -f site/counties/maryland/baltimore/index.html
           test -f site/counties/maryland/baltimore-city/index.html
           test -f site/counties/missouri/st-louis/index.html
@@ -74,6 +79,7 @@ jobs:
           test -f site/guides/septic-system-winter-care/index.html
           test -f site/guides/septic-inspection-checklist/index.html
           test -f site/guides/septic-system-lifespan/index.html
+          node --check site/assets/septic-services-near-me.js
           python site_inventory.py --check
           python tools/seo_hourly_audit.py --site site --report validation-seo-report.json
           python tools/continuous_growth.py --site site --state data/growth-links.json --report validation-growth-report.json
@@ -110,6 +116,60 @@ jobs:
           for label, value in expected.items():
               if not re.search(rf'\b{value:,}\s+{re.escape(label)}\b', visible, flags=re.I):
                   raise SystemExit(f'Homepage does not show current metric: {value:,} {label}')
+          if home.count('href="/septic-services-near-me/"') < 4:
+              raise SystemExit('Homepage does not prominently expose Septic Services Near Me')
+          if '>Septic Services Near Me<' not in home:
+              raise SystemExit('Homepage is missing the exact Septic Services Near Me link text')
+          if re.search(r'Browse\s+Indiana\s+septic', visible, flags=re.I):
+              raise SystemExit('Obsolete Indiana-only homepage promotion remains')
+
+          locator_path = Path('site/septic-services-near-me/index.html')
+          locator = locator_path.read_text(encoding='utf-8')
+          locator_compact = locator.replace(' ', '').lower()
+          if locator.lower().count('<h1') != 1 or '<h1>septicservicesnearme</h1>' not in locator_compact:
+              raise SystemExit('Septic Services Near Me page needs one exact H1')
+          if 'noindex' in locator.lower():
+              raise SystemExit('Populated Septic Services Near Me page must be indexable')
+          if '<linkrel="canonical"href="https://septicscope.com/septic-services-near-me/">' not in locator_compact:
+              raise SystemExit('Septic Services Near Me canonical is missing or wrong')
+          if locator.count('data-provider-card') < 35:
+              raise SystemExit('Septic Services Near Me does not contain the researched provider expansion')
+
+          locator_data = json.loads(Path('site/data/septic-services-near-me.json').read_text())
+          service_providers = locator_data.get('providers', [])
+          service_counties = locator_data.get('counties', [])
+          if len(service_providers) < 35:
+              raise SystemExit(f'Expected at least 35 source-reviewed providers, found {len(service_providers)}')
+          if len(service_counties) != 3144 or len({row.get('f') for row in service_counties}) != 3144:
+              raise SystemExit('Septic Services Near Me county lookup is not nationally complete')
+          provider_ids = [row.get('id') for row in service_providers]
+          if len(provider_ids) != len(set(provider_ids)):
+              raise SystemExit('Septic Services Near Me contains duplicate provider IDs')
+          incomplete = [
+              row.get('id') for row in service_providers
+              if not row.get('name') or not row.get('phone') or not row.get('source')
+              or not row.get('fips') or not row.get('services') or not row.get('coverage')
+          ]
+          if incomplete:
+              raise SystemExit(f'Provider records are missing required public evidence fields: {incomplete[:10]}')
+          addressed = sum(bool(row.get('address')) for row in service_providers)
+          if addressed < 20:
+              raise SystemExit(f'Provider directory address coverage is unexpectedly weak: {addressed}')
+          if counts['provider_listings'] != len(service_providers):
+              raise SystemExit(
+                  f'Inventory/provider locator drift: {counts["provider_listings"]} versus {len(service_providers)}'
+              )
+
+          sitemap = Path('site/sitemap.xml').read_text(encoding='utf-8')
+          if sitemap.count('https://septicscope.com/septic-services-near-me/') != 1:
+              raise SystemExit('Septic Services Near Me must appear exactly once in the sitemap')
+          keyword_map = json.loads(Path('site/data/keyword-map.json').read_text())
+          keyword_rows = {
+              row.get('url'): row for row in keyword_map.get('records', []) if isinstance(row, dict)
+          }
+          locator_keyword = keyword_rows.get('https://septicscope.com/septic-services-near-me/', {}).get('primary_keyword', '')
+          if locator_keyword.lower() != 'septic services near me':
+              raise SystemExit(f'Service locator keyword mapping is wrong: {locator_keyword!r}')
 
           provider = Path('site/providers/index.html').read_text(encoding='utf-8')
           if 'data-septicscope-provider-directory="1"' not in provider:
@@ -145,7 +205,10 @@ jobs:
           key = Path('site/f1c5f33bc7de84c635e009f874dc4be9.txt').read_text().strip()
           if key != 'f1c5f33bc7de84c635e009f874dc4be9':
               raise SystemExit('IndexNow key file is invalid')
-          print('PASS: homepage metrics, provider output, continuous growth, IndexNow key, and metadata quality totals are current')
+          print(
+              'PASS: homepage, service locator, provider evidence, county lookup, '
+              'continuous growth, IndexNow key, and metadata quality totals are current'
+          )
           PY
 
       - name: Audit every generated page and internal link
@@ -184,6 +247,10 @@ jobs:
             validation-seo-report.json
             validation-growth-report.json
             site/index.html
+            site/septic-services-near-me/index.html
+            site/assets/septic-services-near-me.css
+            site/assets/septic-services-near-me.js
+            site/data/septic-services-near-me.json
             site/counties/index.html
             site/counties/virginia/fairfax/index.html
             site/counties/virginia/fairfax-city/index.html

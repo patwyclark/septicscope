@@ -57,7 +57,11 @@ jobs:
               raise SystemExit(f"Production did not reach expected commit: {last_error}")
 
           checks = {
-              "/": ("SepticScope", "verified county guides"),
+              "/": ("Septic Services Near Me", "verified county guides", "source-reviewed service businesses"),
+              "/septic-services-near-me/": ("Septic Services Near Me", "Local septic provider directory", "Source reviewed"),
+              "/data/septic-services-near-me.json": ("providers", "counties", "method_note"),
+              "/assets/septic-services-near-me.css": ("ssn-provider", "ssn-search"),
+              "/assets/septic-services-near-me.js": ("septic_services_search", "data-provider-card"),
               "/counties/": ("3,144", "county"),
               "/counties/virginia/fairfax/": ("Fairfax County", "Official sources"),
               "/counties/virginia/fairfax-city/": ("Fairfax City", "Local guide in progress"),
@@ -65,7 +69,7 @@ jobs:
               "/guides/septic-system-lifespan/": ("Septic system lifespan: what lasts, what fails, and when", "Official and Extension sources"),
               "/faq/": ("Septic", "FAQ"),
               "/providers/": ("provider directory", "Directory standards"),
-              "/sitemap.xml": ("https://septicscope.com/counties/", "https://septicscope.com/guides/septic-system-lifespan/"),
+              "/sitemap.xml": ("https://septicscope.com/counties/", "https://septicscope.com/septic-services-near-me/"),
               "/robots.txt": ("Sitemap:", "septicscope.com/sitemap.xml"),
           }
           bodies = {}
@@ -88,6 +92,8 @@ jobs:
               raise SystemExit(f"Production build quality gate is not passing: {info}")
           if int(info.get("published_county_or_equivalent_pages", 0)) != 3144:
               raise SystemExit(f"Production county coverage is incomplete: {info}")
+          if int(info.get("provider_listings", 0)) < 35:
+              raise SystemExit(f"Production provider coverage did not include the researched expansion: {info}")
 
           home_visible = re.sub(r"<[^>]+>", " ", bodies["/"])
           home_visible = re.sub(r"\s+", " ", home_visible)
@@ -95,10 +101,30 @@ jobs:
               "verified county guides": int(info.get("verified_county_guides", -1)),
               "FAQ articles": int(info.get("faq_articles", -1)),
               "septic guides": int(info.get("guide_articles_and_tools", -1)),
+              "source-reviewed service businesses": int(info.get("provider_listings", -1)),
           }
           for label, value in home_stats.items():
               if value < 0 or not re.search(rf"\b{value:,}\s+{re.escape(label)}\b", home_visible, flags=re.I):
                   raise SystemExit(f"Homepage does not match build-info metric: {value:,} {label}")
+          if bodies["/"].count('href="/septic-services-near-me/"') < 4:
+              raise SystemExit("Homepage does not expose enough direct service-locator paths")
+
+          locator = bodies["/septic-services-near-me/"]
+          locator_compact = locator.replace(" ", "").lower()
+          if "noindex" in locator.lower():
+              raise SystemExit("Septic Services Near Me is unexpectedly noindex")
+          if '<linkrel="canonical"href="https://septicscope.com/septic-services-near-me/">' not in locator_compact:
+              raise SystemExit("Septic Services Near Me production canonical is wrong")
+          if locator.count("data-provider-card") < 35:
+              raise SystemExit("Septic Services Near Me production page lacks the researched provider cards")
+
+          locator_data = json.loads(bodies["/data/septic-services-near-me.json"])
+          if len(locator_data.get("providers", [])) != int(info.get("provider_listings", -1)):
+              raise SystemExit("Production provider JSON does not match build-info")
+          if len(locator_data.get("counties", [])) != 3144:
+              raise SystemExit("Production service locator county index is incomplete")
+          if len({row.get("f") for row in locator_data.get("counties", [])}) != 3144:
+              raise SystemExit("Production service locator has duplicate county FIPS records")
 
           if int(info.get("provider_listings", -1)) == 0 and "noindex,follow" not in bodies["/providers/"].replace(" ", "").lower():
               raise SystemExit("Empty provider directory must remain noindex,follow")
@@ -107,5 +133,5 @@ jobs:
           if "noindex" in bodies["/counties/virginia/fairfax/"].lower():
               raise SystemExit("Verified Fairfax County guide is unexpectedly noindex")
 
-          print("PASS: SepticScope production deployment matches the validated commit and reported metrics")
+          print("PASS: SepticScope production, local service locator, and homepage match the validated commit and reported metrics")
           PY

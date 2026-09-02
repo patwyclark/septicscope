@@ -10,8 +10,14 @@ on:
       - "tools/continuous_growth.py"
       - "tools/seo_hourly_audit.py"
       - "tools/indexnow_submit.py"
+      - "tools/sync_curated_providers.py"
       - "provider_experience.py"
+      - "provider_curated_experience.py"
       - "continuous_growth_experience.py"
+      - "septic_services_near_me.py"
+      - "homepage_experience.py"
+      - "data/provider-overrides.json"
+      - "data/provider-expansion-*.json"
       - "build_site.py"
   schedule:
     - cron: "23 * * * *"
@@ -37,7 +43,7 @@ permissions:
 jobs:
   maintain:
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    timeout-minutes: 60
     env:
       COUNTY_LIMIT: ${{ github.event.inputs.county_limit || '100' }}
     steps:
@@ -58,6 +64,7 @@ jobs:
           python tools/continuous_growth.py --self-test
           python tools/seo_hourly_audit.py --self-test
           python tools/indexnow_submit.py /dev/null --self-test
+          python tools/sync_curated_providers.py --self-test
 
       - name: Build current production site
         run: python build_site.py
@@ -160,8 +167,14 @@ jobs:
               for url in data.get('changed_urls', []):
                   if isinstance(url, str) and url.startswith('https://septicscope.com/') and url not in urls:
                       urls.append(url)
-          if os.environ.get('PROVIDER_CHANGED') == 'true' and 'https://septicscope.com/providers/' not in urls:
-              urls.append('https://septicscope.com/providers/')
+          if os.environ.get('PROVIDER_CHANGED') == 'true':
+              for url in (
+                  'https://septicscope.com/',
+                  'https://septicscope.com/providers/',
+                  'https://septicscope.com/septic-services-near-me/',
+              ):
+                  if url not in urls:
+                      urls.append(url)
           Path('hourly-changed-urls.json').write_text(
               json.dumps({'changed_urls': urls}, indent=2) + '\n',
               encoding='utf-8',
@@ -186,6 +199,9 @@ jobs:
             post-rebase-internal-audit.txt
             post-rebase-external-audit.txt
             post-rebase-adsense-audit.txt
+            site/index.html
+            site/septic-services-near-me/index.html
+            site/data/septic-services-near-me.json
             site/build-info.json
             site/data/continuous-growth-report.json
             site/data/project-audit-summary.json
