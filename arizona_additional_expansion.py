@@ -99,3 +99,4 @@ if entries:
     sitemap.write_text(sm.replace('</urlset>', entries + '</urlset>'), encoding='utf-8')
 
 print(f'Arizona additional expansion complete: +{len(az2_urls)} verified county guides')
+exec((ROOT / 'arizona_completion_expansion.py').read_text(encoding='utf-8'), globals())
