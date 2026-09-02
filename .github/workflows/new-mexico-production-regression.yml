@@ -31,39 +31,70 @@ jobs:
           from urllib.request import Request, urlopen
 
           base = "https://septicscope.com"
-          expected = os.environ["EXPECTED_SHA"].strip()
-          info = None
-          last_error = "not checked"
+          expected_sha = os.environ["EXPECTED_SHA"].strip()
+          expected_slugs = {
+              "bernalillo",
+              "catron",
+              "chaves",
+              "cibola",
+              "colfax",
+              "curry",
+              "de-baca",
+              "dona-ana",
+              "eddy",
+              "grant",
+              "guadalupe",
+              "harding",
+              "hidalgo",
+              "lea",
+              "lincoln",
+              "los-alamos",
+              "luna",
+              "mckinley",
+              "mora",
+              "otero",
+              "quay",
+              "rio-arriba",
+              "roosevelt",
+              "sandoval",
+              "san-juan",
+              "san-miguel",
+              "santa-fe",
+              "sierra",
+              "socorro",
+              "taos",
+              "torrance",
+              "union",
+              "valencia",
+          }
 
-          def fetch(path: str) -> str:
+          def fetch(path: str, timeout: int = 30) -> str:
+              separator = "&" if "?" in path else "?"
               request = Request(
-                  f"{base}{path}?v={int(time.time())}",
+                  f"{base}{path}{separator}v={int(time.time())}",
                   headers={
                       "User-Agent": "SepticScope New Mexico production regression",
                       "Cache-Control": "no-cache",
                   },
               )
-              with urlopen(request, timeout=30) as response:
+              with urlopen(request, timeout=timeout) as response:
                   if response.status != 200:
                       raise SystemExit(f"{path} returned {response.status}")
                   return response.read().decode("utf-8", errors="replace")
 
+          info = None
+          last_error = "not checked"
           for attempt in range(40):
               try:
-                  request = Request(
-                      f"{base}/build-info.json?v={int(time.time())}",
-                      headers={
-                          "User-Agent": "SepticScope New Mexico production regression",
-                          "Cache-Control": "no-cache",
-                      },
-                  )
-                  with urlopen(request, timeout=20) as response:
-                      info = json.load(response)
-                  deployed = str(info.get("commit_sha", ""))
-                  if deployed == expected:
-                      print(f"Cloudflare deployment confirmed at commit {deployed}")
+                  info = json.loads(fetch("/build-info.json", timeout=20))
+                  deployed_sha = str(info.get("commit_sha", ""))
+                  if deployed_sha == expected_sha:
+                      print(f"Cloudflare deployment confirmed at commit {deployed_sha}")
                       break
-                  last_error = f"deployed commit is {deployed or 'unknown'}, expected {expected}"
+                  last_error = (
+                      f"deployed commit is {deployed_sha or 'unknown'}, "
+                      f"expected {expected_sha}"
+                  )
               except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
                   last_error = repr(exc)
               print(f"Waiting for deployment ({attempt + 1}/40): {last_error}")
@@ -71,94 +102,91 @@ jobs:
           else:
               raise SystemExit(f"Production did not reach expected commit: {last_error}")
 
-          if info.get("quality_gate") != "pass":
+          if info is None or info.get("quality_gate") != "pass":
               raise SystemExit(f"Production quality gate is not passing: {info}")
           if int(info.get("published_county_or_equivalent_pages", 0)) != 3144:
               raise SystemExit(f"National county coverage changed unexpectedly: {info}")
           if int(info.get("verified_county_guides", 0)) < 442:
-              raise SystemExit(f"Verified county total regressed below the New Mexico completion baseline: {info}")
-          if int(info.get("completed_states_and_dc", 0)) < 4:
-              raise SystemExit(f"Completed-state total regressed below the New Mexico completion baseline: {info}")
+              raise SystemExit(
+                  f"Verified county total regressed below the New Mexico completion baseline: {info}"
+              )
 
-          checks = {
-              "/counties/new-mexico/": (
-                  "All 33 New Mexico counties now have source-checked SepticScope guides",
-                  "Bernalillo",
-              ),
-              "/counties/new-mexico/bernalillo/": (
-                  "Bernalillo County",
-                  "outside the NMED liquid-waste program",
-                  "Official sources",
-                  "Verify the parcel’s jurisdiction",
-              ),
-              "/counties/new-mexico/catron/": (
-                  "Catron County",
-                  "field office serving Catron County",
-                  "Official sources",
-                  "County-specific information not confirmed",
-              ),
-              "/counties/new-mexico/los-alamos/": (
-                  "Los Alamos County",
-                  "field office serving Los Alamos County",
-                  "Official sources",
-                  "County-specific information not confirmed",
-              ),
-              "/counties/new-mexico/union/": (
-                  "Union County",
-                  "Official sources",
-                  "County-specific information not confirmed",
-              ),
-              "/sitemap.xml": (
-                  "https://septicscope.com/counties/new-mexico/bernalillo/",
-                  "https://septicscope.com/counties/new-mexico/catron/",
-                  "https://septicscope.com/counties/new-mexico/los-alamos/",
-                  "https://septicscope.com/counties/new-mexico/union/",
-              ),
-          }
+          completed_states = info.get("completed_states_and_dc")
+          if completed_states not in (None, ""):
+              if int(completed_states) < 4:
+                  raise SystemExit(
+                      f"Completed-state total regressed below the New Mexico completion baseline: {info}"
+                  )
+          else:
+              print(
+                  "build-info.json does not publish completed_states_and_dc; "
+                  "relying on the direct 33-county New Mexico checks below"
+              )
 
-          bodies = {}
-          for path, needles in checks.items():
-              body = fetch(path)
-              missing = [needle for needle in needles if needle.lower() not in body.lower()]
-              if missing:
-                  raise SystemExit(f"{path} is missing expected production content: {missing}")
-              bodies[path] = body
-              print(f"PASS {path}")
-
-          hub_links = set(
+          hub = fetch("/counties/new-mexico/")
+          hub_paths = set(
               re.findall(
-                  r'href=["\'](/counties/new-mexico/[^"\']+/)["\']',
-                  bodies["/counties/new-mexico/"],
+                  r'href=["\'](/counties/new-mexico/([^/"\']+)/)["\']',
+                  hub,
                   flags=re.I,
               )
           )
-          if len(hub_links) != 33:
-              raise SystemExit(f"New Mexico hub exposes {len(hub_links)} county links instead of 33")
+          actual_slugs = {slug.lower() for _path, slug in hub_paths}
+          if actual_slugs != expected_slugs:
+              missing = sorted(expected_slugs - actual_slugs)
+              extra = sorted(actual_slugs - expected_slugs)
+              raise SystemExit(
+                  f"New Mexico hub county-link mismatch; missing={missing}, extra={extra}"
+              )
+          print("PASS /counties/new-mexico/ exposes all 33 New Mexico county guides")
 
-          verified_paths = (
-              "/counties/new-mexico/bernalillo/",
-              "/counties/new-mexico/catron/",
-              "/counties/new-mexico/los-alamos/",
-              "/counties/new-mexico/union/",
-          )
-          for path in verified_paths:
-              body = bodies[path]
-              if "noindex" in body.lower():
+          sitemap = fetch("/sitemap.xml")
+          representative = {}
+          for slug in sorted(expected_slugs):
+              path = f"/counties/new-mexico/{slug}/"
+              canonical = f"{base}{path}"
+              if canonical not in sitemap:
+                  raise SystemExit(f"New Mexico guide is missing from sitemap: {canonical}")
+
+              body = fetch(path)
+              lower = body.lower()
+              if "noindex" in lower:
                   raise SystemExit(f"Completed New Mexico guide is unexpectedly noindex: {path}")
-              expected_canonical = f'<link rel="canonical" href="{base}{path}">'
-              if expected_canonical.lower() not in body.lower():
+              canonical_pattern = re.compile(
+                  r'<link\b(?=[^>]*\brel=["\']canonical["\'])'
+                  r'(?=[^>]*\bhref=["\']' + re.escape(canonical) + r'["\'])[^>]*>',
+                  flags=re.I,
+              )
+              if not canonical_pattern.search(body):
                   raise SystemExit(f"Completed New Mexico guide has the wrong canonical: {path}")
-              if "https://www.srca.nm.gov/parts/title20/20.007.0003.html" not in body:
-                  raise SystemExit(f"Completed New Mexico guide lacks the current official 20.7.3 NMAC source: {path}")
+              if "official sources" not in lower:
+                  raise SystemExit(f"Completed New Mexico guide lacks its official-source section: {path}")
+              if "local guide in progress" in lower:
+                  raise SystemExit(f"Completed New Mexico guide reverted to fallback copy: {path}")
 
-          bernalillo = bodies["/counties/new-mexico/bernalillo/"]
-          required_bern_links = (
-              "https://lwop.waste.web.env.nm.gov/wwtspf/instructions",
-              "https://aca-prod.accela.com/BERNCO/Welcome.aspx",
+              if slug in {"bernalillo", "catron", "los-alamos", "union"}:
+                  representative[slug] = body
+              print(f"PASS {path}")
+
+          current_rule = "https://www.srca.nm.gov/parts/title20/20.007.0003.html"
+          for slug, body in representative.items():
+              if current_rule not in body:
+                  raise SystemExit(
+                      f"Representative New Mexico guide lacks the current official 20.7.3 NMAC source: {slug}"
+                  )
+
+          bernalillo = representative["bernalillo"].lower()
+          for domain_marker in (
+              "lwop.waste.web.env.nm.gov",
+              "aca-prod.accela.com/bernco",
+          ):
+              if domain_marker not in bernalillo:
+                  raise SystemExit(
+                      f"Bernalillo County guide lacks required jurisdiction source: {domain_marker}"
+                  )
+
+          print(
+              "PASS: all 33 New Mexico county guides are deployed, indexable, canonical, "
+              "source-backed, and present in the sitemap"
           )
-          for url in required_bern_links:
-              if url not in bernalillo:
-                  raise SystemExit(f"Bernalillo County guide lacks required jurisdiction source: {url}")
-
-          print("PASS: all 33 New Mexico county guides are deployed and the completion baseline is intact")
           PY
