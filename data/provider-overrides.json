@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "last_updated": "2026-09-02",
+  "provider_updates": {
+    "cisco-septic-service-san-antonio": {
+      "remove_counties_served": [
+        "48209"
+      ],
+      "set": {
+        "date_last_verified": "2026-09-02",
+        "coverage_notes": "The company-owned service-area page explicitly lists Atascosa, Bandera, Bexar, Comal, Guadalupe, Kendall, Medina, Karnes, and Wilson counties and advertises residential and commercial pumping and cleaning for conventional, aerobic, lift-station, and cesspool tanks."
+      }
+    }
+  },
+  "providers": [
+    {
+      "id": "aams-wastewater-hays-tx",
+      "business_name": "AAMS Wastewater",
+      "website": "https://aamswastewater.com/",
+      "public_phone": "512-847-0757",
+      "city": "Wimberley",
+      "state": "TX",
+      "zip_code": "78676",
+      "counties_served": [
+        "48209"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "inspection",
+        "installation",
+        "repair",
+        "maintenance",
+        "aerobic",
+        "emergency"
+      ],
+      "license_information": "The company website states that its inspection services are NAWT certified and that it is authorized to perform Hays County change-of-ownership inspections; verify current Texas credentials, insurance, and service scope before hiring.",
+      "source_urls": [
+        "https://aamswastewater.com/",
+        "https://aamswastewater.com/services-2/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly states service throughout Hays County and advertises pumping, inspections, installation, repairs, aerobic maintenance contracts, and emergency service."
+    }
+  ]
+}

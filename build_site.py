@@ -70,7 +70,7 @@ def _run() -> None:
         function(*args, **kwargs)
 
     inventory = ROOT / "site_inventory.py"
-    provider_experience = ROOT / "provider_experience.py"
+    provider_experience = ROOT / "provider_curated_experience.py"
     growth_experience = ROOT / "continuous_growth_experience.py"
     seo_review = ROOT / "tools" / "seo_hourly_audit.py"
     growth_planner = ROOT / "tools" / "continuous_growth.py"
