@@ -3,7 +3,8 @@
 
 The site renderer can apply provider overrides without mutating source data. This tool is
 used by GitHub Actions after reviewed changes so inventory manifests, county provider
-counts, and build metadata read the same curated records that visitors see.
+counts, and build metadata read the same curated records that visitors see. Its self-test
+also protects provider IDs and county FIPS mappings before a production build begins.
 """
 from __future__ import annotations
 
