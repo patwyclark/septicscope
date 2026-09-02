@@ -1,0 +1,186 @@
+name: Verify Arizona completion deployment
+
+on:
+  workflow_run:
+    workflows: ["Validate SepticScope site"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production-arizona:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - name: Verify all 15 Arizona county guides on production
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import re
+          import time
+          from urllib.error import HTTPError, URLError
+          from urllib.request import Request, urlopen
+
+          base = "https://septicscope.com"
+          expected = os.environ["EXPECTED_SHA"].strip()
+          info = None
+          last_error = "not checked"
+
+          def fetch(path: str) -> str:
+              request = Request(
+                  f"{base}{path}?v={int(time.time())}",
+                  headers={
+                      "User-Agent": "SepticScope Arizona production regression",
+                      "Cache-Control": "no-cache",
+                  },
+              )
+              with urlopen(request, timeout=30) as response:
+                  if response.status != 200:
+                      raise SystemExit(f"{path} returned {response.status}")
+                  return response.read().decode("utf-8", errors="replace")
+
+          for attempt in range(40):
+              try:
+                  request = Request(
+                      f"{base}/build-info.json?v={int(time.time())}",
+                      headers={
+                          "User-Agent": "SepticScope Arizona production regression",
+                          "Cache-Control": "no-cache",
+                      },
+                  )
+                  with urlopen(request, timeout=20) as response:
+                      info = json.load(response)
+                  deployed = str(info.get("commit_sha", ""))
+                  if deployed == expected:
+                      print(f"Cloudflare deployment confirmed at commit {deployed}")
+                      break
+                  last_error = f"deployed commit is {deployed or 'unknown'}, expected {expected}"
+              except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
+                  last_error = repr(exc)
+              print(f"Waiting for deployment ({attempt + 1}/40): {last_error}")
+              time.sleep(15)
+          else:
+              raise SystemExit(f"Production did not reach expected commit: {last_error}")
+
+          if info.get("quality_gate") != "pass":
+              raise SystemExit(f"Production quality gate is not passing: {info}")
+          if int(info.get("published_county_or_equivalent_pages", 0)) != 3144:
+              raise SystemExit(f"National county coverage changed unexpectedly: {info}")
+          if int(info.get("verified_county_guides", 0)) < 450:
+              raise SystemExit(f"Verified county total regressed below the Arizona completion baseline: {info}")
+          if int(info.get("completed_states_and_dc", 0)) < 5:
+              raise SystemExit(f"Completed-state total regressed below the Arizona completion baseline: {info}")
+
+          checks = {
+              "/counties/arizona/": (
+                  "All 15 Arizona counties now have source-checked SepticScope guides",
+                  "Apache",
+                  "Yuma",
+              ),
+              "/counties/arizona/apache/": (
+                  "Apache County",
+                  "minimum of two inspections",
+                  "Official sources",
+              ),
+              "/counties/arizona/gila/": (
+                  "Gila County",
+                  "Public Health and Community Services",
+                  "Official sources",
+              ),
+              "/counties/arizona/graham/": (
+                  "Graham County",
+                  "permanent Health Department record",
+                  "Official sources",
+              ),
+              "/counties/arizona/greenlee/": (
+                  "Greenlee County",
+                  "$100 soil-evaluation fee",
+                  "$200 septic-permit fee",
+              ),
+              "/counties/arizona/la-paz/": (
+                  "La Paz County",
+                  "Construction Authorizations",
+                  "Discharge Authorizations",
+              ),
+              "/counties/arizona/navajo/": (
+                  "Navajo County",
+                  "soil test is required",
+                  "Tribal jurisdiction",
+              ),
+              "/counties/arizona/santa-cruz/": (
+                  "Santa Cruz County",
+                  "Class I",
+                  "Class III",
+              ),
+              "/counties/arizona/yuma/": (
+                  "Yuma County",
+                  "submitted simultaneously",
+                  "after 1975",
+              ),
+              "/sitemap.xml": (
+                  "https://septicscope.com/counties/arizona/apache/",
+                  "https://septicscope.com/counties/arizona/gila/",
+                  "https://septicscope.com/counties/arizona/navajo/",
+                  "https://septicscope.com/counties/arizona/santa-cruz/",
+                  "https://septicscope.com/counties/arizona/yuma/",
+              ),
+          }
+
+          bodies = {}
+          for path, needles in checks.items():
+              body = fetch(path)
+              missing = [needle for needle in needles if needle.lower() not in body.lower()]
+              if missing:
+                  raise SystemExit(f"{path} is missing expected production content: {missing}")
+              bodies[path] = body
+              print(f"PASS {path}")
+
+          hub_links = set(
+              re.findall(
+                  r'href=["\'](/counties/arizona/[^"\']+/)["\']',
+                  bodies["/counties/arizona/"],
+                  flags=re.I,
+              )
+          )
+          if len(hub_links) != 15:
+              raise SystemExit(f"Arizona hub exposes {len(hub_links)} county links instead of 15")
+
+          verified_paths = tuple(
+              path for path in checks
+              if path.startswith("/counties/arizona/") and path != "/counties/arizona/"
+          )
+          for path in verified_paths:
+              body = bodies[path]
+              if "noindex" in body.lower():
+                  raise SystemExit(f"Completed Arizona guide is unexpectedly noindex: {path}")
+              expected_canonical = f'<link rel="canonical" href="{base}{path}">'
+              if expected_canonical.lower() not in body.lower():
+                  raise SystemExit(f"Completed Arizona guide has the wrong canonical: {path}")
+              if "Arizona statewide permit framework" not in body:
+                  raise SystemExit(f"Completed Arizona guide lacks the statewide/local scope section: {path}")
+              if "Report outdated county information" not in body:
+                  raise SystemExit(f"Completed Arizona guide lacks the correction route: {path}")
+
+          apache = bodies["/counties/arizona/apache/"]
+          if "https://www.apachecountyaz.gov/environmental-services" not in apache:
+              raise SystemExit("Apache County guide lacks its official Environmental Services source")
+
+          santa_cruz = bodies["/counties/arizona/santa-cruz/"]
+          if "https://www.santacruzcountyaz.gov/984/Onsite-Wastewater-Treatment-Facility-Sep" not in santa_cruz:
+              raise SystemExit("Santa Cruz County guide lacks its official onsite-wastewater source")
+
+          yuma = bodies["/counties/arizona/yuma/"]
+          if "https://www.yumacountyaz.gov/government/development-services/divisions/environmental-programs" not in yuma:
+              raise SystemExit("Yuma County guide lacks its official Environmental Programs source")
+
+          print("PASS: all 15 Arizona county guides are deployed and the completion baseline is intact")
+          PY
