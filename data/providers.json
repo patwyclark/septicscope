@@ -438,7 +438,6 @@
         "48091",
         "48187",
         "48259",
-        "48209",
         "48325",
         "48255",
         "48493"
@@ -460,7 +459,7 @@
       "status": "active",
       "sponsored": false,
       "affiliate": false,
-      "coverage_notes": "The company-owned service-area page explicitly lists Atascosa, Bandera, Bexar, Comal, Guadalupe, Kendall, Hays, Medina, Karnes, and Wilson counties. Hays service is limited to San Marcos and Wimberley. The company advertises residential and commercial pumping and cleaning for conventional, aerobic, lift-station, and cesspool tanks."
+      "coverage_notes": "The company-owned service-area page explicitly lists Atascosa, Bandera, Bexar, Comal, Guadalupe, Kendall, Medina, Karnes, and Wilson counties and advertises residential and commercial pumping and cleaning for conventional, aerobic, lift-station, and cesspool tanks."
     },
     {
       "id": "grobler-septic-systems-central-texas",
@@ -534,6 +533,327 @@
       "sponsored": false,
       "affiliate": false,
       "coverage_notes": "The company-owned location page explicitly names McLennan, Bosque, Falls, Hill, Bell, Limestone, and Coryell counties. Its service pages advertise pumping, residential and commercial installation, repair, maintenance, and real-estate septic inspections."
+    },
+    {
+      "id": "aams-wastewater-hays-tx",
+      "business_name": "AAMS Wastewater",
+      "website": "https://aamswastewater.com/",
+      "public_phone": "512-847-0757",
+      "city": "Wimberley",
+      "state": "TX",
+      "zip_code": "78676",
+      "counties_served": [
+        "48209"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "inspection",
+        "installation",
+        "repair",
+        "maintenance",
+        "aerobic",
+        "emergency"
+      ],
+      "license_information": "The company website states that its inspection services are NAWT certified and that it is authorized to perform Hays County change-of-ownership inspections; verify current Texas credentials, insurance, and service scope before hiring.",
+      "source_urls": [
+        "https://aamswastewater.com/",
+        "https://aamswastewater.com/services-2/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly states service throughout Hays County and advertises pumping, inspections, installation, repairs, aerobic maintenance contracts, and emergency service."
+    },
+    {
+      "id": "first-turn-septic-north-georgia",
+      "business_name": "First Turn Septic",
+      "website": "https://www.firstturngs.com/",
+      "public_phone": "678-807-3443",
+      "city": "Cumming",
+      "state": "GA",
+      "zip_code": "30041",
+      "counties_served": [
+        "13013",
+        "13057",
+        "13067",
+        "13085",
+        "13089",
+        "13117",
+        "13121",
+        "13135",
+        "13139",
+        "13157",
+        "13187",
+        "13227",
+        "13311"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "maintenance",
+        "installation",
+        "repair",
+        "inspection",
+        "lift_station",
+        "drainage",
+        "emergency"
+      ],
+      "license_information": "Verify current Georgia certification, county permitting credentials, insurance, and the permitted scope of work before hiring.",
+      "source_urls": [
+        "https://www.firstturngs.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly names Barrow, Cherokee, Cobb, Dawson, DeKalb, Forsyth, Fulton, Gwinnett, Hall, Jackson, Lumpkin, Pickens, and White as its normal service-area counties and lists pumping, maintenance, installations, repairs, inspections, lift-station work, drainage solutions, and emergency service."
+    },
+    {
+      "id": "west-ga-plumbing-septic",
+      "business_name": "West GA Plumbing and Septic",
+      "website": "https://www.westgaps.com/",
+      "public_phone": "678-708-8883",
+      "city": "Buchanan",
+      "state": "GA",
+      "zip_code": "",
+      "counties_served": [
+        "13097",
+        "13143",
+        "13045",
+        "13223",
+        "13233",
+        "13077",
+        "13149",
+        "13115",
+        "13067",
+        "13015"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "maintenance",
+        "repair",
+        "inspection",
+        "installation",
+        "replacement",
+        "drainfield",
+        "hydrojetting",
+        "emergency"
+      ],
+      "license_information": "Verify current Georgia certification, county permitting credentials, insurance, and the permitted scope of work before hiring.",
+      "source_urls": [
+        "https://www.westgaps.com/service-areas/",
+        "https://www.westgaps.com/septic-services/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned service-area page explicitly lists Douglas, Haralson, Carroll, Paulding, Polk, Coweta, Heard, Floyd, Cobb, and Bartow counties. Its septic page advertises pumping, maintenance, inspections, repairs, field-line and tank replacement, drainfield work, installation, hydrojetting, and emergency service."
+    },
+    {
+      "id": "asap-septic-middle-georgia",
+      "business_name": "ASAP Septic",
+      "website": "https://www.asapsepticllc.com/",
+      "public_phone": "478-308-2811",
+      "city": "Cochran",
+      "state": "GA",
+      "zip_code": "31014",
+      "counties_served": [
+        "13021",
+        "13175",
+        "13023",
+        "13093",
+        "13091",
+        "13225",
+        "13153",
+        "13079",
+        "13235",
+        "13289"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "inspection",
+        "installation",
+        "replacement",
+        "repair",
+        "commercial",
+        "grease_trap",
+        "rv"
+      ],
+      "license_information": "Verify current Georgia certification, county permitting credentials, insurance, and the permitted scope of work before hiring.",
+      "source_urls": [
+        "https://www.asapsepticllc.com/service-area",
+        "https://www.asapsepticllc.com/contact"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned service-area page explicitly lists septic service in Bibb, Laurens, Bleckley, Dooly, Dodge, Peach, Houston, Crawford, Pulaski, and Twiggs counties. The site advertises pumping and inspections, new installation, replacement, repairs, residential and commercial septic service, grease-trap work, and RV tank pumping."
+    },
+    {
+      "id": "coastal-georgia-septic",
+      "business_name": "Coastal Georgia Septic",
+      "website": "https://coastalgeorgiaseptic.com/",
+      "public_phone": "912-476-0063",
+      "city": "Brunswick",
+      "state": "GA",
+      "zip_code": "",
+      "counties_served": [
+        "13127",
+        "13191",
+        "13039"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "inspection",
+        "installation",
+        "repair",
+        "replacement",
+        "drainfield"
+      ],
+      "license_information": "The company-owned website states that the business is licensed, state certified, and insured; verify current Georgia credentials, county requirements, insurance, and service scope before hiring.",
+      "source_urls": [
+        "https://coastalgeorgiaseptic.com/faq",
+        "https://coastalgeorgiaseptic.com/septic-pumping",
+        "https://coastalgeorgiaseptic.com/septic-installation"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly states service throughout Glynn, McIntosh, and Camden counties and advertises septic pumping, cleaning, real-estate inspections, repairs, drainfield replacement, and new conventional, mound, and Eljen system installation."
+    },
+    {
+      "id": "bob-fitzpatrick-septic-ne-georgia",
+      "business_name": "Bob Fitzpatrick Septic",
+      "website": "https://www.bobfitzpatrickseptic.com/",
+      "public_phone": "706-308-7633",
+      "city": "Danielsville",
+      "state": "GA",
+      "zip_code": "30633",
+      "counties_served": [
+        "13195",
+        "13059",
+        "13219",
+        "13119",
+        "13157",
+        "13221",
+        "13105",
+        "13147",
+        "13011",
+        "13013"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "installation",
+        "repair",
+        "inspection",
+        "maintenance",
+        "commercial",
+        "grease_trap",
+        "sewer_pump",
+        "emergency"
+      ],
+      "license_information": "Verify current Georgia certification, county permitting credentials, insurance, and the permitted scope of work before hiring.",
+      "source_urls": [
+        "https://www.bobfitzpatrickseptic.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly lists Madison, Clarke, Oconee, Franklin, Jackson, Oglethorpe, Elbert, Hart, Banks, and Barrow counties and advertises septic cleaning and pumping, new installation, repairs, inspections, sewer-system maintenance, grease-trap pumping, sewer-pump work, and emergency service."
+    },
+    {
+      "id": "advance-septic-solutions-metro-east-georgia",
+      "business_name": "Advance Septic Solutions",
+      "website": "https://advanceseptic.com/",
+      "public_phone": "678-940-0226",
+      "city": "Conyers",
+      "state": "GA",
+      "zip_code": "30094",
+      "counties_served": [
+        "13217",
+        "13247",
+        "13135",
+        "13159",
+        "13211",
+        "13297",
+        "13151"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "installation",
+        "repair",
+        "inspection",
+        "maintenance",
+        "replacement",
+        "drainfield",
+        "grease_trap",
+        "lift_station",
+        "commercial",
+        "emergency"
+      ],
+      "license_information": "The company-owned website describes licensed and insured septic service; verify current Georgia certification, county permitting credentials, insurance, and the permitted scope of work before hiring.",
+      "source_urls": [
+        "https://advanceseptic.com/septic-tank-service-areas/",
+        "https://advanceseptic.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned service-area page explicitly identifies Newton, Rockdale, Gwinnett, Jasper, Morgan, Walton, and Henry as the counties closest to its home base and states that service is available in all or parts of the listed areas. The site advertises pumping, installation, repair, inspection, maintenance, drainfield, grease-trap, lift-station, commercial, and emergency work; confirm availability for the exact address."
+    },
+    {
+      "id": "carlton-septic-colquitt-ga",
+      "business_name": "Carlton Septic Service",
+      "website": "https://www.carltonseptic.com/",
+      "public_phone": "229-985-2861",
+      "city": "Moultrie",
+      "state": "GA",
+      "zip_code": "",
+      "counties_served": [
+        "13071"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "installation",
+        "repair",
+        "inspection",
+        "maintenance",
+        "drainfield",
+        "commercial",
+        "emergency"
+      ],
+      "license_information": "Verify current Georgia certification, county permitting credentials, insurance, and the permitted scope of work before hiring.",
+      "source_urls": [
+        "https://www.carltonseptic.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly states service throughout Colquitt County and advertises septic pumping, installation, system and drainfield repairs, camera inspections, maintenance, commercial septic work, and emergency repairs."
     }
   ]
 }
