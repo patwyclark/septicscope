@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Load the checksum-verified hourly provider discovery implementation."""
+"""Load the checksum-verified free official-source provider discovery implementation."""
 from __future__ import annotations
 
 import base64
@@ -20,4 +20,25 @@ actual = hashlib.sha256(source_bytes).hexdigest()
 if actual != SOURCE_SHA256:
     raise RuntimeError(f"Provider discovery source checksum mismatch: {actual}")
 
-exec(compile(source_bytes, str(Path(__file__).with_name("provider_discovery_impl.py")), "exec"), globals())
+# The preserved implementation originally had an optional paid-search branch. SepticScope
+# now operates this job entirely from free official public sources. Rename the old secret
+# lookup before compilation so a forgotten repository secret can never turn paid search on,
+# and replace the obsolete warning with an accurate operating message.
+source_text = source_bytes.decode("utf-8")
+source_text = source_text.replace(
+    "BRAVE_SEARCH_API_KEY",
+    "SEPTICSCOPE_PAID_SEARCH_PERMANENTLY_DISABLED",
+)
+source_text = source_text.replace(
+    "BRAVE_SEARCH_API_KEY is not configured; this run used official-source discovery only.",
+    "This run used free official-source discovery; no paid search API is configured or required.",
+)
+
+exec(
+    compile(
+        source_text,
+        str(Path(__file__).with_name("provider_discovery_impl.py")),
+        "exec",
+    ),
+    globals(),
+)
