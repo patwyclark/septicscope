@@ -167,7 +167,7 @@
       "status": "active",
       "sponsored": false,
       "affiliate": false,
-      "coverage_notes": "County relationship and service category published by the official source: El Paso County Public Health \u2014 Licensed Installers."
+      "coverage_notes": "County relationship and service category published by the official source: El Paso County Public Health — Licensed Installers."
     },
     {
       "id": "dulworth-septic-north-texas",
@@ -304,31 +304,236 @@
     {
       "id": "weaver-excavating-septic-ennis-tx",
       "business_name": "Weaver Excavating & Septic",
-      "website": "https://weaverexcavating.net/excavating/ennis/",
+      "website": "https://weaverexcavating.net/",
       "public_phone": "903-603-2200",
       "city": "Eustace",
       "state": "TX",
       "zip_code": "75124",
       "counties_served": [
-        "48139"
+        "48213",
+        "48257",
+        "48467",
+        "48139",
+        "48349",
+        "48217"
       ],
       "zip_codes_served": [],
       "service_categories": [
         "pumping",
         "installation",
         "repair",
+        "maintenance",
         "excavation"
       ],
-      "license_information": "Company website describes the business as TCEQ licensed; verify current credentials and scope before hiring.",
+      "license_information": "Company website displays Texas license OS0025734; verify current scope and status before hiring.",
       "source_urls": [
-        "https://weaverexcavating.net/excavating/ennis/"
+        "https://weaverexcavating.net/service-areas/"
       ],
       "date_added": "2026-09-01",
-      "date_last_verified": "2026-09-01",
+      "date_last_verified": "2026-09-02",
       "status": "active",
       "sponsored": false,
       "affiliate": false,
-      "coverage_notes": "The company-owned Ennis service page explicitly advertises septic pumping, installation, repair, and excavation in the Ellis County area."
+      "coverage_notes": "The company-owned service-area page explicitly lists Henderson, Kaufman, Van Zandt, Ellis, Navarro, and Hill counties and advertises pumping, installation, repairs, maintenance contracts, and excavation."
+    },
+    {
+      "id": "caddo-creek-septic-excavation-north-texas",
+      "business_name": "Caddo Creek Septic & Excavation",
+      "website": "https://www.caddocreekseptic.com/",
+      "public_phone": "903-274-0998",
+      "city": "Celeste",
+      "state": "TX",
+      "zip_code": "",
+      "counties_served": [
+        "48085",
+        "48231",
+        "48397",
+        "48379",
+        "48147",
+        "48181",
+        "48223",
+        "48257",
+        "48467",
+        "48121",
+        "48277",
+        "48119"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "installation",
+        "repair",
+        "replacement",
+        "maintenance",
+        "aerobic",
+        "drainfield",
+        "excavation"
+      ],
+      "license_information": "The company-owned website describes licensed conventional and aerobic installation work; verify current Texas credentials, county registration, insurance, and service scope before hiring.",
+      "source_urls": [
+        "https://www.caddocreekseptic.com/areas"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned service-area page explicitly names Collin, Hunt, Rockwall, Rains, Fannin, Grayson, Hopkins, Kaufman, Van Zandt, Denton, Lamar, and Delta counties and lists pumping, installation, repair, replacement, maintenance, aerobic, drain-field, and excavation services."
+    },
+    {
+      "id": "homefield-north-texas",
+      "business_name": "HomeField North Texas",
+      "website": "https://www.homefieldonsite.com/north-texas/",
+      "public_phone": "940-360-5855",
+      "city": "Wichita Falls",
+      "state": "TX",
+      "zip_code": "76308",
+      "counties_served": [
+        "48009",
+        "48023",
+        "48077",
+        "48097",
+        "48197",
+        "48207",
+        "48237",
+        "48337",
+        "48485",
+        "48487",
+        "48497",
+        "48503"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "installation",
+        "repair",
+        "inspection",
+        "design",
+        "maintenance"
+      ],
+      "license_information": "The company website states that it maintains Texas installer and maintenance-provider credentials and can perform septic inspections; verify current individual license numbers, status, insurance, and county requirements before hiring.",
+      "source_urls": [
+        "https://www.homefieldonsite.com/north-texas/about-us/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned page explicitly lists Archer, Baylor, Clay, Cooke, Hardeman, Haskell, Jack, Montague, Wichita, Wilbarger, Wise, and Young counties and advertises residential and commercial pumping, installation, repair, inspection, real-estate inspection, and design/planning."
+    },
+    {
+      "id": "cisco-septic-service-san-antonio",
+      "business_name": "Cisco Septic Service",
+      "website": "https://www.ciscoseptic.com/",
+      "public_phone": "210-598-9090",
+      "city": "Converse",
+      "state": "TX",
+      "zip_code": "78109",
+      "counties_served": [
+        "48013",
+        "48019",
+        "48029",
+        "48091",
+        "48187",
+        "48259",
+        "48209",
+        "48325",
+        "48255",
+        "48493"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "aerobic",
+        "commercial"
+      ],
+      "license_information": "The company website displays TCEQ #25421 and NAWT #14353ITC; verify current credential status, scope, insurance, and local requirements before hiring.",
+      "source_urls": [
+        "https://www.ciscoseptic.com/service-areas",
+        "https://www.ciscoseptic.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned service-area page explicitly lists Atascosa, Bandera, Bexar, Comal, Guadalupe, Kendall, Hays, Medina, Karnes, and Wilson counties. Hays service is limited to San Marcos and Wimberley. The company advertises residential and commercial pumping and cleaning for conventional, aerobic, lift-station, and cesspool tanks."
+    },
+    {
+      "id": "grobler-septic-systems-central-texas",
+      "business_name": "Grobler Septic Systems Installations",
+      "website": "https://www.groblerseptic.com/",
+      "public_phone": "806-930-8683",
+      "city": "Goldthwaite",
+      "state": "TX",
+      "zip_code": "76844",
+      "counties_served": [
+        "48049",
+        "48093",
+        "48193",
+        "48281",
+        "48333",
+        "48411"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "installation",
+        "replacement",
+        "drainfield",
+        "design",
+        "excavation"
+      ],
+      "license_information": "Verify current Texas licensing, county registration, insurance, and the permitted scope of work before hiring.",
+      "source_urls": [
+        "https://www.groblerseptic.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly lists Brown, Comanche, Hamilton, Lampasas, Mills, and San Saba counties and advertises residential and commercial septic installation, replacement, drain-field installation, site planning, engineered-system work, and excavation."
+    },
+    {
+      "id": "jernan-septic-rainwater-central-texas",
+      "business_name": "Jernan Septic & Rainwater Solutions",
+      "website": "https://jernan.com/",
+      "public_phone": "254-848-4848",
+      "city": "Woodway",
+      "state": "TX",
+      "zip_code": "76712",
+      "counties_served": [
+        "48309",
+        "48035",
+        "48145",
+        "48217",
+        "48027",
+        "48293",
+        "48099"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "installation",
+        "repair",
+        "maintenance",
+        "inspection",
+        "commercial"
+      ],
+      "license_information": "Verify current Texas licensing, county registration, insurance, and service scope before hiring.",
+      "source_urls": [
+        "https://jernan.com/locations/",
+        "https://jernan.com/pumping/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned location page explicitly names McLennan, Bosque, Falls, Hill, Bell, Limestone, and Coryell counties. Its service pages advertise pumping, residential and commercial installation, repair, maintenance, and real-estate septic inspections."
     }
   ]
 }
