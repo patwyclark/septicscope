@@ -1,4 +1,4 @@
-name: Hourly provider growth, link and SEO audit
+name: Hourly continuous SepticScope growth
 
 on:
   push:
@@ -7,20 +7,22 @@ on:
       - ".github/workflows/hourly-growth-maintenance.yml"
       - "tools/provider_discovery.py"
       - "tools/provider_discovery_parts/**"
+      - "tools/continuous_growth.py"
       - "tools/seo_hourly_audit.py"
       - "tools/indexnow_submit.py"
       - "provider_experience.py"
-      - "data/providers.json"
+      - "continuous_growth_experience.py"
+      - "build_site.py"
   schedule:
     - cron: "23 * * * *"
   workflow_dispatch:
     inputs:
       county_limit:
-        description: "Counties to review this run"
+        description: "Counties to review for provider evidence this run"
         required: false
         default: "100"
       dry_run:
-        description: "Research and audit without committing provider changes"
+        description: "Research and audit without committing source changes"
         required: false
         type: boolean
         default: false
@@ -49,17 +51,18 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Compile and self-test hourly tooling
+      - name: Compile and self-test continuous growth tooling
         run: |
           python -m compileall -q -x '(^|/)(site|\.septicscope-build)/' .
           python tools/provider_discovery.py --self-test
+          python tools/continuous_growth.py --self-test
           python tools/seo_hourly_audit.py --self-test
           python tools/indexnow_submit.py /dev/null --self-test
 
-      - name: Build current production site for county and source review
+      - name: Build current production site
         run: python build_site.py
 
-      - name: Review free official provider sources for a rotating batch of 100 counties
+      - name: Review free official provider sources for 100 rotating counties
         id: provider_research
         run: |
           DRY_FLAG=""
@@ -80,6 +83,30 @@ jobs:
 
       - name: Rebuild after provider additions
         if: steps.provider_research.outputs.provider_data_changed == 'true'
+        run: python build_site.py
+
+      - name: Find and apply one additional safe compounding improvement
+        id: continuous_growth
+        run: |
+          APPLY_FLAG="--apply-one"
+          if [ "${{ github.event.inputs.dry_run || 'false' }}" = "true" ]; then
+            APPLY_FLAG=""
+          fi
+          python tools/continuous_growth.py \
+            --site site \
+            --state data/growth-links.json \
+            --report hourly-continuous-growth-report.json \
+            $APPLY_FLAG
+          if git diff --quiet -- data/growth-links.json; then
+            echo "growth_data_changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "growth_data_changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Rebuild after continuous-growth improvement
+        if: >-
+          steps.provider_research.outputs.provider_data_changed == 'true' ||
+          steps.continuous_growth.outputs.growth_data_changed == 'true'
         run: python build_site.py
 
       - name: Review keyword intent and SEO essentials on every indexable page
@@ -108,18 +135,51 @@ jobs:
           set -o pipefail
           python adsense_audit.py 2>&1 | tee hourly-adsense-audit.txt
 
-      - name: Upload hourly diagnostics
+      - name: Build changed URL list for search-engine notification
+        if: >-
+          steps.provider_research.outputs.provider_data_changed == 'true' ||
+          steps.continuous_growth.outputs.growth_data_changed == 'true'
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          urls = []
+          for name in ('hourly-provider-report.json', 'hourly-continuous-growth-report.json'):
+              path = Path(name)
+              if not path.exists():
+                  continue
+              try:
+                  data = json.loads(path.read_text(encoding='utf-8'))
+              except json.JSONDecodeError:
+                  continue
+              for url in data.get('changed_urls', []):
+                  if isinstance(url, str) and url.startswith('https://septicscope.com/') and url not in urls:
+                      urls.append(url)
+          if 'https://septicscope.com/providers/' not in urls and Path('data/providers.json').exists():
+              urls.append('https://septicscope.com/providers/')
+          Path('hourly-changed-urls.json').write_text(
+              json.dumps({'changed_urls': urls}, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          print(f'Prepared {len(urls)} changed URLs')
+          PY
+
+      - name: Upload hourly growth diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: hourly-growth-diagnostics-${{ github.run_number }}
           path: |
             hourly-provider-report.json
+            hourly-continuous-growth-report.json
             hourly-seo-report.json
+            hourly-changed-urls.json
             hourly-internal-audit.txt
             hourly-external-audit.txt
             hourly-adsense-audit.txt
             site/build-info.json
+            site/data/continuous-growth-report.json
             site/data/project-audit-summary.json
             site/data/keyword-map.json
             site/data/provider-directory.json
@@ -133,22 +193,23 @@ jobs:
           test "${{ steps.external_audit.outcome }}" = "success"
           test "${{ steps.adsense_audit.outcome }}" = "success"
 
-      - name: Commit source-checked provider changes from official directories
+      - name: Commit evidence-backed hourly growth changes
         id: commit
         if: >-
-          steps.provider_research.outputs.provider_data_changed == 'true' &&
           github.ref == 'refs/heads/main' &&
-          (github.event_name != 'workflow_dispatch' || github.event.inputs.dry_run != 'true')
+          (github.event_name != 'workflow_dispatch' || github.event.inputs.dry_run != 'true') &&
+          (steps.provider_research.outputs.provider_data_changed == 'true' ||
+           steps.continuous_growth.outputs.growth_data_changed == 'true')
         run: |
           git config user.name "SepticScope Growth Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/providers.json
-          git commit -m "Hourly source-checked provider expansion $(date -u +'%Y-%m-%d %H:00 UTC')"
+          git add data/providers.json data/growth-links.json
+          git commit -m "Hourly evidence-backed site growth $(date -u +'%Y-%m-%d %H:00 UTC')"
           git pull --rebase origin main
           git push origin HEAD:main
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-      - name: Wait for the changed provider pages to reach production
+      - name: Wait for the changed pages to reach production
         if: steps.commit.outputs.sha != ''
         continue-on-error: true
         env:
@@ -158,26 +219,26 @@ jobs:
           import json, os, time
           from urllib.error import HTTPError, URLError
           from urllib.request import Request, urlopen
-          expected = os.environ["EXPECTED_SHA"]
-          for attempt in range(24):
+          expected = os.environ['EXPECTED_SHA']
+          for _ in range(24):
               try:
                   request = Request(
                       f"https://septicscope.com/build-info.json?v={int(time.time())}",
-                      headers={"User-Agent": "SepticScope hourly deployment verifier", "Cache-Control": "no-cache"},
+                      headers={'User-Agent': 'SepticScope hourly deployment verifier', 'Cache-Control': 'no-cache'},
                   )
                   with urlopen(request, timeout=20) as response:
                       info = json.load(response)
-                  if str(info.get("commit_sha", "")) == expected:
-                      print(f"Production reached {expected}")
+                  if str(info.get('commit_sha', '')) == expected:
+                      print(f'Production reached {expected}')
                       break
               except (HTTPError, URLError, TimeoutError, json.JSONDecodeError):
                   pass
               time.sleep(15)
           else:
-              raise SystemExit(f"Production did not reach {expected} within 6 minutes")
+              raise SystemExit(f'Production did not reach {expected} within 6 minutes')
           PY
 
       - name: Notify Bing and other IndexNow participants about changed URLs
         if: steps.commit.outputs.sha != ''
         continue-on-error: true
-        run: python tools/indexnow_submit.py hourly-provider-report.json
+        run: python tools/indexnow_submit.py hourly-changed-urls.json
