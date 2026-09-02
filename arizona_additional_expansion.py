@@ -100,3 +100,4 @@ if entries:
 
 print(f'Arizona additional expansion complete: +{len(az2_urls)} verified county guides')
 exec((ROOT / 'arizona_completion_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'hawaii_completion_expansion.py').read_text(encoding='utf-8'), globals())
