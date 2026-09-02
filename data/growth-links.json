@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "last_updated": "2026-09-01",
+  "policy": "Each record adds one contextual internal link chosen from the generated site's real page graph. Links must connect genuinely related SepticScope resources and may not be added merely to increase keyword frequency.",
+  "links": []
+}
