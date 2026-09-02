@@ -139,9 +139,13 @@ jobs:
         if: >-
           steps.provider_research.outputs.provider_data_changed == 'true' ||
           steps.continuous_growth.outputs.growth_data_changed == 'true'
+        env:
+          PROVIDER_CHANGED: ${{ steps.provider_research.outputs.provider_data_changed }}
+          GROWTH_CHANGED: ${{ steps.continuous_growth.outputs.growth_data_changed }}
         run: |
           python - <<'PY'
           import json
+          import os
           from pathlib import Path
 
           urls = []
@@ -156,7 +160,7 @@ jobs:
               for url in data.get('changed_urls', []):
                   if isinstance(url, str) and url.startswith('https://septicscope.com/') and url not in urls:
                       urls.append(url)
-          if 'https://septicscope.com/providers/' not in urls and Path('data/providers.json').exists():
+          if os.environ.get('PROVIDER_CHANGED') == 'true' and 'https://septicscope.com/providers/' not in urls:
               urls.append('https://septicscope.com/providers/')
           Path('hourly-changed-urls.json').write_text(
               json.dumps({'changed_urls': urls}, indent=2) + '\n',
@@ -178,6 +182,10 @@ jobs:
             hourly-internal-audit.txt
             hourly-external-audit.txt
             hourly-adsense-audit.txt
+            post-rebase-seo-report.json
+            post-rebase-internal-audit.txt
+            post-rebase-external-audit.txt
+            post-rebase-adsense-audit.txt
             site/build-info.json
             site/data/continuous-growth-report.json
             site/data/project-audit-summary.json
@@ -193,7 +201,7 @@ jobs:
           test "${{ steps.external_audit.outcome }}" = "success"
           test "${{ steps.adsense_audit.outcome }}" = "success"
 
-      - name: Commit evidence-backed hourly growth changes
+      - name: Commit and revalidate evidence-backed hourly growth changes
         id: commit
         if: >-
           github.ref == 'refs/heads/main' &&
@@ -201,11 +209,27 @@ jobs:
           (steps.provider_research.outputs.provider_data_changed == 'true' ||
            steps.continuous_growth.outputs.growth_data_changed == 'true')
         run: |
+          set -euo pipefail
           git config user.name "SepticScope Growth Bot"
           git config user.email "actions@users.noreply.github.com"
           git add data/providers.json data/growth-links.json
           git commit -m "Hourly evidence-backed site growth $(date -u +'%Y-%m-%d %H:00 UTC')"
-          git pull --rebase origin main
+
+          audited_base="$GITHUB_SHA"
+          git fetch origin main
+          current_upstream="$(git rev-parse origin/main)"
+          if [ "$current_upstream" != "$audited_base" ]; then
+            echo "main advanced during this run; rebasing and repeating every quality gate"
+            git rebase origin/main
+            rebased_sha="$(git rev-parse HEAD)"
+            GITHUB_SHA="$rebased_sha" python build_site.py
+            python tools/seo_hourly_audit.py --site site --report post-rebase-seo-report.json
+            set -o pipefail
+            python audit_site.py 2>&1 | tee post-rebase-internal-audit.txt
+            python audit_site.py --external 2>&1 | tee post-rebase-external-audit.txt
+            python adsense_audit.py 2>&1 | tee post-rebase-adsense-audit.txt
+          fi
+
           git push origin HEAD:main
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
