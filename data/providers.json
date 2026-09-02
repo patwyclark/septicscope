@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-09-01",
+  "last_updated": "2026-09-02",
   "ordering_policy": "Ordinary listings use neutral ordering. Sponsored or promoted placement must be clearly labeled and paid links must use rel=sponsored.",
   "verification_policy": "Only verifiable public business information may be published. Google Search may be used manually to discover a business, but the published facts must be confirmed on the company-owned website or an official public-agency directory. Do not infer service areas, copy reviews, or display ratings that cannot be maintained accurately.",
   "correction_process": "Business owners and users may report corrections, closures, removals, or listing claims through https://septicscope.com/contact/.",
@@ -134,6 +134,40 @@
       "sponsored": false,
       "affiliate": false,
       "coverage_notes": "The company-owned website explicitly lists Collin, Dallas, Fannin, Grayson, Hunt, Kaufman, Rains, and Rockwall counties for septic design and site-evaluation work."
+    },
+    {
+      "id": "down-to-earth-excavating-inc-fb367a5f",
+      "business_name": "Down to Earth Excavating, Inc",
+      "website": "",
+      "public_phone": "719-495-3660",
+      "city": "",
+      "state": "CO",
+      "zip_code": "",
+      "counties_served": [
+        {
+          "fips": "08041",
+          "evidence_url": "https://www.elpasocountyhealth.org/licenses-permits-inspections-water-testing/onsite-wastewater-treatment-systems/licensed-installers/",
+          "evidence_type": "county_specific_official_directory"
+        }
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "repairs",
+        "installation",
+        "maintenance",
+        "inspection",
+        "pumping"
+      ],
+      "license_or_registration": [],
+      "source_urls": [
+        "https://www.elpasocountyhealth.org/licenses-permits-inspections-water-testing/onsite-wastewater-treatment-systems/licensed-installers/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "County relationship and service category published by the official source: El Paso County Public Health \u2014 Licensed Installers."
     },
     {
       "id": "dulworth-septic-north-texas",
