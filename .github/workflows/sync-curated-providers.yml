@@ -1,0 +1,67 @@
+name: Sync curated provider catalog
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/providers.json"
+      - "data/provider-overrides.json"
+      - "provider_curated_experience.py"
+      - "tools/sync_curated_providers.py"
+      - ".github/workflows/sync-curated-providers.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: septicscope-curated-provider-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout production branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile synchronization tooling
+        run: |
+          python -m py_compile provider_curated_experience.py tools/sync_curated_providers.py
+
+      - name: Reconcile and publish canonical provider data
+        run: |
+          set -euo pipefail
+          git config user.name "SepticScope Provider Sync"
+          git config user.email "actions@users.noreply.github.com"
+
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            python tools/sync_curated_providers.py
+
+            if git diff --quiet -- data/providers.json; then
+              echo "Provider catalog is already synchronized"
+              exit 0
+            fi
+
+            git add data/providers.json
+            git commit -m "Sync reviewed provider catalog into canonical data"
+            if git push origin HEAD:main; then
+              echo "Published synchronized provider catalog"
+              exit 0
+            fi
+
+            echo "main advanced during provider synchronization; retrying ($attempt/3)"
+          done
+
+          echo "Unable to publish synchronized provider catalog after three attempts" >&2
+          exit 1
