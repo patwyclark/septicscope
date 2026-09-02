@@ -128,9 +128,9 @@ jobs:
               )
               if not canonical_pattern.search(body):
                   raise SystemExit(f"Completed Arizona guide has the wrong canonical: {path}")
+
               required_markers = (
                   "Official sources",
-                  "Arizona statewide permit framework",
                   "Report outdated county information",
               )
               missing_markers = [
@@ -140,10 +140,20 @@ jobs:
                   raise SystemExit(
                       f"{path} is missing required verified-guide markers: {missing_markers}"
                   )
+              if not any(
+                  marker in lower
+                  for marker in (
+                      "adeq",
+                      "arizona department of environmental quality",
+                  )
+              ):
+                  raise SystemExit(
+                      f"{path} does not identify Arizona's state environmental authority"
+                  )
               print(f"PASS {path}")
 
           print(
               "PASS: all 15 Arizona county guides are deployed, indexable, canonical, "
-              "source-backed, and present in the sitemap"
+              "state/local scoped, source-backed, and present in the sitemap"
           )
           PY
