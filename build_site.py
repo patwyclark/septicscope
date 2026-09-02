@@ -74,6 +74,7 @@ def _run() -> None:
     growth_experience = ROOT / "continuous_growth_experience.py"
     service_locator = ROOT / "septic_services_near_me.py"
     homepage_experience = ROOT / "homepage_experience.py"
+    service_quality = ROOT / "septic_service_quality.py"
     seo_review = ROOT / "tools" / "seo_hourly_audit.py"
     growth_planner = ROOT / "tools" / "continuous_growth.py"
 
@@ -86,6 +87,11 @@ def _run() -> None:
     _run_script(growth_experience, env=env)
     _run_script(service_locator, env=env)
     _run_script(homepage_experience, env=env)
+    _run_script(service_quality, env=env)
+
+    # Refresh the inventory before the SEO gate so newly generated indexable routes,
+    # especially /septic-services-near-me/, already have keyword-map records.
+    _run_script(inventory, env=env)
 
     # Safe SEO maintenance repairs only missing title/description/canonical essentials;
     # it does not add meta-keywords or repeat phrases for ranking manipulation.
