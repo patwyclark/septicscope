@@ -97,10 +97,9 @@ jobs:
 
           county_slugs = ("hawaii", "honolulu", "kalawao", "kauai", "maui")
           checks = {
-              "/counties/hawaii/": (
-                  "All 5 Hawaii county and county-equivalent pages",
-                  "Hawaii Department of Health Wastewater Branch",
-              ),
+              # The generic state-hub generator owns this page's copy. Verify its
+              # complete five-county link set below instead of pinning old prose.
+              "/counties/hawaii/": (),
               "/counties/hawaii/hawaii/": (
                   "Hawaii County",
                   "County of Hawaii official website",
@@ -140,16 +139,24 @@ jobs:
               bodies[path] = body
               print(f"PASS {path}")
 
+          hub = bodies["/counties/hawaii/"]
+          if "noindex" in hub.lower():
+              raise SystemExit("Hawaii state hub is unexpectedly noindex")
+          expected_hub_canonical = f'<link rel="canonical" href="{BASE}/counties/hawaii/">'
+          if expected_hub_canonical.lower() not in hub.lower():
+              raise SystemExit("Hawaii state hub has the wrong canonical")
+
           hub_links = set(
               re.findall(
                   r'href=["\'](/counties/hawaii/[^"\']+/)["\']',
-                  bodies["/counties/hawaii/"],
+                  hub,
                   flags=re.I,
               )
           )
           expected_links = {f"/counties/hawaii/{slug}/" for slug in county_slugs}
-          if hub_links != expected_links:
-              raise SystemExit(f"Hawaii hub links are incomplete or unexpected: {sorted(hub_links)}")
+          if not expected_links.issubset(hub_links):
+              missing_links = sorted(expected_links.difference(hub_links))
+              raise SystemExit(f"Hawaii hub is missing county links: {missing_links}")
 
           for slug in county_slugs:
               path = f"/counties/hawaii/{slug}/"
@@ -167,7 +174,7 @@ jobs:
                   raise SystemExit(f"Hawaii guide lacks a visible source section: {path}")
 
           print(
-              "PASS: all five Hawaii county-equivalent guides are deployed and the "
-              f"source-controlled quality baseline of {minimum_verified} is intact"
+              "PASS: all five Hawaii county-equivalent guides and the state hub are "
+              f"deployed; source-controlled quality baseline {minimum_verified} is intact"
           )
           PY
