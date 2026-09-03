@@ -2,7 +2,6 @@
 """Gate the national service search until every county has reviewed coverage."""
 from __future__ import annotations
 
-from html import escape
 import json
 from pathlib import Path
 import re
@@ -76,7 +75,7 @@ def hidden_locator_page(provider_count: int, covered_count: int) -> str:
 def scrub_public_directory_links() -> int:
     changed = 0
     targets = ("/septic-services-near-me/", "/providers/")
-    pattern_template = r'<a\b([^>]*?)href=["\']{target}[^"\']*["\']([^>]*)>(.*?)</a>'
+    pattern_template = r"<a\b([^>]*?)href=[\"']{target}[^\"']*[\"']([^>]*)>(.*?)</a>"
     for path in SITE.rglob("*.html"):
         if path in {SITE / "septic-services-near-me" / "index.html", SITE / "providers" / "index.html"}:
             continue
@@ -124,7 +123,8 @@ def verify_hidden() -> None:
         raise RuntimeError("County information directory is missing the restored lookup")
     if "noindex,follow" not in locator.replace(" ", "").lower() or "data-provider-card" in locator:
         raise RuntimeError("Incomplete service locator must be noindex and non-searchable")
-    if "noindex,follow" not in provider.replace(" ", "").lower() or "ss-provider-card" in provider.split("<main", 1)[-1]:
+    provider_body = provider.split("<main", 1)[-1]
+    if "noindex,follow" not in provider.replace(" ", "").lower() or '<article class="ss-provider-card">' in provider_body:
         raise RuntimeError("Incomplete global provider directory must be noindex and hide listing cards")
     if f"{DOMAIN}/septic-services-near-me/" in sitemap or f"{DOMAIN}/providers/" in sitemap:
         raise RuntimeError("Incomplete global service pages must not appear in the sitemap")
