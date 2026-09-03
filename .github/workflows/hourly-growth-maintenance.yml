@@ -15,7 +15,9 @@ on:
       - "provider_curated_experience.py"
       - "continuous_growth_experience.py"
       - "septic_services_near_me.py"
+      - "county_lookup_experience.py"
       - "homepage_experience.py"
+      - "septic_service_quality.py"
       - "data/provider-overrides.json"
       - "data/provider-expansion-*.json"
       - "build_site.py"
@@ -128,7 +130,7 @@ jobs:
           set -o pipefail
           python audit_site.py 2>&1 | tee hourly-internal-audit.txt
 
-      - name: Check external government, source and provider links
+      - name: Check external government, source and county-local provider links
         id: external_audit
         continue-on-error: true
         run: |
@@ -142,19 +144,19 @@ jobs:
           set -o pipefail
           python adsense_audit.py 2>&1 | tee hourly-adsense-audit.txt
 
-      - name: Build changed URL list for search-engine notification
+      - name: Build changed public URL list for search-engine notification
         if: >-
           steps.provider_research.outputs.provider_data_changed == 'true' ||
           steps.continuous_growth.outputs.growth_data_changed == 'true'
-        env:
-          PROVIDER_CHANGED: ${{ steps.provider_research.outputs.provider_data_changed }}
-          GROWTH_CHANGED: ${{ steps.continuous_growth.outputs.growth_data_changed }}
         run: |
           python - <<'PY'
           import json
-          import os
           from pathlib import Path
 
+          hidden = {
+              'https://septicscope.com/providers/',
+              'https://septicscope.com/septic-services-near-me/',
+          }
           urls = []
           for name in ('hourly-provider-report.json', 'hourly-continuous-growth-report.json'):
               path = Path(name)
@@ -165,21 +167,18 @@ jobs:
               except json.JSONDecodeError:
                   continue
               for url in data.get('changed_urls', []):
-                  if isinstance(url, str) and url.startswith('https://septicscope.com/') and url not in urls:
-                      urls.append(url)
-          if os.environ.get('PROVIDER_CHANGED') == 'true':
-              for url in (
-                  'https://septicscope.com/',
-                  'https://septicscope.com/providers/',
-                  'https://septicscope.com/septic-services-near-me/',
-              ):
-                  if url not in urls:
+                  if (
+                      isinstance(url, str)
+                      and url.startswith('https://septicscope.com/')
+                      and url not in hidden
+                      and url not in urls
+                  ):
                       urls.append(url)
           Path('hourly-changed-urls.json').write_text(
               json.dumps({'changed_urls': urls}, indent=2) + '\n',
               encoding='utf-8',
           )
-          print(f'Prepared {len(urls)} changed URLs')
+          print(f'Prepared {len(urls)} changed public URLs; incomplete global service pages excluded')
           PY
 
       - name: Upload hourly growth diagnostics
@@ -200,7 +199,12 @@ jobs:
             post-rebase-external-audit.txt
             post-rebase-adsense-audit.txt
             site/index.html
+            site/counties/index.html
+            site/assets/county-lookup.js
+            site/data/county-lookup.json
             site/septic-services-near-me/index.html
+            site/providers/index.html
+            site/data/service-directory-status.json
             site/data/septic-services-near-me.json
             site/build-info.json
             site/data/continuous-growth-report.json
@@ -278,7 +282,7 @@ jobs:
               raise SystemExit(f'Production did not reach {expected} within 6 minutes')
           PY
 
-      - name: Notify Bing and other IndexNow participants about changed URLs
+      - name: Notify Bing and other IndexNow participants about changed public URLs
         if: steps.commit.outputs.sha != ''
         continue-on-error: true
         run: python tools/indexnow_submit.py hourly-changed-urls.json
