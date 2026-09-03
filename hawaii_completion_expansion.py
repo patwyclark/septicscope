@@ -38,12 +38,13 @@ HI_COUNTIES = [
     },
     {
         'county': 'Kalawao',
-        'local_label': 'Hawaii Department of Health — Kalaupapa program',
-        'local_url': 'https://health.hawaii.gov/kalaupapa/',
+        'local_label': 'Hawaii Department of Health — Kalaupapa Updates',
+        'local_url': 'https://health.hawaii.gov/kalaupapaupdates/',
         'routing': (
             'Kalawao County does not operate like an ordinary county permitting jurisdiction. Start with the '
-            'state Wastewater Branch and the Department of Health Kalaupapa program so the responsible state '
-            'office can confirm access, land-management, public-health, wastewater, and project-review routing.'
+            'state Wastewater Branch and the Department of Health Kalaupapa information resource so the '
+            'responsible state office can confirm access, land-management, public-health, wastewater, and '
+            'project-review routing.'
         ),
     },
     {
