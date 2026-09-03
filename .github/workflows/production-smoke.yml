@@ -20,7 +20,7 @@ jobs:
     env:
       EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
     steps:
-      - name: Wait for Cloudflare Pages and verify the deployed commit
+      - name: Wait for Cloudflare Pages and verify county lookup and service gate
         run: |
           python - <<'PY'
           import json
@@ -36,10 +36,9 @@ jobs:
           last_error = "not checked"
 
           for attempt in range(40):
-              cache_buster = int(time.time())
               try:
                   request = Request(
-                      f"{base}/build-info.json?v={cache_buster}",
+                      f"{base}/build-info.json?v={int(time.time())}",
                       headers={"User-Agent": "SepticScope production smoke test", "Cache-Control": "no-cache"},
                   )
                   with urlopen(request, timeout=20) as response:
@@ -57,19 +56,20 @@ jobs:
               raise SystemExit(f"Production did not reach expected commit: {last_error}")
 
           checks = {
-              "/": ("Septic Services Near Me", "verified county guides", "source-reviewed service businesses"),
-              "/septic-services-near-me/": ("Septic Services Near Me", "Local septic provider directory", "Source reviewed"),
+              "/": ("Find the septic information that applies to your property", "County FIPS", "verified county guides"),
+              "/counties/": ("Find county septic information", "County FIPS", "3,144"),
+              "/data/county-lookup.json": ("record_count", "counties", "48121"),
+              "/assets/county-lookup.js": ("county_lookup_search", "data-county-input", "fips"),
+              "/data/service-directory-status.json": ("covered_counties", "required_counties", "public"),
               "/data/septic-services-near-me.json": ("providers", "counties", "method_note"),
-              "/assets/septic-services-near-me.css": ("ssn-provider", "ssn-search"),
-              "/assets/septic-services-near-me.js": ("septic_services_search", "data-provider-card"),
-              "/counties/": ("3,144", "county"),
+              "/septic-services-near-me/": ("national septic service search is still being built", "Find county septic information"),
+              "/providers/": ("National septic service directory in development", "Coverage build in progress"),
               "/counties/virginia/fairfax/": ("Fairfax County", "Official sources"),
               "/counties/virginia/fairfax-city/": ("Fairfax City", "Local guide in progress"),
               "/guides/": ("septic-system-lifespan", "septic-inspection-checklist"),
               "/guides/septic-system-lifespan/": ("Septic system lifespan: what lasts, what fails, and when", "Official and Extension sources"),
               "/faq/": ("Septic", "FAQ"),
-              "/providers/": ("provider directory", "Directory standards"),
-              "/sitemap.xml": ("https://septicscope.com/counties/", "https://septicscope.com/septic-services-near-me/"),
+              "/sitemap.xml": ("https://septicscope.com/counties/",),
               "/robots.txt": ("Sitemap:", "septicscope.com/sitemap.xml"),
           }
           bodies = {}
@@ -92,46 +92,98 @@ jobs:
               raise SystemExit(f"Production build quality gate is not passing: {info}")
           if int(info.get("published_county_or_equivalent_pages", 0)) != 3144:
               raise SystemExit(f"Production county coverage is incomplete: {info}")
-          if int(info.get("provider_listings", 0)) < 35:
-              raise SystemExit(f"Production provider coverage did not include the researched expansion: {info}")
 
-          home_visible = re.sub(r"<[^>]+>", " ", bodies["/"])
+          home = bodies["/"]
+          home_visible = re.sub(r"<[^>]+>", " ", home)
           home_visible = re.sub(r"\s+", " ", home_visible)
           home_stats = {
               "verified county guides": int(info.get("verified_county_guides", -1)),
               "FAQ articles": int(info.get("faq_articles", -1)),
               "septic guides": int(info.get("guide_articles_and_tools", -1)),
-              "source-reviewed service businesses": int(info.get("provider_listings", -1)),
           }
           for label, value in home_stats.items():
               if value < 0 or not re.search(rf"\b{value:,}\s+{re.escape(label)}\b", home_visible, flags=re.I):
                   raise SystemExit(f"Homepage does not match build-info metric: {value:,} {label}")
-          if bodies["/"].count('href="/septic-services-near-me/"') < 4:
-              raise SystemExit("Homepage does not expose enough direct service-locator paths")
+          if "data-county-lookup-root" not in home or "/assets/county-lookup.js" not in home:
+              raise SystemExit("Homepage county lookup is not active")
+          for forbidden in ('href="/septic-services-near-me/', "href='/septic-services-near-me/", 'href="/providers/', "href='/providers/"):
+              if forbidden in home.lower():
+                  raise SystemExit(f"Homepage still promotes an incomplete service directory: {forbidden}")
+
+          county_page = bodies["/counties/"]
+          county_compact = county_page.replace(" ", "").lower()
+          if "data-county-lookup-root" not in county_page:
+              raise SystemExit("County directory lookup is missing")
+          if "noindex" in county_page.lower():
+              raise SystemExit("County directory is unexpectedly noindex")
+          if '<linkrel="canonical"href="https://septicscope.com/counties/">' not in county_compact:
+              raise SystemExit("County lookup canonical is wrong")
+
+          county_data = json.loads(bodies["/data/county-lookup.json"])
+          county_rows = county_data.get("counties", [])
+          if county_data.get("record_count") != 3144 or len(county_rows) != 3144:
+              raise SystemExit("Production county lookup is not nationally complete")
+          if len({row.get("f") for row in county_rows}) != 3144:
+              raise SystemExit("Production county lookup contains duplicate FIPS records")
+          sample = next((row for row in county_rows if row.get("f") == "48121"), None)
+          if not sample or sample.get("n") != "Denton" or sample.get("a") != "TX":
+              raise SystemExit(f"Production FIPS lookup sample is wrong: {sample}")
+
+          provider_data = json.loads(bodies["/data/septic-services-near-me.json"])
+          providers = provider_data.get("providers", [])
+          provider_counties = provider_data.get("counties", [])
+          if len(providers) != int(info.get("provider_listings", -1)):
+              raise SystemExit("Background provider data does not match build-info")
+          if len(provider_counties) != 3144 or len({row.get("f") for row in provider_counties}) != 3144:
+              raise SystemExit("Background provider county index is incomplete")
+          covered = {
+              str(fips)
+              for provider in providers
+              for fips in provider.get("fips", [])
+              if re.fullmatch(r"\d{5}", str(fips))
+          }
+
+          status = json.loads(bodies["/data/service-directory-status.json"])
+          if int(status.get("required_counties", 0)) != 3144:
+              raise SystemExit(f"Service launch requirement is wrong: {status}")
+          if int(status.get("covered_counties", -1)) != len(covered):
+              raise SystemExit("Service coverage status does not match provider records")
+          should_be_public = len(covered) == 3144
+          if bool(status.get("public")) != should_be_public:
+              raise SystemExit("Service directory launch gate is inconsistent")
 
           locator = bodies["/septic-services-near-me/"]
-          locator_compact = locator.replace(" ", "").lower()
-          if "noindex" in locator.lower():
-              raise SystemExit("Septic Services Near Me is unexpectedly noindex")
-          if '<linkrel="canonical"href="https://septicscope.com/septic-services-near-me/">' not in locator_compact:
-              raise SystemExit("Septic Services Near Me production canonical is wrong")
-          if locator.count("data-provider-card") < 35:
-              raise SystemExit("Septic Services Near Me production page lacks the researched provider cards")
+          provider_page = bodies["/providers/"]
+          sitemap = bodies["/sitemap.xml"]
+          if should_be_public:
+              if "noindex" in locator.lower() or "data-provider-card" not in locator:
+                  raise SystemExit("Complete national service locator should be public")
+              if "noindex" in provider_page.lower():
+                  raise SystemExit("Complete national provider directory should be public")
+              if sitemap.count("https://septicscope.com/septic-services-near-me/") != 1:
+                  raise SystemExit("Public service locator must appear once in the sitemap")
+          else:
+              if "noindex,follow" not in locator.replace(" ", "").lower() or "data-provider-card" in locator:
+                  raise SystemExit("Incomplete national service locator is publicly searchable")
+              provider_body = provider_page.split("<main", 1)[-1]
+              if "noindex,follow" not in provider_page.replace(" ", "").lower():
+                  raise SystemExit("Incomplete provider directory is not noindex")
+              if '<article class="ss-provider-card">' in provider_body:
+                  raise SystemExit("Incomplete provider directory exposes listing cards")
+              for hidden_url in (
+                  "https://septicscope.com/septic-services-near-me/",
+                  "https://septicscope.com/providers/",
+              ):
+                  if hidden_url in sitemap:
+                      raise SystemExit(f"Hidden service URL remains in sitemap: {hidden_url}")
 
-          locator_data = json.loads(bodies["/data/septic-services-near-me.json"])
-          if len(locator_data.get("providers", [])) != int(info.get("provider_listings", -1)):
-              raise SystemExit("Production provider JSON does not match build-info")
-          if len(locator_data.get("counties", [])) != 3144:
-              raise SystemExit("Production service locator county index is incomplete")
-          if len({row.get("f") for row in locator_data.get("counties", [])}) != 3144:
-              raise SystemExit("Production service locator has duplicate county FIPS records")
-
-          if int(info.get("provider_listings", -1)) == 0 and "noindex,follow" not in bodies["/providers/"].replace(" ", "").lower():
-              raise SystemExit("Empty provider directory must remain noindex,follow")
           if "noindex,follow" not in bodies["/counties/virginia/fairfax-city/"].replace(" ", "").lower():
               raise SystemExit("In-progress county-equivalent page must remain noindex,follow")
           if "noindex" in bodies["/counties/virginia/fairfax/"].lower():
               raise SystemExit("Verified Fairfax County guide is unexpectedly noindex")
 
-          print("PASS: SepticScope production, local service locator, and homepage match the validated commit and reported metrics")
+          print(
+              "PASS: production county/ZIP/city/FIPS lookup is live and the incomplete "
+              f"national service search is gated at {len(covered)}/3,144 counties"
+          )
           PY
