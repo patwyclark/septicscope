@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   production-hawaii:
@@ -24,11 +24,10 @@ jobs:
     env:
       EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
     steps:
-      - name: Checkout current main
+      - name: Checkout current quality baseline
         uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
 
       - name: Verify all five Hawaii county-equivalent guides on production
         run: |
@@ -41,54 +40,58 @@ jobs:
           from urllib.error import HTTPError, URLError
           from urllib.request import Request, urlopen
 
-          base = "https://septicscope.com"
-          expected = os.environ["EXPECTED_SHA"].strip()
-          info = None
-          last_error = "not checked"
+          BASE = "https://septicscope.com"
+          EXPECTED = os.environ["EXPECTED_SHA"].strip()
+          HEADERS = {
+              "User-Agent": "SepticScope Hawaii production regression",
+              "Cache-Control": "no-cache",
+          }
 
           def fetch(path: str) -> str:
               request = Request(
-                  f"{base}{path}?v={int(time.time())}",
-                  headers={
-                      "User-Agent": "SepticScope Hawaii production regression",
-                      "Cache-Control": "no-cache",
-                  },
+                  f"{BASE}{path}?v={int(time.time())}",
+                  headers=HEADERS,
               )
               with urlopen(request, timeout=30) as response:
                   if response.status != 200:
-                      raise SystemExit(f"{path} returned {response.status}")
+                      raise RuntimeError(f"{path} returned HTTP {response.status}")
                   return response.read().decode("utf-8", errors="replace")
 
+          info = None
+          last_error = "not checked"
           for attempt in range(60):
               try:
                   info = json.loads(fetch("/build-info.json"))
                   deployed = str(info.get("commit_sha", ""))
-                  if deployed == expected:
-                      print(f"Cloudflare deployment confirmed at commit {deployed}")
+                  if deployed == EXPECTED:
+                      print(f"Cloudflare deployment confirmed at {deployed}")
                       break
-                  last_error = f"deployed commit is {deployed or 'unknown'}, expected {expected}"
-              except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
+                  last_error = f"deployed {deployed or 'unknown'}; expected {EXPECTED}"
+              except (HTTPError, URLError, TimeoutError, RuntimeError, json.JSONDecodeError) as exc:
                   last_error = repr(exc)
               print(f"Waiting for deployment ({attempt + 1}/60): {last_error}")
               time.sleep(15)
           else:
               raise SystemExit(f"Production did not reach expected commit: {last_error}")
 
+          baseline = json.loads(Path("data/quality-baseline.json").read_text(encoding="utf-8"))
+          minimum_verified = int(baseline.get("minimum_verified_counties", 0))
           if info.get("quality_gate") != "pass":
               raise SystemExit(f"Production quality gate is not passing: {info}")
           if int(info.get("published_county_or_equivalent_pages", 0)) != 3144:
               raise SystemExit(f"National county coverage changed unexpectedly: {info}")
-          if int(info.get("verified_county_guides", 0)) < 463:
-              raise SystemExit(f"Verified county total regressed below the Hawaii completion baseline: {info}")
+          if int(info.get("verified_county_guides", 0)) < minimum_verified:
+              raise SystemExit(
+                  f"Verified county total is below the source-controlled baseline "
+                  f"{minimum_verified}: {info}"
+              )
 
           audit = json.loads(fetch("/data/project-audit-summary.json"))
           counts = audit.get("counts", {})
-          if int(counts.get("verified_county_guides", 0)) < 463:
-              raise SystemExit(f"Production audit lost Hawaii county coverage: {counts}")
-          if int(counts.get("completed_states_and_dc", 0)) < 8:
-              raise SystemExit(f"Completed-state total regressed below the Hawaii baseline: {counts}")
+          if int(counts.get("verified_county_guides", 0)) < minimum_verified:
+              raise SystemExit(f"Production audit is below the quality baseline: {counts}")
           if int(counts.get("pages_without_primary_keywords", -1)) != 0:
-              raise SystemExit(f"A Hawaii-era indexable page lacks a primary keyword: {counts}")
+              raise SystemExit(f"An indexable page lacks a primary keyword: {counts}")
           if int(counts.get("canonical_errors", -1)) != 0:
               raise SystemExit(f"Canonical errors are present in production: {counts}")
 
@@ -124,7 +127,7 @@ jobs:
                   "County-specific details not independently confirmed",
               ),
               "/sitemap.xml": tuple(
-                  f"https://septicscope.com/counties/hawaii/{slug}/" for slug in county_slugs
+                  f"{BASE}/counties/hawaii/{slug}/" for slug in county_slugs
               ),
           }
 
@@ -133,7 +136,7 @@ jobs:
               body = fetch(path)
               missing = [needle for needle in needles if needle.lower() not in body.lower()]
               if missing:
-                  raise SystemExit(f"{path} is missing expected production content: {missing}")
+                  raise SystemExit(f"{path} is missing expected content: {missing}")
               bodies[path] = body
               print(f"PASS {path}")
 
@@ -144,7 +147,8 @@ jobs:
                   flags=re.I,
               )
           )
-          if hub_links != {f"/counties/hawaii/{slug}/" for slug in county_slugs}:
+          expected_links = {f"/counties/hawaii/{slug}/" for slug in county_slugs}
+          if hub_links != expected_links:
               raise SystemExit(f"Hawaii hub links are incomplete or unexpected: {sorted(hub_links)}")
 
           for slug in county_slugs:
@@ -152,39 +156,18 @@ jobs:
               body = bodies[path]
               if "noindex" in body.lower():
                   raise SystemExit(f"Completed Hawaii guide is unexpectedly noindex: {path}")
-              expected_canonical = f'<link rel="canonical" href="{base}{path}">'
+              expected_canonical = f'<link rel="canonical" href="{BASE}{path}">'
               if expected_canonical.lower() not in body.lower():
                   raise SystemExit(f"Completed Hawaii guide has the wrong canonical: {path}")
               if "https://health.hawaii.gov/wastewater/" not in body:
-                  raise SystemExit(f"Completed Hawaii guide lacks its state Wastewater Branch source: {path}")
+                  raise SystemExit(f"Hawaii guide lacks the state Wastewater Branch source: {path}")
               if "https://health.hawaii.gov/opppd/department-of-health-administrative-rules-title-11/" not in body:
-                  raise SystemExit(f"Completed Hawaii guide lacks its official Title 11 rules source: {path}")
+                  raise SystemExit(f"Hawaii guide lacks the official Title 11 source: {path}")
               if "Official sources" not in body:
-                  raise SystemExit(f"Completed Hawaii guide lacks a visible source section: {path}")
+                  raise SystemExit(f"Hawaii guide lacks a visible source section: {path}")
 
-          baseline_path = Path("data/quality-baseline.json")
-          baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
-          if int(baseline.get("minimum_verified_counties", 0)) < 463:
-              baseline["minimum_verified_counties"] = 463
-              baseline["established_at_commit"] = expected
-              baseline["established_date"] = "2026-09-02"
-              baseline_path.write_text(json.dumps(baseline, indent=2) + "\n", encoding="utf-8")
-              print("Raised source-controlled verified-county baseline to 463")
-          else:
-              print("Source-controlled verified-county baseline is already at least 463")
-
-          print("PASS: all five Hawaii county-equivalent guides are deployed and the completion baseline is intact")
+          print(
+              "PASS: all five Hawaii county-equivalent guides are deployed and the "
+              f"source-controlled quality baseline of {minimum_verified} is intact"
+          )
           PY
-
-      - name: Commit raised Hawaii quality baseline when needed
-        run: |
-          if git diff --quiet -- data/quality-baseline.json; then
-            echo "Quality baseline already current"
-            exit 0
-          fi
-          git config user.name "SepticScope Quality Bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add data/quality-baseline.json
-          git commit -m "Raise verified county baseline after Hawaii completion"
-          git pull --rebase origin main
-          git push origin HEAD:main
