@@ -123,6 +123,11 @@ def main() -> None:
             encoding="utf-8",
         )
         renderer.PROVIDER_FILE = curated_file
+        # Keep the correct AdSense loader ready for the future day when the national
+        # directory reaches its 3,144-county launch gate. The current incomplete
+        # directory remains noindex and ad-free.
+        renderer.ADSENSE_TAG = f'''<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={renderer.ADSENSE_CLIENT}" crossorigin="anonymous"></script>'''
         renderer.main()
 
 

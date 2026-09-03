@@ -41,7 +41,7 @@ jobs:
       - name: Build complete production site
         run: python build_site.py
 
-      - name: Verify production pages and machine-readable manifests
+      - name: Verify county lookup and gated service-directory behavior
         id: inventory
         continue-on-error: true
         run: |
@@ -56,12 +56,16 @@ jobs:
           test -f site/data/project-audit-summary.txt
           test -f site/data/hourly-seo-build-report.json
           test -f site/data/continuous-growth-report.json
+          test -f site/data/county-lookup.json
+          test -f site/data/service-directory-status.json
           test -f site/data/septic-services-near-me.json
+          test -f site/assets/county-lookup.js
           test -f site/assets/septic-services-near-me.css
           test -f site/assets/septic-services-near-me.js
           test -f site/f1c5f33bc7de84c635e009f874dc4be9.txt
           test -f site/providers/index.html
           test -f site/septic-services-near-me/index.html
+          test -f site/counties/index.html
           test -f site/counties/maryland/baltimore/index.html
           test -f site/counties/maryland/baltimore-city/index.html
           test -f site/counties/missouri/st-louis/index.html
@@ -79,6 +83,7 @@ jobs:
           test -f site/guides/septic-system-winter-care/index.html
           test -f site/guides/septic-inspection-checklist/index.html
           test -f site/guides/septic-system-lifespan/index.html
+          node --check site/assets/county-lookup.js
           node --check site/assets/septic-services-near-me.js
           python site_inventory.py --check
           python tools/seo_hourly_audit.py --site site --report validation-seo-report.json
@@ -106,80 +111,103 @@ jobs:
               raise SystemExit(f'Final metadata/SEO quality counts are not zero: {failures}')
 
           home = Path('site/index.html').read_text(encoding='utf-8')
-          visible = re.sub(r'<[^>]+>', ' ', home)
-          visible = re.sub(r'\s+', ' ', visible)
+          home_visible = re.sub(r'<[^>]+>', ' ', home)
+          home_visible = re.sub(r'\s+', ' ', home_visible)
           expected = {
               'verified county guides': counts['verified_county_guides'],
               'FAQ articles': counts['faq_articles'],
               'septic guides': counts['guide_articles_and_tools'],
           }
           for label, value in expected.items():
-              if not re.search(rf'\b{value:,}\s+{re.escape(label)}\b', visible, flags=re.I):
+              if not re.search(rf'\b{value:,}\s+{re.escape(label)}\b', home_visible, flags=re.I):
                   raise SystemExit(f'Homepage does not show current metric: {value:,} {label}')
-          if home.count('href="/septic-services-near-me/"') < 4:
-              raise SystemExit('Homepage does not prominently expose Septic Services Near Me')
-          if '>Septic Services Near Me<' not in home:
-              raise SystemExit('Homepage is missing the exact Septic Services Near Me link text')
-          if re.search(r'Browse\s+Indiana\s+septic', visible, flags=re.I):
+          if 'data-county-lookup-root' not in home or '/assets/county-lookup.js' not in home:
+              raise SystemExit('Homepage county lookup is missing')
+          for forbidden in ('href="/septic-services-near-me/', "href='/septic-services-near-me/", 'href="/providers/', "href='/providers/"):
+              if forbidden in home:
+                  raise SystemExit(f'Homepage still promotes an incomplete service directory: {forbidden}')
+          if re.search(r'Browse\s+Indiana\s+septic', home_visible, flags=re.I):
               raise SystemExit('Obsolete Indiana-only homepage promotion remains')
 
-          locator_path = Path('site/septic-services-near-me/index.html')
-          locator = locator_path.read_text(encoding='utf-8')
-          locator_compact = locator.replace(' ', '').lower()
-          if locator.lower().count('<h1') != 1 or '<h1>septicservicesnearme</h1>' not in locator_compact:
-              raise SystemExit('Septic Services Near Me page needs one exact H1')
-          if 'noindex' in locator.lower():
-              raise SystemExit('Populated Septic Services Near Me page must be indexable')
-          if '<linkrel="canonical"href="https://septicscope.com/septic-services-near-me/">' not in locator_compact:
-              raise SystemExit('Septic Services Near Me canonical is missing or wrong')
-          if locator.count('data-provider-card') < 35:
-              raise SystemExit('Septic Services Near Me does not contain the researched provider expansion')
+          county_page = Path('site/counties/index.html').read_text(encoding='utf-8')
+          if 'data-county-lookup-root' not in county_page or 'County FIPS' not in county_page:
+              raise SystemExit('County directory does not include ZIP/city/county/FIPS lookup')
+          if 'noindex' in county_page.lower():
+              raise SystemExit('County lookup must remain indexable')
 
-          locator_data = json.loads(Path('site/data/septic-services-near-me.json').read_text())
-          service_providers = locator_data.get('providers', [])
-          service_counties = locator_data.get('counties', [])
-          if len(service_providers) < 35:
-              raise SystemExit(f'Expected at least 35 source-reviewed providers, found {len(service_providers)}')
+          county_data = json.loads(Path('site/data/county-lookup.json').read_text())
+          county_rows = county_data.get('counties', [])
+          if county_data.get('record_count') != 3144 or len(county_rows) != 3144:
+              raise SystemExit('County lookup does not contain all 3,144 county-equivalents')
+          if len({row.get('f') for row in county_rows}) != 3144:
+              raise SystemExit('County lookup contains duplicate county FIPS records')
+          incomplete_counties = [row for row in county_rows if not row.get('f') or not row.get('n') or not row.get('s') or not row.get('u')]
+          if incomplete_counties:
+              raise SystemExit('County lookup contains incomplete records')
+
+          service_data = json.loads(Path('site/data/septic-services-near-me.json').read_text())
+          service_providers = service_data.get('providers', [])
+          service_counties = service_data.get('counties', [])
           if len(service_counties) != 3144 or len({row.get('f') for row in service_counties}) != 3144:
-              raise SystemExit('Septic Services Near Me county lookup is not nationally complete')
+              raise SystemExit('Background provider coverage dataset is not nationally complete')
           provider_ids = [row.get('id') for row in service_providers]
           if len(provider_ids) != len(set(provider_ids)):
-              raise SystemExit('Septic Services Near Me contains duplicate provider IDs')
-          incomplete = [
+              raise SystemExit('Provider dataset contains duplicate provider IDs')
+          incomplete_providers = [
               row.get('id') for row in service_providers
               if not row.get('name') or not row.get('phone') or not row.get('source')
               or not row.get('fips') or not row.get('services') or not row.get('coverage')
           ]
-          if incomplete:
-              raise SystemExit(f'Provider records are missing required public evidence fields: {incomplete[:10]}')
-          addressed = sum(bool(row.get('address')) for row in service_providers)
-          if addressed < 20:
-              raise SystemExit(f'Provider directory address coverage is unexpectedly weak: {addressed}')
+          if incomplete_providers:
+              raise SystemExit(f'Provider records are missing required evidence fields: {incomplete_providers[:10]}')
           if counts['provider_listings'] != len(service_providers):
               raise SystemExit(
-                  f'Inventory/provider locator drift: {counts["provider_listings"]} versus {len(service_providers)}'
+                  f'Inventory/provider data drift: {counts["provider_listings"]} versus {len(service_providers)}'
               )
 
-          sitemap = Path('site/sitemap.xml').read_text(encoding='utf-8')
-          if sitemap.count('https://septicscope.com/septic-services-near-me/') != 1:
-              raise SystemExit('Septic Services Near Me must appear exactly once in the sitemap')
-          keyword_map = json.loads(Path('site/data/keyword-map.json').read_text())
-          keyword_rows = {
-              row.get('url'): row for row in keyword_map.get('records', []) if isinstance(row, dict)
+          status = json.loads(Path('site/data/service-directory-status.json').read_text())
+          covered = {
+              str(fips)
+              for provider in service_providers
+              for fips in provider.get('fips', [])
           }
-          locator_keyword = keyword_rows.get('https://septicscope.com/septic-services-near-me/', {}).get('primary_keyword', '')
-          if locator_keyword.lower() != 'septic services near me':
-              raise SystemExit(f'Service locator keyword mapping is wrong: {locator_keyword!r}')
+          if status.get('covered_counties') != len(covered):
+              raise SystemExit('Service-directory coverage status does not match provider data')
+          expected_public = len(covered) == 3144
+          if bool(status.get('public')) != expected_public:
+              raise SystemExit('Service-directory launch gate is inconsistent')
 
-          provider = Path('site/providers/index.html').read_text(encoding='utf-8')
-          if 'data-septicscope-provider-directory="1"' not in provider:
-              raise SystemExit('Provider directory was overwritten after final rendering')
-          if counts['provider_listings'] == 0:
-              compact = provider.replace(' ', '').lower()
-              if 'noindex,follow' not in compact:
-                  raise SystemExit('Empty provider directory must remain noindex,follow')
-              if 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js' in provider:
-                  raise SystemExit('Empty provider directory must remain ad-free')
+          locator = Path('site/septic-services-near-me/index.html').read_text(encoding='utf-8')
+          provider_page = Path('site/providers/index.html').read_text(encoding='utf-8')
+          sitemap = Path('site/sitemap.xml').read_text(encoding='utf-8')
+          if expected_public:
+              if 'noindex' in locator.lower() or 'data-provider-card' not in locator:
+                  raise SystemExit('Complete service search should be public')
+              if 'noindex' in provider_page.lower():
+                  raise SystemExit('Complete provider directory should be public')
+              if sitemap.count('https://septicscope.com/septic-services-near-me/') != 1:
+                  raise SystemExit('Public service search must appear once in the sitemap')
+          else:
+              if 'noindex,follow' not in locator.replace(' ', '').lower() or 'data-provider-card' in locator:
+                  raise SystemExit('Incomplete service search must be hidden and non-searchable')
+              if 'noindex,follow' not in provider_page.replace(' ', '').lower():
+                  raise SystemExit('Incomplete provider directory must be noindex')
+              provider_body = provider_page.split('<main', 1)[-1]
+              if '<article class="ss-provider-card">' in provider_body:
+                  raise SystemExit('Incomplete national provider directory must not show listing cards')
+              if 'https://septicscope.com/septic-services-near-me/' in sitemap or 'https://septicscope.com/providers/' in sitemap:
+                  raise SystemExit('Incomplete service pages must be absent from the sitemap')
+              public_refs = []
+              for page in Path('site').rglob('*.html'):
+                  if page in {Path('site/septic-services-near-me/index.html'), Path('site/providers/index.html')}:
+                      continue
+                  text = page.read_text(encoding='utf-8', errors='replace').lower()
+                  if 'href="/septic-services-near-me/' in text or "href='/septic-services-near-me/" in text:
+                      public_refs.append(str(page))
+                  if 'href="/providers/' in text or "href='/providers/" in text:
+                      public_refs.append(str(page))
+              if public_refs:
+                  raise SystemExit(f'Incomplete service-directory links remain public: {public_refs[:10]}')
 
           growth_state = json.loads(Path('data/growth-links.json').read_text())
           growth_report = json.loads(Path('site/data/continuous-growth-report.json').read_text())
@@ -205,10 +233,7 @@ jobs:
           key = Path('site/f1c5f33bc7de84c635e009f874dc4be9.txt').read_text().strip()
           if key != 'f1c5f33bc7de84c635e009f874dc4be9':
               raise SystemExit('IndexNow key file is invalid')
-          print(
-              'PASS: homepage, service locator, provider evidence, county lookup, '
-              'continuous growth, IndexNow key, and metadata quality totals are current'
-          )
+          print('PASS: county lookup restored and incomplete global service search remains hidden')
           PY
 
       - name: Audit every generated page and internal link
@@ -235,7 +260,7 @@ jobs:
           set -o pipefail
           python adsense_audit.py 2>&1 | tee adsense-audit.txt
 
-      - name: Upload audit diagnostics, inventories, and representative pages
+      - name: Upload audit diagnostics and representative pages
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -247,16 +272,13 @@ jobs:
             validation-seo-report.json
             validation-growth-report.json
             site/index.html
-            site/septic-services-near-me/index.html
-            site/assets/septic-services-near-me.css
-            site/assets/septic-services-near-me.js
-            site/data/septic-services-near-me.json
             site/counties/index.html
-            site/counties/virginia/fairfax/index.html
-            site/counties/virginia/fairfax-city/index.html
-            site/guides/index.html
-            site/guides/septic-system-lifespan/index.html
+            site/assets/county-lookup.js
+            site/data/county-lookup.json
+            site/septic-services-near-me/index.html
             site/providers/index.html
+            site/data/service-directory-status.json
+            site/data/septic-services-near-me.json
             site/build-info.json
             site/data/national-coverage-manifest.json
             site/data/keyword-map.json

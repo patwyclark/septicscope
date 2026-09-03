@@ -2,9 +2,9 @@
 
 Cloudflare Pages and GitHub Actions must both run only this file. The historical
 site generator is preserved as site_core_build.py; supplemental guides, trust
-hardening, provider rendering, local-service search, homepage experience,
-contextual growth links, SEO safeguards and machine-readable inventories are
-executed in a deterministic order so CI and production cannot drift.
+hardening, provider rendering, county lookup, gated service search, homepage
+experience, contextual links, SEO safeguards and machine-readable inventories
+are executed in a deterministic order so CI and production cannot drift.
 """
 from __future__ import annotations
 
@@ -51,9 +51,6 @@ def _run() -> None:
         captured_exit_handlers.append((function, args, kwargs))
         return function
 
-    # The legacy build chain registers final trust/AdSense passes with atexit.
-    # Capture them so this orchestrator can run supplemental page generators first,
-    # then apply those finalizers, and only then create the authoritative manifests.
     atexit.register = capture_register  # type: ignore[assignment]
     try:
         runpy.run_path(str(CORE_BUILD), run_name="__main__")
@@ -65,7 +62,6 @@ def _run() -> None:
     for script_name in POST_BUILD_SCRIPTS:
         _run_script(ROOT / script_name, env=env)
 
-    # Match normal Python atexit ordering (last registered, first executed).
     for function, args, kwargs in reversed(captured_exit_handlers):
         function(*args, **kwargs)
 
@@ -73,28 +69,27 @@ def _run() -> None:
     provider_experience = ROOT / "provider_curated_experience.py"
     growth_experience = ROOT / "continuous_growth_experience.py"
     service_locator = ROOT / "septic_services_near_me.py"
+    county_lookup = ROOT / "county_lookup_experience.py"
     homepage_experience = ROOT / "homepage_experience.py"
     service_quality = ROOT / "septic_service_quality.py"
     seo_review = ROOT / "tools" / "seo_hourly_audit.py"
     growth_planner = ROOT / "tools" / "continuous_growth.py"
 
-    # The first inventory creates the national county manifest needed to map provider
-    # FIPS records to final county URLs. Source-controlled provider and contextual-link
-    # layers then enrich the finished pages. The service locator and homepage are built
-    # from those final local records so their metrics and cards cannot drift.
+    # The first inventory creates the national county manifest. Provider modules may
+    # continue to enrich counties where public evidence exists, while the global service
+    # directory remains hidden until all 3,144 county-equivalents have coverage.
     _run_script(inventory, env=env)
     _run_script(provider_experience, env=env)
     _run_script(growth_experience, env=env)
     _run_script(service_locator, env=env)
+    _run_script(county_lookup, env=env)
     _run_script(homepage_experience, env=env)
     _run_script(service_quality, env=env)
 
-    # Refresh the inventory before the SEO gate so newly generated indexable routes,
-    # especially /septic-services-near-me/, already have keyword-map records.
+    # Refresh inventory before the SEO gate so final public/noindex decisions and the
+    # restored county lookup are reflected in the keyword map and sitemap review.
     _run_script(inventory, env=env)
 
-    # Safe SEO maintenance repairs only missing title/description/canonical essentials;
-    # it does not add meta-keywords or repeat phrases for ranking manipulation.
     _run_script(
         seo_review,
         "--site",
@@ -105,8 +100,6 @@ def _run() -> None:
         env=env,
     )
 
-    # Rebuild inventories from the final enriched output. site_inventory.py preserves
-    # the detailed provider page when its marker is present.
     _run_script(inventory, env=env)
     _run_script(
         seo_review,
@@ -117,8 +110,6 @@ def _run() -> None:
         env=env,
     )
 
-    # Publish a machine-readable, plan-only view of the next evidence-backed growth
-    # opportunities. Production builds never mutate source-controlled growth state.
     _run_script(
         growth_planner,
         "--site",
