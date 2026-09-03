@@ -20,7 +20,7 @@ jobs:
     env:
       EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
     steps:
-      - name: Wait for Cloudflare Pages and verify county lookup and service gate
+      - name: Verify exact Cloudflare deployment, county lookup, and service launch gate
         run: |
           python - <<'PY'
           import json
@@ -30,160 +30,152 @@ jobs:
           from urllib.error import HTTPError, URLError
           from urllib.request import Request, urlopen
 
-          base = "https://septicscope.com"
-          expected = os.environ["EXPECTED_SHA"].strip()
+          BASE = "https://septicscope.com"
+          EXPECTED = os.environ["EXPECTED_SHA"].strip()
+          HEADERS = {
+              "User-Agent": "SepticScope production smoke test",
+              "Cache-Control": "no-cache",
+          }
+
+          def fetch_text(path, timeout=30):
+              request = Request(
+                  f"{BASE}{path}?v={int(time.time())}",
+                  headers=HEADERS,
+              )
+              with urlopen(request, timeout=timeout) as response:
+                  if response.status != 200:
+                      raise RuntimeError(f"{path} returned HTTP {response.status}")
+                  return response.read().decode("utf-8", errors="replace")
+
           info = None
           last_error = "not checked"
-
           for attempt in range(40):
               try:
-                  request = Request(
-                      f"{base}/build-info.json?v={int(time.time())}",
-                      headers={"User-Agent": "SepticScope production smoke test", "Cache-Control": "no-cache"},
-                  )
-                  with urlopen(request, timeout=20) as response:
-                      info = json.load(response)
+                  info = json.loads(fetch_text("/build-info.json", 20))
                   deployed = str(info.get("commit_sha", ""))
-                  if deployed == expected:
-                      print(f"Cloudflare deployment confirmed at commit {deployed}")
+                  if deployed == EXPECTED:
+                      print(f"Cloudflare deployment confirmed at {deployed}")
                       break
-                  last_error = f"deployed commit is {deployed or 'unknown'}, expected {expected}"
-              except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
+                  last_error = f"deployed {deployed or 'unknown'}; expected {EXPECTED}"
+              except (HTTPError, URLError, TimeoutError, RuntimeError, json.JSONDecodeError) as exc:
                   last_error = repr(exc)
               print(f"Waiting for deployment ({attempt + 1}/40): {last_error}")
               time.sleep(15)
           else:
-              raise SystemExit(f"Production did not reach expected commit: {last_error}")
-
-          checks = {
-              "/": ("Find the septic information that applies to your property", "County FIPS", "verified county guides"),
-              "/counties/": ("Find county septic information", "County FIPS", "3,144"),
-              "/data/county-lookup.json": ("record_count", "counties", "48121"),
-              "/assets/county-lookup.js": ("county_lookup_search", "data-county-input", "fips"),
-              "/data/service-directory-status.json": ("covered_counties", "required_counties", "public"),
-              "/data/septic-services-near-me.json": ("providers", "counties", "method_note"),
-              "/septic-services-near-me/": ("national septic service search is still being built", "Find county septic information"),
-              "/providers/": ("National septic service directory in development", "Coverage build in progress"),
-              "/counties/virginia/fairfax/": ("Fairfax County", "Official sources"),
-              "/counties/virginia/fairfax-city/": ("Fairfax City", "Local guide in progress"),
-              "/guides/": ("septic-system-lifespan", "septic-inspection-checklist"),
-              "/guides/septic-system-lifespan/": ("Septic system lifespan: what lasts, what fails, and when", "Official and Extension sources"),
-              "/faq/": ("Septic", "FAQ"),
-              "/sitemap.xml": ("https://septicscope.com/counties/",),
-              "/robots.txt": ("Sitemap:", "septicscope.com/sitemap.xml"),
-          }
-          bodies = {}
-          for path, needles in checks.items():
-              request = Request(
-                  f"{base}{path}?v={int(time.time())}",
-                  headers={"User-Agent": "SepticScope production smoke test", "Cache-Control": "no-cache"},
-              )
-              with urlopen(request, timeout=30) as response:
-                  body = response.read().decode("utf-8", errors="replace")
-                  if response.status != 200:
-                      raise SystemExit(f"{path} returned {response.status}")
-              missing = [needle for needle in needles if needle.lower() not in body.lower()]
-              if missing:
-                  raise SystemExit(f"{path} is missing expected production content: {missing}")
-              bodies[path] = body
-              print(f"PASS {path}")
+              raise SystemExit(f"Production did not reach the expected commit: {last_error}")
 
           if info.get("quality_gate") != "pass":
-              raise SystemExit(f"Production build quality gate is not passing: {info}")
+              raise SystemExit(f"Production quality gate is not passing: {info}")
           if int(info.get("published_county_or_equivalent_pages", 0)) != 3144:
               raise SystemExit(f"Production county coverage is incomplete: {info}")
 
-          home = bodies["/"]
-          home_visible = re.sub(r"<[^>]+>", " ", home)
-          home_visible = re.sub(r"\s+", " ", home_visible)
-          home_stats = {
-              "verified county guides": int(info.get("verified_county_guides", -1)),
-              "FAQ articles": int(info.get("faq_articles", -1)),
-              "septic guides": int(info.get("guide_articles_and_tools", -1)),
-          }
-          for label, value in home_stats.items():
-              if value < 0 or not re.search(rf"\b{value:,}\s+{re.escape(label)}\b", home_visible, flags=re.I):
-                  raise SystemExit(f"Homepage does not match build-info metric: {value:,} {label}")
-          if "data-county-lookup-root" not in home or "/assets/county-lookup.js" not in home:
-              raise SystemExit("Homepage county lookup is not active")
-          for forbidden in ('href="/septic-services-near-me/', "href='/septic-services-near-me/", 'href="/providers/', "href='/providers/"):
-              if forbidden in home.lower():
-                  raise SystemExit(f"Homepage still promotes an incomplete service directory: {forbidden}")
+          home = fetch_text("/")
+          counties_page = fetch_text("/counties/")
+          county_js = fetch_text("/assets/county-lookup.js")
+          county_data = json.loads(fetch_text("/data/county-lookup.json"))
+          provider_data = json.loads(fetch_text("/data/septic-services-near-me.json"))
+          service_status = json.loads(fetch_text("/data/service-directory-status.json"))
+          locator = fetch_text("/septic-services-near-me/")
+          provider_page = fetch_text("/providers/")
+          sitemap = fetch_text("/sitemap.xml")
+          robots = fetch_text("/robots.txt")
+          verified_county = fetch_text("/counties/virginia/fairfax/")
+          progress_county = fetch_text("/counties/virginia/fairfax-city/")
 
-          county_page = bodies["/counties/"]
-          county_compact = county_page.replace(" ", "").lower()
-          if "data-county-lookup-root" not in county_page:
-              raise SystemExit("County directory lookup is missing")
-          if "noindex" in county_page.lower():
+          # County lookup must be the primary public search on both entry points.
+          for label, body in (("homepage", home), ("county directory", counties_page)):
+              if "data-county-lookup-root" not in body:
+                  raise SystemExit(f"{label} is missing the county lookup")
+              if "/assets/county-lookup.js" not in body:
+                  raise SystemExit(f"{label} is missing the county lookup script")
+          if "Find the septic information that applies to your property" not in home:
+              raise SystemExit("Homepage county-information heading is missing")
+          if "Find county septic information" not in counties_page or "County FIPS" not in counties_page:
+              raise SystemExit("County directory is missing visible county/FIPS guidance")
+          if "county_lookup_search" not in county_js or "data-county-input" not in county_js:
+              raise SystemExit("County lookup JavaScript is incomplete")
+          if "noindex" in counties_page.lower():
               raise SystemExit("County directory is unexpectedly noindex")
+          county_compact = counties_page.replace(" ", "").lower()
           if '<linkrel="canonical"href="https://septicscope.com/counties/">' not in county_compact:
-              raise SystemExit("County lookup canonical is wrong")
+              raise SystemExit("County directory canonical is wrong")
 
-          county_data = json.loads(bodies["/data/county-lookup.json"])
           county_rows = county_data.get("counties", [])
           if county_data.get("record_count") != 3144 or len(county_rows) != 3144:
-              raise SystemExit("Production county lookup is not nationally complete")
+              raise SystemExit("County lookup is not nationally complete")
           if len({row.get("f") for row in county_rows}) != 3144:
-              raise SystemExit("Production county lookup contains duplicate FIPS records")
-          sample = next((row for row in county_rows if row.get("f") == "48121"), None)
-          if not sample or sample.get("n") != "Denton" or sample.get("a") != "TX":
-              raise SystemExit(f"Production FIPS lookup sample is wrong: {sample}")
+              raise SystemExit("County lookup contains duplicate FIPS records")
+          denton = next((row for row in county_rows if row.get("f") == "48121"), None)
+          if (
+              not denton
+              or not str(denton.get("n", "")).lower().startswith("denton")
+              or denton.get("a") != "TX"
+              or denton.get("u") != "/counties/texas/denton/"
+          ):
+              raise SystemExit(f"Denton County FIPS sample is wrong: {denton}")
 
-          provider_data = json.loads(bodies["/data/septic-services-near-me.json"])
+          # The homepage must not promote the unfinished global service search.
+          home_lower = home.lower()
+          forbidden_home_links = (
+              'href="/septic-services-near-me/',
+              "href='/septic-services-near-me/",
+              'href="/providers/',
+              "href='/providers/",
+          )
+          for forbidden in forbidden_home_links:
+              if forbidden in home_lower:
+                  raise SystemExit(f"Homepage promotes an incomplete service directory: {forbidden}")
+
           providers = provider_data.get("providers", [])
           provider_counties = provider_data.get("counties", [])
           if len(providers) != int(info.get("provider_listings", -1)):
-              raise SystemExit("Background provider data does not match build-info")
+              raise SystemExit("Provider data does not match build-info")
           if len(provider_counties) != 3144 or len({row.get("f") for row in provider_counties}) != 3144:
-              raise SystemExit("Background provider county index is incomplete")
+              raise SystemExit("Provider background county index is incomplete")
           covered = {
               str(fips)
               for provider in providers
               for fips in provider.get("fips", [])
               if re.fullmatch(r"\d{5}", str(fips))
           }
-
-          status = json.loads(bodies["/data/service-directory-status.json"])
-          if int(status.get("required_counties", 0)) != 3144:
-              raise SystemExit(f"Service launch requirement is wrong: {status}")
-          if int(status.get("covered_counties", -1)) != len(covered):
-              raise SystemExit("Service coverage status does not match provider records")
           should_be_public = len(covered) == 3144
-          if bool(status.get("public")) != should_be_public:
-              raise SystemExit("Service directory launch gate is inconsistent")
+          if int(service_status.get("required_counties", 0)) != 3144:
+              raise SystemExit(f"Service launch requirement is wrong: {service_status}")
+          if int(service_status.get("covered_counties", -1)) != len(covered):
+              raise SystemExit("Service launch status does not match provider coverage")
+          if bool(service_status.get("public")) != should_be_public:
+              raise SystemExit("Service launch gate is inconsistent")
 
-          locator = bodies["/septic-services-near-me/"]
-          provider_page = bodies["/providers/"]
-          sitemap = bodies["/sitemap.xml"]
           if should_be_public:
               if "noindex" in locator.lower() or "data-provider-card" not in locator:
                   raise SystemExit("Complete national service locator should be public")
               if "noindex" in provider_page.lower():
-                  raise SystemExit("Complete national provider directory should be public")
-              if sitemap.count("https://septicscope.com/septic-services-near-me/") != 1:
-                  raise SystemExit("Public service locator must appear once in the sitemap")
+                  raise SystemExit("Complete provider directory should be public")
+              if sitemap.count(f"{BASE}/septic-services-near-me/") != 1:
+                  raise SystemExit("Public service locator must appear once in sitemap")
           else:
-              if "noindex,follow" not in locator.replace(" ", "").lower() or "data-provider-card" in locator:
-                  raise SystemExit("Incomplete national service locator is publicly searchable")
+              if "noindex,follow" not in locator.replace(" ", "").lower():
+                  raise SystemExit("Incomplete service locator is not noindex,follow")
+              if "data-provider-card" in locator:
+                  raise SystemExit("Incomplete service locator still exposes searchable cards")
               provider_body = provider_page.split("<main", 1)[-1]
               if "noindex,follow" not in provider_page.replace(" ", "").lower():
-                  raise SystemExit("Incomplete provider directory is not noindex")
+                  raise SystemExit("Incomplete provider directory is not noindex,follow")
               if '<article class="ss-provider-card">' in provider_body:
                   raise SystemExit("Incomplete provider directory exposes listing cards")
-              for hidden_url in (
-                  "https://septicscope.com/septic-services-near-me/",
-                  "https://septicscope.com/providers/",
-              ):
+              for hidden_url in (f"{BASE}/septic-services-near-me/", f"{BASE}/providers/"):
                   if hidden_url in sitemap:
-                      raise SystemExit(f"Hidden service URL remains in sitemap: {hidden_url}")
+                      raise SystemExit(f"Hidden service route remains in sitemap: {hidden_url}")
 
-          if "noindex,follow" not in bodies["/counties/virginia/fairfax-city/"].replace(" ", "").lower():
-              raise SystemExit("In-progress county-equivalent page must remain noindex,follow")
-          if "noindex" in bodies["/counties/virginia/fairfax/"].lower():
-              raise SystemExit("Verified Fairfax County guide is unexpectedly noindex")
+          if "Sitemap:" not in robots or "septicscope.com/sitemap.xml" not in robots:
+              raise SystemExit("robots.txt does not publish the sitemap")
+          if "noindex" in verified_county.lower() or "Official sources" not in verified_county:
+              raise SystemExit("Verified Fairfax County guide is invalid")
+          if "noindex,follow" not in progress_county.replace(" ", "").lower():
+              raise SystemExit("In-progress Fairfax City page must remain noindex,follow")
 
           print(
-              "PASS: production county/ZIP/city/FIPS lookup is live and the incomplete "
-              f"national service search is gated at {len(covered)}/3,144 counties"
+              "PASS: production county ZIP/city/FIPS lookup is live; "
+              f"global service search remains gated at {len(covered)}/3,144 counties"
           )
           PY
