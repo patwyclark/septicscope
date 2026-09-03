@@ -6,6 +6,8 @@ from collections import Counter
 import json
 from pathlib import Path
 
+from provider_curated_experience import curated_provider_data
+
 ROOT = Path(__file__).resolve().parent
 CORE = ROOT / "site_inventory_core.py"
 
@@ -103,6 +105,10 @@ def _patched_namespace() -> dict:
         "__file__": str(CORE),
     }
     exec(compile(source, str(CORE), "exec"), namespace)
+    # Inventory must use the same layered, reviewed provider catalog as the rendered
+    # directory, county modules, homepage, and service locator—even before the canonical
+    # providers.json synchronization workflow has flattened a new expansion layer.
+    namespace["load_provider_data"] = curated_provider_data
     return namespace
 
 

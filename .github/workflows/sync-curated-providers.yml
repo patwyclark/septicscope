@@ -6,6 +6,7 @@ on:
     paths:
       - "data/providers.json"
       - "data/provider-overrides.json"
+      - "data/provider-expansion-*.json"
       - "provider_curated_experience.py"
       - "tools/sync_curated_providers.py"
       - ".github/workflows/sync-curated-providers.yml"

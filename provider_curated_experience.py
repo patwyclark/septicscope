@@ -13,6 +13,7 @@ import provider_experience as renderer
 ROOT = Path(__file__).resolve().parent
 BASE_PROVIDER_FILE = ROOT / "data" / "providers.json"
 OVERRIDE_FILE = ROOT / "data" / "provider-overrides.json"
+EXPANSION_GLOB = "provider-expansion-*.json"
 
 
 def load_object(path: Path) -> dict:
@@ -28,27 +29,21 @@ def county_value(item: object) -> str:
     return str(item).strip()
 
 
-def curated_provider_data() -> dict:
-    data = deepcopy(load_object(BASE_PROVIDER_FILE))
-    overrides = load_object(OVERRIDE_FILE) if OVERRIDE_FILE.exists() else {}
-    providers = data.get("providers", [])
-    if not isinstance(providers, list):
-        raise RuntimeError("data/providers.json providers must be a list")
-
-    by_id = {
-        str(provider.get("id", "")).strip(): provider
-        for provider in providers
-        if isinstance(provider, dict) and str(provider.get("id", "")).strip()
-    }
-
-    updates = overrides.get("provider_updates", {})
+def apply_provider_layer(
+    providers: list[dict],
+    by_id: dict[str, dict],
+    layer: dict,
+    *,
+    label: str,
+) -> None:
+    updates = layer.get("provider_updates", {})
     if updates and not isinstance(updates, dict):
-        raise RuntimeError("provider_updates must be an object")
+        raise RuntimeError(f"{label}: provider_updates must be an object")
     for provider_id, raw_update in updates.items():
         if provider_id not in by_id:
-            raise RuntimeError(f"Provider override references unknown id: {provider_id}")
+            raise RuntimeError(f"{label}: provider update references unknown id: {provider_id}")
         if not isinstance(raw_update, dict):
-            raise RuntimeError(f"Provider override for {provider_id} must be an object")
+            raise RuntimeError(f"{label}: provider update for {provider_id} must be an object")
         provider = by_id[provider_id]
         removals = {
             str(value).strip()
@@ -62,30 +57,60 @@ def curated_provider_data() -> dict:
             ]
         field_updates = raw_update.get("set", {})
         if field_updates and not isinstance(field_updates, dict):
-            raise RuntimeError(f"set override for {provider_id} must be an object")
+            raise RuntimeError(f"{label}: set override for {provider_id} must be an object")
         provider.update(field_updates)
 
-    for addition in overrides.get("providers", []):
+    additions = layer.get("providers", [])
+    if additions and not isinstance(additions, list):
+        raise RuntimeError(f"{label}: providers must be a list")
+    for addition in additions:
         if not isinstance(addition, dict):
-            raise RuntimeError("Each provider override addition must be an object")
+            raise RuntimeError(f"{label}: each provider addition must be an object")
         provider_id = str(addition.get("id", "")).strip()
         if not provider_id:
-            raise RuntimeError("Provider override addition is missing id")
+            raise RuntimeError(f"{label}: provider addition is missing id")
+        replacement = deepcopy(addition)
         if provider_id in by_id:
-            replacement = deepcopy(addition)
             index = providers.index(by_id[provider_id])
             providers[index] = replacement
             by_id[provider_id] = replacement
         else:
-            addition_copy = deepcopy(addition)
-            providers.append(addition_copy)
-            by_id[provider_id] = addition_copy
+            providers.append(replacement)
+            by_id[provider_id] = replacement
 
-    data["providers"] = providers
-    data["last_updated"] = max(
-        str(data.get("last_updated", "")),
-        str(overrides.get("last_updated", "")),
+
+def curated_provider_data() -> dict:
+    data = deepcopy(load_object(BASE_PROVIDER_FILE))
+    providers = data.get("providers", [])
+    if not isinstance(providers, list):
+        raise RuntimeError("data/providers.json providers must be a list")
+
+    by_id = {
+        str(provider.get("id", "")).strip(): provider
+        for provider in providers
+        if isinstance(provider, dict) and str(provider.get("id", "")).strip()
+    }
+
+    layers: list[tuple[Path, dict]] = []
+    if OVERRIDE_FILE.exists():
+        layers.append((OVERRIDE_FILE, load_object(OVERRIDE_FILE)))
+    for path in sorted((ROOT / "data").glob(EXPANSION_GLOB)):
+        layers.append((path, load_object(path)))
+
+    latest = str(data.get("last_updated", ""))
+    for path, layer in layers:
+        apply_provider_layer(providers, by_id, layer, label=path.name)
+        latest = max(latest, str(layer.get("last_updated", "")))
+
+    data["providers"] = sorted(
+        providers,
+        key=lambda provider: (
+            str(provider.get("business_name", "")).casefold(),
+            str(provider.get("id", "")),
+        ),
     )
+    data["last_updated"] = latest
+    data["catalog_layers"] = [path.name for path, _layer in layers]
     return data
 
 

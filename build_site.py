@@ -2,9 +2,9 @@
 
 Cloudflare Pages and GitHub Actions must both run only this file. The historical
 site generator is preserved as site_core_build.py; supplemental guides, trust
-hardening, provider rendering, contextual growth links, SEO safeguards and
-machine-readable inventories are executed in a deterministic order so CI and
-production cannot drift.
+hardening, provider rendering, local-service search, homepage experience,
+contextual growth links, SEO safeguards and machine-readable inventories are
+executed in a deterministic order so CI and production cannot drift.
 """
 from __future__ import annotations
 
@@ -72,15 +72,26 @@ def _run() -> None:
     inventory = ROOT / "site_inventory.py"
     provider_experience = ROOT / "provider_curated_experience.py"
     growth_experience = ROOT / "continuous_growth_experience.py"
+    service_locator = ROOT / "septic_services_near_me.py"
+    homepage_experience = ROOT / "homepage_experience.py"
+    service_quality = ROOT / "septic_service_quality.py"
     seo_review = ROOT / "tools" / "seo_hourly_audit.py"
     growth_planner = ROOT / "tools" / "continuous_growth.py"
 
     # The first inventory creates the national county manifest needed to map provider
     # FIPS records to final county URLs. Source-controlled provider and contextual-link
-    # layers then enrich the finished pages.
+    # layers then enrich the finished pages. The service locator and homepage are built
+    # from those final local records so their metrics and cards cannot drift.
     _run_script(inventory, env=env)
     _run_script(provider_experience, env=env)
     _run_script(growth_experience, env=env)
+    _run_script(service_locator, env=env)
+    _run_script(homepage_experience, env=env)
+    _run_script(service_quality, env=env)
+
+    # Refresh the inventory before the SEO gate so newly generated indexable routes,
+    # especially /septic-services-near-me/, already have keyword-map records.
+    _run_script(inventory, env=env)
 
     # Safe SEO maintenance repairs only missing title/description/canonical essentials;
     # it does not add meta-keywords or repeat phrases for ranking manipulation.
