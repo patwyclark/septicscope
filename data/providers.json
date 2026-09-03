@@ -6,6 +6,202 @@
   "correction_process": "Business owners and users may report corrections, closures, removals, or listing claims through https://septicscope.com/contact/.",
   "providers": [
     {
+      "id": "aaa-septic-shelton-wa",
+      "business_name": "AAA Septic & Portable Toilets",
+      "website": "https://aaasepticshelton.com/",
+      "public_phone": "360-427-6110",
+      "address": "",
+      "city": "Shelton",
+      "state": "WA",
+      "zip_code": "",
+      "counties_served": [
+        "53045",
+        "53035",
+        "53067",
+        "53031",
+        "53027"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "maintenance",
+        "repair",
+        "risers",
+        "camera_inspection",
+        "jetting",
+        "property_transfer",
+        "holding_tank"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://aaasepticshelton.com/",
+        "https://aaasepticshelton.com/service-area/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service in Mason, Kitsap, Thurston, Jefferson, and Grays Harbor counties and advertises pumping, operations and maintenance, repairs, risers, camera work, jetting, home-sale inspections, and holding-tank service.",
+      "coverage_basis": "The company-owned website publishes service in Mason, Kitsap, Thurston, Jefferson, and Grays Harbor counties and advertises pumping, operations and maintenance, repairs, risers, camera work, jetting, home-sale inspections, and holding-tank service."
+    },
+    {
+      "id": "aaa-septic-service-east-tennessee",
+      "business_name": "AAA Septic Service",
+      "website": "https://aaaseptictn.com/",
+      "public_phone": "865-809-0308",
+      "address": "705 Dr",
+      "city": "Loudon",
+      "state": "TN",
+      "zip_code": "37774",
+      "counties_served": [
+        "47001",
+        "47009",
+        "47093",
+        "47105",
+        "47121",
+        "47107",
+        "47123",
+        "47145"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "installation",
+        "repair",
+        "inspection",
+        "maintenance",
+        "drainfield",
+        "jetting",
+        "emergency"
+      ],
+      "license_information": "The company website publishes permit numbers 284 and 12259; verify current state permits and scope.",
+      "source_urls": [
+        "https://aaaseptictn.com/",
+        "https://aaaseptictn.com/service-areas/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service in Anderson, Blount, Knox, Loudon, Meigs, McMinn, Monroe, and Roane counties and advertises pumping, installation, repair, inspections, maintenance, drainfield service, jetting, and emergency work.",
+      "coverage_basis": "The company-owned website publishes service in Anderson, Blount, Knox, Loudon, Meigs, McMinn, Monroe, and Roane counties and advertises pumping, installation, repair, inspections, maintenance, drainfield service, jetting, and emergency work.",
+      "public_email": "AAASeptic25@gmail.com",
+      "hours_note": "The company website advertises emergency service. The published street address appears incomplete; confirm before visiting."
+    },
+    {
+      "id": "aams-wastewater-hays-tx",
+      "business_name": "AAMS Wastewater",
+      "website": "https://aamswastewater.com/",
+      "public_phone": "512-847-0757",
+      "city": "Wimberley",
+      "state": "TX",
+      "zip_code": "78676",
+      "counties_served": [
+        "48209"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "inspection",
+        "installation",
+        "repair",
+        "maintenance",
+        "aerobic",
+        "emergency"
+      ],
+      "license_information": "The company website states that its inspection services are NAWT certified and that it is authorized to perform Hays County change-of-ownership inspections; verify current Texas credentials, insurance, and service scope before hiring.",
+      "source_urls": [
+        "https://aamswastewater.com/",
+        "https://aamswastewater.com/services-2/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly states service throughout Hays County and advertises pumping, inspections, installation, repairs, aerobic maintenance contracts, and emergency service."
+    },
+    {
+      "id": "ace-septic-excavating-marion-or",
+      "business_name": "Ace Septic & Excavating",
+      "website": "https://www.acesepticandexcavating.com/",
+      "public_phone": "503-393-1033",
+      "address": "",
+      "city": "Brooks",
+      "state": "OR",
+      "zip_code": "",
+      "counties_served": [
+        "41047"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "inspection",
+        "installation",
+        "drainfield",
+        "repair",
+        "holding_tank"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://www.acesepticandexcavating.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website identifies Marion County service and advertises pumping, cleaning, inspections, installation, drainfield work, repairs, and holding-tank service.",
+      "coverage_basis": "The company-owned website identifies Marion County service and advertises pumping, cleaning, inspections, installation, drainfield work, repairs, and holding-tank service.",
+      "public_email": "office@ace-septic.com"
+    },
+    {
+      "id": "advance-septic-solutions-metro-east-georgia",
+      "business_name": "Advance Septic Solutions",
+      "website": "https://advanceseptic.com/",
+      "public_phone": "678-940-0226",
+      "city": "Conyers",
+      "state": "GA",
+      "zip_code": "30094",
+      "counties_served": [
+        "13217",
+        "13247",
+        "13135",
+        "13159",
+        "13211",
+        "13297",
+        "13151"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "installation",
+        "repair",
+        "inspection",
+        "maintenance",
+        "replacement",
+        "drainfield",
+        "grease_trap",
+        "lift_station",
+        "commercial",
+        "emergency"
+      ],
+      "license_information": "The company-owned website describes licensed and insured septic service; verify current Georgia certification, county permitting credentials, insurance, and the permitted scope of work before hiring.",
+      "source_urls": [
+        "https://advanceseptic.com/septic-tank-service-areas/",
+        "https://advanceseptic.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned service-area page explicitly identifies Newton, Rockdale, Gwinnett, Jasper, Morgan, Walton, and Henry as the counties closest to its home base and states that service is available in all or parts of the listed areas. The site advertises pumping, installation, repair, inspection, maintenance, drainfield, grease-trap, lift-station, commercial, and emergency work; confirm availability for the exact address."
+    },
+    {
       "id": "aerobic-systems-inc-kaufman-tx",
       "business_name": "Aerobic Systems, Inc.",
       "website": "https://asi-im.com/",
@@ -33,6 +229,202 @@
       "sponsored": false,
       "affiliate": false,
       "coverage_notes": "The company website states that it serves Kaufman County and provides aerobic-system installation and maintenance."
+    },
+    {
+      "id": "all-about-septic-treasure-coast-fl",
+      "business_name": "All About Septic Services",
+      "website": "https://www.allaboutsepticservices.com/",
+      "public_phone": "772-828-5818",
+      "address": "991 Edwards Rd",
+      "city": "Fort Pierce",
+      "state": "FL",
+      "zip_code": "34982",
+      "counties_served": [
+        "12111",
+        "12085",
+        "12055",
+        "12093"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "repair",
+        "inspection",
+        "drainfield",
+        "installation",
+        "aerobic",
+        "lift_station",
+        "grease_trap",
+        "commercial",
+        "emergency"
+      ],
+      "license_information": "The company website describes a licensed Master Septic Contractor; verify current Florida registration and scope.",
+      "source_urls": [
+        "https://www.allaboutsepticservices.com/",
+        "https://www.allaboutsepticservices.com/service-area"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service in St. Lucie, Martin, Highlands, and Okeechobee counties and advertises pumping, repairs, inspections, drainfields, installation, aerobic treatment units, lift stations, grease traps, commercial work, and emergency response.",
+      "coverage_basis": "The company-owned website publishes service in St. Lucie, Martin, Highlands, and Okeechobee counties and advertises pumping, repairs, inspections, drainfields, installation, aerobic treatment units, lift stations, grease traps, commercial work, and emergency response.",
+      "hours_note": "The company website advertises 24/7 emergency service."
+    },
+    {
+      "id": "asap-septic-middle-georgia",
+      "business_name": "ASAP Septic",
+      "website": "https://www.asapsepticllc.com/",
+      "public_phone": "478-308-2811",
+      "city": "Cochran",
+      "state": "GA",
+      "zip_code": "31014",
+      "counties_served": [
+        "13021",
+        "13175",
+        "13023",
+        "13093",
+        "13091",
+        "13225",
+        "13153",
+        "13079",
+        "13235",
+        "13289"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "inspection",
+        "installation",
+        "replacement",
+        "repair",
+        "commercial",
+        "grease_trap",
+        "rv"
+      ],
+      "license_information": "Verify current Georgia certification, county permitting credentials, insurance, and the permitted scope of work before hiring.",
+      "source_urls": [
+        "https://www.asapsepticllc.com/service-area",
+        "https://www.asapsepticllc.com/contact"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned service-area page explicitly lists septic service in Bibb, Laurens, Bleckley, Dooly, Dodge, Peach, Houston, Crawford, Pulaski, and Twiggs counties. The site advertises pumping and inspections, new installation, replacement, repairs, residential and commercial septic service, grease-trap work, and RV tank pumping."
+    },
+    {
+      "id": "billingsley-brooks-piedmont-nc",
+      "business_name": "Billingsley & Brooks Septic Tank Company",
+      "website": "https://billingsleyseptic.com/",
+      "public_phone": "336-342-0608",
+      "address": "149 Penn Rd",
+      "city": "Reidsville",
+      "state": "NC",
+      "zip_code": "27320",
+      "counties_served": [
+        "37157",
+        "37081",
+        "37033",
+        "37001"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "inspection",
+        "repair",
+        "installation"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://billingsleyseptic.com/areas-served/",
+        "https://billingsleyseptic.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned service-area page explicitly lists Rockingham, Guilford, Caswell, and Alamance counties and advertises septic pumping, cleaning, inspections, repairs, and installation.",
+      "coverage_basis": "The company-owned service-area page explicitly lists Rockingham, Guilford, Caswell, and Alamance counties and advertises septic pumping, cleaning, inspections, repairs, and installation."
+    },
+    {
+      "id": "bob-fitzpatrick-septic-ne-georgia",
+      "business_name": "Bob Fitzpatrick Septic",
+      "website": "https://www.bobfitzpatrickseptic.com/",
+      "public_phone": "706-308-7633",
+      "city": "Danielsville",
+      "state": "GA",
+      "zip_code": "30633",
+      "counties_served": [
+        "13195",
+        "13059",
+        "13219",
+        "13119",
+        "13157",
+        "13221",
+        "13105",
+        "13147",
+        "13011",
+        "13013"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "installation",
+        "repair",
+        "inspection",
+        "maintenance",
+        "commercial",
+        "grease_trap",
+        "sewer_pump",
+        "emergency"
+      ],
+      "license_information": "Verify current Georgia certification, county permitting credentials, insurance, and the permitted scope of work before hiring.",
+      "source_urls": [
+        "https://www.bobfitzpatrickseptic.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly lists Madison, Clarke, Oconee, Franklin, Jackson, Oglethorpe, Elbert, Hart, Banks, and Barrow counties and advertises septic cleaning and pumping, new installation, repairs, inspections, sewer-system maintenance, grease-trap pumping, sewer-pump work, and emergency service."
+    },
+    {
+      "id": "boggeros-septic-greenwood-sc",
+      "business_name": "Boggero's Septic Tank Service",
+      "website": "https://boggerosseptictank.com/",
+      "public_phone": "864-223-7023",
+      "address": "1502 Main St S",
+      "city": "Greenwood",
+      "state": "SC",
+      "zip_code": "29646",
+      "counties_served": [
+        "45047"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "cleaning",
+        "pumping",
+        "installation",
+        "repair"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://boggerosseptictank.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website identifies Greenwood County service and advertises septic cleaning, pumping, installation, and repair.",
+      "coverage_basis": "The company-owned website identifies Greenwood County service and advertises septic cleaning, pumping, installation, and repair."
     },
     {
       "id": "bumblebee-septics-parker-tx",
@@ -100,6 +492,231 @@
       "coverage_notes": "The company service-area page explicitly names Johnson, Tarrant, Ellis, and Parker counties and lists pumping, cleaning, maintenance, installation, repair, monitoring, and inspection-related services."
     },
     {
+      "id": "caddo-creek-septic-excavation-north-texas",
+      "business_name": "Caddo Creek Septic & Excavation",
+      "website": "https://www.caddocreekseptic.com/",
+      "public_phone": "903-274-0998",
+      "city": "Celeste",
+      "state": "TX",
+      "zip_code": "",
+      "counties_served": [
+        "48085",
+        "48231",
+        "48397",
+        "48379",
+        "48147",
+        "48181",
+        "48223",
+        "48257",
+        "48467",
+        "48121",
+        "48277",
+        "48119"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "installation",
+        "repair",
+        "replacement",
+        "maintenance",
+        "aerobic",
+        "drainfield",
+        "excavation"
+      ],
+      "license_information": "The company-owned website describes licensed conventional and aerobic installation work; verify current Texas credentials, county registration, insurance, and service scope before hiring.",
+      "source_urls": [
+        "https://www.caddocreekseptic.com/areas"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned service-area page explicitly names Collin, Hunt, Rockwall, Rains, Fannin, Grayson, Hopkins, Kaufman, Van Zandt, Denton, Lamar, and Delta counties and lists pumping, installation, repair, replacement, maintenance, aerobic, drain-field, and excavation services."
+    },
+    {
+      "id": "carlton-septic-colquitt-ga",
+      "business_name": "Carlton Septic Service",
+      "website": "https://www.carltonseptic.com/",
+      "public_phone": "229-985-2861",
+      "city": "Moultrie",
+      "state": "GA",
+      "zip_code": "",
+      "counties_served": [
+        "13071"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "installation",
+        "repair",
+        "inspection",
+        "maintenance",
+        "drainfield",
+        "commercial",
+        "emergency"
+      ],
+      "license_information": "Verify current Georgia certification, county permitting credentials, insurance, and the permitted scope of work before hiring.",
+      "source_urls": [
+        "https://www.carltonseptic.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly states service throughout Colquitt County and advertises septic pumping, installation, system and drainfield repairs, camera inspections, maintenance, commercial septic work, and emergency repairs."
+    },
+    {
+      "id": "casa-grande-septic-service",
+      "business_name": "Casa Grande Septic Service",
+      "website": "https://casagrandesepticservice.com/",
+      "public_phone": "520-836-2095",
+      "address": "7324 S Linda Lou Rd",
+      "city": "Eloy",
+      "state": "AZ",
+      "zip_code": "85131",
+      "counties_served": [
+        "04021"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "inspection",
+        "repair",
+        "locating",
+        "drain_cleaning",
+        "excavation",
+        "jetting",
+        "emergency"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://casagrandesepticservice.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website identifies its Pinal County base and advertises septic pumping, cleaning, inspections, repairs, locating, drain service, excavation, jetting, and emergency response.",
+      "coverage_basis": "The company-owned website identifies its Pinal County base and advertises septic pumping, cleaning, inspections, repairs, locating, drain service, excavation, jetting, and emergency response.",
+      "hours_note": "The company website advertises 24-hour service."
+    },
+    {
+      "id": "cisco-septic-service-san-antonio",
+      "business_name": "Cisco Septic Service",
+      "website": "https://www.ciscoseptic.com/",
+      "public_phone": "210-598-9090",
+      "city": "Converse",
+      "state": "TX",
+      "zip_code": "78109",
+      "counties_served": [
+        "48013",
+        "48019",
+        "48029",
+        "48091",
+        "48187",
+        "48259",
+        "48325",
+        "48255",
+        "48493"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "aerobic",
+        "commercial"
+      ],
+      "license_information": "The company website displays TCEQ #25421 and NAWT #14353ITC; verify current credential status, scope, insurance, and local requirements before hiring.",
+      "source_urls": [
+        "https://www.ciscoseptic.com/service-areas",
+        "https://www.ciscoseptic.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned service-area page explicitly lists Atascosa, Bandera, Bexar, Comal, Guadalupe, Kendall, Medina, Karnes, and Wilson counties and advertises residential and commercial pumping and cleaning for conventional, aerobic, lift-station, and cesspool tanks."
+    },
+    {
+      "id": "ck-septic-southwest-wisconsin",
+      "business_name": "CK Septic Service",
+      "website": "https://www.ckseptic.com/",
+      "public_phone": "608-341-6249",
+      "address": "",
+      "city": "Dodgeville",
+      "state": "WI",
+      "zip_code": "",
+      "counties_served": [
+        "55049",
+        "55065",
+        "55043",
+        "55111",
+        "55025"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "emergency",
+        "holding_tank"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://www.ckseptic.com/",
+        "https://www.ckseptic.com/service-area"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service in Iowa County, northern Lafayette County, eastern Grant County, southern Sauk County, and western Dane County and advertises septic and holding-tank pumping plus emergency service. Confirm coverage for the exact address.",
+      "coverage_basis": "The company-owned website publishes service in Iowa County, northern Lafayette County, eastern Grant County, southern Sauk County, and western Dane County and advertises septic and holding-tank pumping plus emergency service. Confirm coverage for the exact address.",
+      "hours_note": "The company website advertises emergency service."
+    },
+    {
+      "id": "coastal-georgia-septic",
+      "business_name": "Coastal Georgia Septic",
+      "website": "https://coastalgeorgiaseptic.com/",
+      "public_phone": "912-476-0063",
+      "city": "Brunswick",
+      "state": "GA",
+      "zip_code": "",
+      "counties_served": [
+        "13127",
+        "13191",
+        "13039"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "inspection",
+        "installation",
+        "repair",
+        "replacement",
+        "drainfield"
+      ],
+      "license_information": "The company-owned website states that the business is licensed, state certified, and insured; verify current Georgia credentials, county requirements, insurance, and service scope before hiring.",
+      "source_urls": [
+        "https://coastalgeorgiaseptic.com/faq",
+        "https://coastalgeorgiaseptic.com/septic-pumping",
+        "https://coastalgeorgiaseptic.com/septic-installation"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly states service throughout Glynn, McIntosh, and Camden counties and advertises septic pumping, cleaning, real-estate inspections, repairs, drainfield replacement, and new conventional, mound, and Eljen system installation."
+    },
+    {
       "id": "collin-county-septic-design-evaluation",
       "business_name": "Collin County Septic Design & Evaluation",
       "website": "https://www.collincountyseptic.com/",
@@ -134,6 +751,109 @@
       "sponsored": false,
       "affiliate": false,
       "coverage_notes": "The company-owned website explicitly lists Collin, Dallas, Fannin, Grayson, Hunt, Kaufman, Rains, and Rockwall counties for septic design and site-evaluation work."
+    },
+    {
+      "id": "conleys-septic-services-middle-tennessee",
+      "business_name": "Conley's Septic Services",
+      "website": "https://conleyssepticservices.com/",
+      "public_phone": "931-993-5985",
+      "address": "2390 Phillips Rd",
+      "city": "Lewisburg",
+      "state": "TN",
+      "zip_code": "37091",
+      "counties_served": [
+        "47003",
+        "47117",
+        "47119",
+        "47149",
+        "47187"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "septage_disposal"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://conleyssepticservices.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes septic cleanout and pumping service in Bedford, Marshall, Maury, Rutherford, and portions of Williamson County. Confirm availability for the exact address.",
+      "coverage_basis": "The company-owned website publishes septic cleanout and pumping service in Bedford, Marshall, Maury, Rutherford, and portions of Williamson County. Confirm availability for the exact address."
+    },
+    {
+      "id": "countywide-septic-horry-sc",
+      "business_name": "Countywide Septic",
+      "website": "https://www.countywidesc.com/",
+      "public_phone": "843-358-3989",
+      "address": "1307 Vaught Rd",
+      "city": "Galivants Ferry",
+      "state": "SC",
+      "zip_code": "29544",
+      "counties_served": [
+        "45051"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "installation",
+        "pumping",
+        "repair",
+        "lift_station",
+        "line_clearing"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://www.countywidesc.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service throughout Horry County and advertises septic installation, pumping, repair, lift-station service, and line clearing.",
+      "coverage_basis": "The company-owned website publishes service throughout Horry County and advertises septic installation, pumping, repair, lift-station service, and line clearing."
+    },
+    {
+      "id": "desert-septic-casa-grande",
+      "business_name": "Desert Septic",
+      "website": "https://www.desertsepticllc.com/",
+      "public_phone": "520-705-9922",
+      "address": "P.O. Box 12220",
+      "city": "Casa Grande",
+      "state": "AZ",
+      "zip_code": "85130",
+      "counties_served": [
+        "04021"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "inspection",
+        "installation",
+        "locating",
+        "repair",
+        "treatment",
+        "root_removal",
+        "design",
+        "soil_testing",
+        "alternative_systems"
+      ],
+      "license_information": "The company website publishes NAWT 6018 ITC, Arizona ROC 272246, and RSB145575; verify current status and scope.",
+      "source_urls": [
+        "https://www.desertsepticllc.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes Pinal County septic services including ADEQ inspections, installation, locating, pumping, treatment, root removal, design, soil testing, and alternative systems.",
+      "coverage_basis": "The company-owned website publishes Pinal County septic services including ADEQ inspections, installation, locating, pumping, treatment, root removal, design, soil testing, and alternative systems."
     },
     {
       "id": "down-to-earth-excavating-inc-fb367a5f",
@@ -240,332 +960,43 @@
       "coverage_notes": "The company-owned website explicitly states service for aerobic septic systems in Dallas, Johnson, and Ellis counties and lists inspections, contracts, maintenance, service, and repair."
     },
     {
-      "id": "l-and-d-septic-services-ellis-tx",
-      "business_name": "L & D Septic Services",
-      "website": "https://www.ldseptic.com/",
-      "public_phone": "972-449-3342",
-      "city": "",
-      "state": "TX",
-      "zip_code": "",
+      "id": "epic-septics-upstate-sc",
+      "business_name": "Epic Septics",
+      "website": "https://www.epicseptics.com/",
+      "public_phone": "864-641-0111",
+      "address": "130 Sunshine Ln",
+      "city": "Spartanburg",
+      "state": "SC",
+      "zip_code": "29301",
       "counties_served": [
-        "48139"
+        "45021",
+        "45045",
+        "45059",
+        "45087"
       ],
       "zip_codes_served": [],
       "service_categories": [
         "pumping",
-        "cleaning",
-        "inspection",
-        "maintenance",
-        "installation",
-        "aerobic"
-      ],
-      "license_information": "Verify current Texas licensing, registration, and insurance directly before hiring.",
-      "source_urls": [
-        "https://www.ldseptic.com/"
-      ],
-      "date_added": "2026-09-01",
-      "date_last_verified": "2026-09-01",
-      "status": "active",
-      "sponsored": false,
-      "affiliate": false,
-      "coverage_notes": "The company-owned website explicitly markets service in Ellis County and lists tank pumping, cleaning, inspection, maintenance, installation, and aerobic treatment."
-    },
-    {
-      "id": "navarro-county-septic-pumping",
-      "business_name": "Navarro County Septic Pumping",
-      "website": "https://www.navarrocountyseptic.com/",
-      "public_phone": "903-875-5746",
-      "city": "Frost",
-      "state": "TX",
-      "zip_code": "76641",
-      "counties_served": [
-        "48139",
-        "48349"
-      ],
-      "zip_codes_served": [],
-      "service_categories": [
-        "pumping",
-        "cleaning",
-        "inspection",
-        "locating",
-        "emergency"
-      ],
-      "license_information": "Company states that it is licensed and insured in Texas; verify current license scope and status before hiring.",
-      "source_urls": [
-        "https://www.navarrocountyseptic.com/"
-      ],
-      "date_added": "2026-09-01",
-      "date_last_verified": "2026-09-01",
-      "status": "active",
-      "sponsored": false,
-      "affiliate": false,
-      "coverage_notes": "The company-owned website explicitly states septic pumping service throughout Navarro and Ellis counties and also describes inspections and tank-location services."
-    },
-    {
-      "id": "weaver-excavating-septic-ennis-tx",
-      "business_name": "Weaver Excavating & Septic",
-      "website": "https://weaverexcavating.net/",
-      "public_phone": "903-603-2200",
-      "city": "Eustace",
-      "state": "TX",
-      "zip_code": "75124",
-      "counties_served": [
-        "48213",
-        "48257",
-        "48467",
-        "48139",
-        "48349",
-        "48217"
-      ],
-      "zip_codes_served": [],
-      "service_categories": [
-        "pumping",
-        "installation",
-        "repair",
-        "maintenance",
-        "excavation"
-      ],
-      "license_information": "Company website displays Texas license OS0025734; verify current scope and status before hiring.",
-      "source_urls": [
-        "https://weaverexcavating.net/service-areas/"
-      ],
-      "date_added": "2026-09-01",
-      "date_last_verified": "2026-09-02",
-      "status": "active",
-      "sponsored": false,
-      "affiliate": false,
-      "coverage_notes": "The company-owned service-area page explicitly lists Henderson, Kaufman, Van Zandt, Ellis, Navarro, and Hill counties and advertises pumping, installation, repairs, maintenance contracts, and excavation."
-    },
-    {
-      "id": "caddo-creek-septic-excavation-north-texas",
-      "business_name": "Caddo Creek Septic & Excavation",
-      "website": "https://www.caddocreekseptic.com/",
-      "public_phone": "903-274-0998",
-      "city": "Celeste",
-      "state": "TX",
-      "zip_code": "",
-      "counties_served": [
-        "48085",
-        "48231",
-        "48397",
-        "48379",
-        "48147",
-        "48181",
-        "48223",
-        "48257",
-        "48467",
-        "48121",
-        "48277",
-        "48119"
-      ],
-      "zip_codes_served": [],
-      "service_categories": [
-        "pumping",
-        "cleaning",
         "installation",
         "repair",
         "replacement",
-        "maintenance",
-        "aerobic",
-        "drainfield",
-        "excavation"
-      ],
-      "license_information": "The company-owned website describes licensed conventional and aerobic installation work; verify current Texas credentials, county registration, insurance, and service scope before hiring.",
-      "source_urls": [
-        "https://www.caddocreekseptic.com/areas"
-      ],
-      "date_added": "2026-09-02",
-      "date_last_verified": "2026-09-02",
-      "status": "active",
-      "sponsored": false,
-      "affiliate": false,
-      "coverage_notes": "The company-owned service-area page explicitly names Collin, Hunt, Rockwall, Rains, Fannin, Grayson, Hopkins, Kaufman, Van Zandt, Denton, Lamar, and Delta counties and lists pumping, installation, repair, replacement, maintenance, aerobic, drain-field, and excavation services."
-    },
-    {
-      "id": "homefield-north-texas",
-      "business_name": "HomeField North Texas",
-      "website": "https://www.homefieldonsite.com/north-texas/",
-      "public_phone": "940-360-5855",
-      "city": "Wichita Falls",
-      "state": "TX",
-      "zip_code": "76308",
-      "counties_served": [
-        "48009",
-        "48023",
-        "48077",
-        "48097",
-        "48197",
-        "48207",
-        "48237",
-        "48337",
-        "48485",
-        "48487",
-        "48497",
-        "48503"
-      ],
-      "zip_codes_served": [],
-      "service_categories": [
-        "pumping",
-        "installation",
-        "repair",
-        "inspection",
-        "design",
-        "maintenance"
-      ],
-      "license_information": "The company website states that it maintains Texas installer and maintenance-provider credentials and can perform septic inspections; verify current individual license numbers, status, insurance, and county requirements before hiring.",
-      "source_urls": [
-        "https://www.homefieldonsite.com/north-texas/about-us/"
-      ],
-      "date_added": "2026-09-02",
-      "date_last_verified": "2026-09-02",
-      "status": "active",
-      "sponsored": false,
-      "affiliate": false,
-      "coverage_notes": "The company-owned page explicitly lists Archer, Baylor, Clay, Cooke, Hardeman, Haskell, Jack, Montague, Wichita, Wilbarger, Wise, and Young counties and advertises residential and commercial pumping, installation, repair, inspection, real-estate inspection, and design/planning."
-    },
-    {
-      "id": "cisco-septic-service-san-antonio",
-      "business_name": "Cisco Septic Service",
-      "website": "https://www.ciscoseptic.com/",
-      "public_phone": "210-598-9090",
-      "city": "Converse",
-      "state": "TX",
-      "zip_code": "78109",
-      "counties_served": [
-        "48013",
-        "48019",
-        "48029",
-        "48091",
-        "48187",
-        "48259",
-        "48325",
-        "48255",
-        "48493"
-      ],
-      "zip_codes_served": [],
-      "service_categories": [
-        "pumping",
-        "cleaning",
-        "aerobic",
-        "commercial"
-      ],
-      "license_information": "The company website displays TCEQ #25421 and NAWT #14353ITC; verify current credential status, scope, insurance, and local requirements before hiring.",
-      "source_urls": [
-        "https://www.ciscoseptic.com/service-areas",
-        "https://www.ciscoseptic.com/"
-      ],
-      "date_added": "2026-09-02",
-      "date_last_verified": "2026-09-02",
-      "status": "active",
-      "sponsored": false,
-      "affiliate": false,
-      "coverage_notes": "The company-owned service-area page explicitly lists Atascosa, Bandera, Bexar, Comal, Guadalupe, Kendall, Medina, Karnes, and Wilson counties and advertises residential and commercial pumping and cleaning for conventional, aerobic, lift-station, and cesspool tanks."
-    },
-    {
-      "id": "grobler-septic-systems-central-texas",
-      "business_name": "Grobler Septic Systems Installations",
-      "website": "https://www.groblerseptic.com/",
-      "public_phone": "806-930-8683",
-      "city": "Goldthwaite",
-      "state": "TX",
-      "zip_code": "76844",
-      "counties_served": [
-        "48049",
-        "48093",
-        "48193",
-        "48281",
-        "48333",
-        "48411"
-      ],
-      "zip_codes_served": [],
-      "service_categories": [
-        "installation",
-        "replacement",
-        "drainfield",
-        "design",
-        "excavation"
-      ],
-      "license_information": "Verify current Texas licensing, county registration, insurance, and the permitted scope of work before hiring.",
-      "source_urls": [
-        "https://www.groblerseptic.com/"
-      ],
-      "date_added": "2026-09-02",
-      "date_last_verified": "2026-09-02",
-      "status": "active",
-      "sponsored": false,
-      "affiliate": false,
-      "coverage_notes": "The company-owned website explicitly lists Brown, Comanche, Hamilton, Lampasas, Mills, and San Saba counties and advertises residential and commercial septic installation, replacement, drain-field installation, site planning, engineered-system work, and excavation."
-    },
-    {
-      "id": "jernan-septic-rainwater-central-texas",
-      "business_name": "Jernan Septic & Rainwater Solutions",
-      "website": "https://jernan.com/",
-      "public_phone": "254-848-4848",
-      "city": "Woodway",
-      "state": "TX",
-      "zip_code": "76712",
-      "counties_served": [
-        "48309",
-        "48035",
-        "48145",
-        "48217",
-        "48027",
-        "48293",
-        "48099"
-      ],
-      "zip_codes_served": [],
-      "service_categories": [
-        "pumping",
-        "installation",
-        "repair",
-        "maintenance",
-        "inspection",
-        "commercial"
-      ],
-      "license_information": "Verify current Texas licensing, county registration, insurance, and service scope before hiring.",
-      "source_urls": [
-        "https://jernan.com/locations/",
-        "https://jernan.com/pumping/"
-      ],
-      "date_added": "2026-09-02",
-      "date_last_verified": "2026-09-02",
-      "status": "active",
-      "sponsored": false,
-      "affiliate": false,
-      "coverage_notes": "The company-owned location page explicitly names McLennan, Bosque, Falls, Hill, Bell, Limestone, and Coryell counties. Its service pages advertise pumping, residential and commercial installation, repair, maintenance, and real-estate septic inspections."
-    },
-    {
-      "id": "aams-wastewater-hays-tx",
-      "business_name": "AAMS Wastewater",
-      "website": "https://aamswastewater.com/",
-      "public_phone": "512-847-0757",
-      "city": "Wimberley",
-      "state": "TX",
-      "zip_code": "78676",
-      "counties_served": [
-        "48209"
-      ],
-      "zip_codes_served": [],
-      "service_categories": [
-        "pumping",
-        "inspection",
-        "installation",
-        "repair",
-        "maintenance",
-        "aerobic",
+        "drain_cleaning",
         "emergency"
       ],
-      "license_information": "The company website states that its inspection services are NAWT certified and that it is authorized to perform Hays County change-of-ownership inspections; verify current Texas credentials, insurance, and service scope before hiring.",
+      "license_information": "The company website describes Tier 2 authorization; verify current South Carolina licensing and scope.",
       "source_urls": [
-        "https://aamswastewater.com/",
-        "https://aamswastewater.com/services-2/"
+        "https://www.epicseptics.com/",
+        "https://www.epicseptics.com/service-areas"
       ],
       "date_added": "2026-09-02",
       "date_last_verified": "2026-09-02",
       "status": "active",
       "sponsored": false,
       "affiliate": false,
-      "coverage_notes": "The company-owned website explicitly states service throughout Hays County and advertises pumping, inspections, installation, repairs, aerobic maintenance contracts, and emergency service."
+      "coverage_notes": "The company-owned website explicitly lists Cherokee, Greenville, Laurens, and Union counties and advertises pumping, installation, repair, replacement, drain service, and emergency work. The site also mentions portions of Greenwood County, but this record does not map Greenwood because the covered extent is not defined.",
+      "coverage_basis": "The company-owned website explicitly lists Cherokee, Greenville, Laurens, and Union counties and advertises pumping, installation, repair, replacement, drain service, and emergency work. The site also mentions portions of Greenwood County, but this record does not map Greenwood because the covered extent is not defined.",
+      "public_email": "epicseptics@gmail.com",
+      "hours_note": "The company website advertises emergency service."
     },
     {
       "id": "first-turn-septic-north-georgia",
@@ -613,6 +1044,1009 @@
       "coverage_notes": "The company-owned website explicitly names Barrow, Cherokee, Cobb, Dawson, DeKalb, Forsyth, Fulton, Gwinnett, Hall, Jackson, Lumpkin, Pickens, and White as its normal service-area counties and lists pumping, maintenance, installations, repairs, inspections, lift-station work, drainage solutions, and emergency service."
     },
     {
+      "id": "full-circle-environmental-north-carolina",
+      "business_name": "Full Circle Environmental",
+      "website": "https://www.fullcircleenv.com/",
+      "public_phone": "919-359-9984",
+      "address": "381 Cleveland Crossing Dr, Suite 125",
+      "city": "Garner",
+      "state": "NC",
+      "zip_code": "27529",
+      "counties_served": [
+        "37183",
+        "37101",
+        "37085",
+        "37037",
+        "37063",
+        "37105",
+        "37195",
+        "37135",
+        "37191",
+        "37031",
+        "37129",
+        "37019",
+        "37141",
+        "37133",
+        "37051",
+        "37017",
+        "37163",
+        "37061",
+        "37079",
+        "37107",
+        "37103"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "inspection",
+        "repair",
+        "installation",
+        "utility",
+        "emergency"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://www.fullcircleenv.com/areas-served/",
+        "https://www.fullcircleenv.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned service-area page explicitly lists Wake, Johnston, Harnett, Chatham, Durham, Lee, Wilson, Orange, Wayne, Carteret, New Hanover, Brunswick, Pender, Onslow, Cumberland, Bladen, Sampson, Duplin, Greene, Lenoir, and Jones counties and advertises pumping, inspections, repairs, installation, utility, and emergency work.",
+      "coverage_basis": "The company-owned service-area page explicitly lists Wake, Johnston, Harnett, Chatham, Durham, Lee, Wilson, Orange, Wayne, Carteret, New Hanover, Brunswick, Pender, Onslow, Cumberland, Bladen, Sampson, Duplin, Greene, Lenoir, and Jones counties and advertises pumping, inspections, repairs, installation, utility, and emergency work.",
+      "hours_note": "The company website advertises 24/7 service."
+    },
+    {
+      "id": "gapter-septic-pumping-colorado",
+      "business_name": "Gapter Septic Pumping",
+      "website": "https://www.gaptersepticpumping.com/",
+      "public_phone": "720-896-0618",
+      "address": "",
+      "city": "",
+      "state": "CO",
+      "zip_code": "",
+      "counties_served": [
+        "08013",
+        "08047",
+        "08123",
+        "08069"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "maintenance",
+        "inspection",
+        "property_transfer"
+      ],
+      "license_information": "The company website describes NAWT-certified inspection capability; verify current certification and scope.",
+      "source_urls": [
+        "https://www.gaptersepticpumping.com/",
+        "https://www.gaptersepticpumping.com/service-area"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service in Boulder, Gilpin, Weld, and Larimer counties and advertises pumping, maintenance, inspections, and property-transfer work.",
+      "coverage_basis": "The company-owned website publishes service in Boulder, Gilpin, Weld, and Larimer counties and advertises pumping, maintenance, inspections, and property-transfer work."
+    },
+    {
+      "id": "grobler-septic-systems-central-texas",
+      "business_name": "Grobler Septic Systems Installations",
+      "website": "https://www.groblerseptic.com/",
+      "public_phone": "806-930-8683",
+      "city": "Goldthwaite",
+      "state": "TX",
+      "zip_code": "76844",
+      "counties_served": [
+        "48049",
+        "48093",
+        "48193",
+        "48281",
+        "48333",
+        "48411"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "installation",
+        "replacement",
+        "drainfield",
+        "design",
+        "excavation"
+      ],
+      "license_information": "Verify current Texas licensing, county registration, insurance, and the permitted scope of work before hiring.",
+      "source_urls": [
+        "https://www.groblerseptic.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly lists Brown, Comanche, Hamilton, Lampasas, Mills, and San Saba counties and advertises residential and commercial septic installation, replacement, drain-field installation, site planning, engineered-system work, and excavation."
+    },
+    {
+      "id": "herr-environmental-wisconsin",
+      "business_name": "Herr Environmental",
+      "website": "https://herrcorp.com/",
+      "public_phone": "262-968-2550",
+      "address": "S15 W33670 Wolf Rd",
+      "city": "Oconomowoc",
+      "state": "WI",
+      "zip_code": "53066",
+      "counties_served": [
+        "55133",
+        "55055",
+        "55131",
+        "55127",
+        "55089",
+        "55101",
+        "55027"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "inspection",
+        "repair",
+        "soil_testing",
+        "design",
+        "installation",
+        "mound_systems",
+        "sewer",
+        "excavation"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://herrcorp.com/",
+        "https://herrcorp.com/service-area/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service in Waukesha, Jefferson, Washington, Walworth, Ozaukee, Racine, and Dodge counties and advertises pumping, inspections, repairs, soil testing, design, installation, mound systems, sewer work, and excavation.",
+      "coverage_basis": "The company-owned website publishes service in Waukesha, Jefferson, Washington, Walworth, Ozaukee, Racine, and Dodge counties and advertises pumping, inspections, repairs, soil testing, design, installation, mound systems, sewer work, and excavation.",
+      "public_email": "todd@herrcorp.com"
+    },
+    {
+      "id": "homefield-north-texas",
+      "business_name": "HomeField North Texas",
+      "website": "https://www.homefieldonsite.com/north-texas/",
+      "public_phone": "940-360-5855",
+      "city": "Wichita Falls",
+      "state": "TX",
+      "zip_code": "76308",
+      "counties_served": [
+        "48009",
+        "48023",
+        "48077",
+        "48097",
+        "48197",
+        "48207",
+        "48237",
+        "48337",
+        "48485",
+        "48487",
+        "48497",
+        "48503"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "installation",
+        "repair",
+        "inspection",
+        "design",
+        "maintenance"
+      ],
+      "license_information": "The company website states that it maintains Texas installer and maintenance-provider credentials and can perform septic inspections; verify current individual license numbers, status, insurance, and county requirements before hiring.",
+      "source_urls": [
+        "https://www.homefieldonsite.com/north-texas/about-us/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned page explicitly lists Archer, Baylor, Clay, Cooke, Hardeman, Haskell, Jack, Montague, Wichita, Wilbarger, Wise, and Young counties and advertises residential and commercial pumping, installation, repair, inspection, real-estate inspection, and design/planning."
+    },
+    {
+      "id": "jernan-septic-rainwater-central-texas",
+      "business_name": "Jernan Septic & Rainwater Solutions",
+      "website": "https://jernan.com/",
+      "public_phone": "254-848-4848",
+      "city": "Woodway",
+      "state": "TX",
+      "zip_code": "76712",
+      "counties_served": [
+        "48309",
+        "48035",
+        "48145",
+        "48217",
+        "48027",
+        "48293",
+        "48099"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "installation",
+        "repair",
+        "maintenance",
+        "inspection",
+        "commercial"
+      ],
+      "license_information": "Verify current Texas licensing, county registration, insurance, and service scope before hiring.",
+      "source_urls": [
+        "https://jernan.com/locations/",
+        "https://jernan.com/pumping/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned location page explicitly names McLennan, Bosque, Falls, Hill, Bell, Limestone, and Coryell counties. Its service pages advertise pumping, residential and commercial installation, repair, maintenance, and real-estate septic inspections."
+    },
+    {
+      "id": "kellys-septic-west-central-ohio",
+      "business_name": "Kelly's Septic Service",
+      "website": "https://kellysseptic.com/",
+      "public_phone": "937-592-3466",
+      "address": "1771 County Rd 130",
+      "city": "Bellefontaine",
+      "state": "OH",
+      "zip_code": "43311",
+      "counties_served": [
+        "39091",
+        "39021",
+        "39065",
+        "39011",
+        "39149",
+        "39159"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "installation",
+        "repair",
+        "jetting",
+        "camera_inspection",
+        "inspection",
+        "grease_trap",
+        "locating",
+        "lift_station"
+      ],
+      "license_information": "The company website describes the business as Ohio licensed and insured; verify current authorization and scope.",
+      "source_urls": [
+        "https://kellysseptic.com/",
+        "https://kellysseptic.com/service-area/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service in Logan, Champaign, Hardin, Auglaize, Shelby, and Union counties and advertises pumping, cleaning, installation, repairs, jetting, camera inspections, grease traps, locating, and lift-station service.",
+      "coverage_basis": "The company-owned website publishes service in Logan, Champaign, Hardin, Auglaize, Shelby, and Union counties and advertises pumping, cleaning, installation, repairs, jetting, camera inspections, grease traps, locating, and lift-station service.",
+      "public_email": "KellysSepticService@gmail.com"
+    },
+    {
+      "id": "l-and-d-septic-services-ellis-tx",
+      "business_name": "L & D Septic Services",
+      "website": "https://www.ldseptic.com/",
+      "public_phone": "972-449-3342",
+      "city": "",
+      "state": "TX",
+      "zip_code": "",
+      "counties_served": [
+        "48139"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "inspection",
+        "maintenance",
+        "installation",
+        "aerobic"
+      ],
+      "license_information": "Verify current Texas licensing, registration, and insurance directly before hiring.",
+      "source_urls": [
+        "https://www.ldseptic.com/"
+      ],
+      "date_added": "2026-09-01",
+      "date_last_verified": "2026-09-01",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly markets service in Ellis County and lists tank pumping, cleaning, inspection, maintenance, installation, and aerobic treatment."
+    },
+    {
+      "id": "maverick-pumping-central-wisconsin",
+      "business_name": "Maverick Pumping Service",
+      "website": "https://maverickpumping.com/",
+      "public_phone": "920-765-1903",
+      "address": "",
+      "city": "Wautoma",
+      "state": "WI",
+      "zip_code": "",
+      "counties_served": [
+        "55135",
+        "55097",
+        "55137",
+        "55001",
+        "55077",
+        "55047"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "holding_tank",
+        "drain_cleaning",
+        "risers",
+        "filter_service",
+        "grease_trap",
+        "emergency"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://maverickpumping.com/",
+        "https://maverickpumping.com/service-area/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service in Waupaca, Portage, Waushara, Adams, Marquette, and Green Lake counties and advertises pumping, holding tanks, drain service, risers, filter service, grease traps, and emergency response.",
+      "coverage_basis": "The company-owned website publishes service in Waupaca, Portage, Waushara, Adams, Marquette, and Green Lake counties and advertises pumping, holding tanks, drain service, risers, filter service, grease traps, and emergency response.",
+      "hours_note": "The company website advertises 24/7 emergency service."
+    },
+    {
+      "id": "maxwell-septic-middle-tennessee",
+      "business_name": "Maxwell Septic Pumping",
+      "website": "https://maxwellseptic.com/",
+      "public_phone": "615-452-3986",
+      "address": "748 Airport Rd",
+      "city": "Gallatin",
+      "state": "TN",
+      "zip_code": "37066",
+      "counties_served": [
+        "47037",
+        "47189",
+        "47147",
+        "47149",
+        "47021",
+        "47187",
+        "47111",
+        "47169",
+        "47165",
+        "47043"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "inspection",
+        "repair",
+        "replacement",
+        "camera_inspection",
+        "excavation",
+        "risers",
+        "commercial",
+        "emergency"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://maxwellseptic.com/",
+        "https://maxwellseptic.com/service-area/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes coverage in Davidson, Wilson, Robertson, Rutherford, Cheatham, Williamson, Macon, Trousdale, Sumner, and Dickson counties and advertises pumping, inspections, repair/replacement, camera work, excavation, risers, commercial service, and emergency response.",
+      "coverage_basis": "The company-owned website publishes coverage in Davidson, Wilson, Robertson, Rutherford, Cheatham, Williamson, Macon, Trousdale, Sumner, and Dickson counties and advertises pumping, inspections, repair/replacement, camera work, excavation, risers, commercial service, and emergency response.",
+      "hours_note": "The company website advertises 24/7 emergency service."
+    },
+    {
+      "id": "myers-septic-rowan-nc",
+      "business_name": "Myers Septic Service",
+      "website": "https://myerssepticnc.com/",
+      "public_phone": "704-633-3962",
+      "address": "1882 Briggs Rd",
+      "city": "Salisbury",
+      "state": "NC",
+      "zip_code": "28147",
+      "counties_served": [
+        "37159"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "repair",
+        "inspection",
+        "grease_trap",
+        "lift_station",
+        "installation",
+        "pump_service"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://myerssepticnc.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website identifies Rowan County service and advertises pumping, repairs, inspections, grease traps, lift stations, installation, and pump service.",
+      "coverage_basis": "The company-owned website identifies Rowan County service and advertises pumping, repairs, inspections, grease traps, lift stations, installation, and pump service.",
+      "public_email": "myersseptictank1882@gmail.com"
+    },
+    {
+      "id": "navarro-county-septic-pumping",
+      "business_name": "Navarro County Septic Pumping",
+      "website": "https://www.navarrocountyseptic.com/",
+      "public_phone": "903-875-5746",
+      "city": "Frost",
+      "state": "TX",
+      "zip_code": "76641",
+      "counties_served": [
+        "48139",
+        "48349"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "inspection",
+        "locating",
+        "emergency"
+      ],
+      "license_information": "Company states that it is licensed and insured in Texas; verify current license scope and status before hiring.",
+      "source_urls": [
+        "https://www.navarrocountyseptic.com/"
+      ],
+      "date_added": "2026-09-01",
+      "date_last_verified": "2026-09-01",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly states septic pumping service throughout Navarro and Ellis counties and also describes inspections and tank-location services."
+    },
+    {
+      "id": "outright-septic-middle-tennessee",
+      "business_name": "Outright Septic",
+      "website": "https://www.outrightseptic.com/",
+      "public_phone": "615-558-8144",
+      "address": "1126 Harpeth Industrial Ct, Suite 12",
+      "city": "Franklin",
+      "state": "TN",
+      "zip_code": "37064",
+      "counties_served": [
+        "47187",
+        "47149",
+        "47119",
+        "47037",
+        "47043",
+        "47189",
+        "47021",
+        "47117",
+        "47099",
+        "47055",
+        "47101"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "inspection",
+        "emergency",
+        "risers",
+        "grease_trap",
+        "commercial"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://www.outrightseptic.com/",
+        "https://www.outrightseptic.com/service-areas"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes coverage in Williamson, Rutherford, Maury, Davidson, Dickson, Wilson, Cheatham, Marshall, Lawrence, Giles, and Lewis counties and advertises pumping, inspections, risers, grease-trap, commercial, and emergency service.",
+      "coverage_basis": "The company-owned website publishes coverage in Williamson, Rutherford, Maury, Davidson, Dickson, Wilson, Cheatham, Marshall, Lawrence, Giles, and Lewis counties and advertises pumping, inspections, risers, grease-trap, commercial, and emergency service.",
+      "public_email": "hello@outrightseptic.com",
+      "hours_note": "The company website advertises emergency service."
+    },
+    {
+      "id": "prince-septic-services-spartanburg",
+      "business_name": "Prince Septic Services",
+      "website": "https://princesepticservicesc.com/",
+      "public_phone": "864-641-5670",
+      "address": "",
+      "city": "Inman",
+      "state": "SC",
+      "zip_code": "29349",
+      "counties_served": [
+        "45083"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "repair",
+        "installation",
+        "emergency"
+      ],
+      "license_information": "The company website publishes license numbers 23-367-23302 and 23-368-23077; verify current status and scope.",
+      "source_urls": [
+        "https://princesepticservicesc.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website identifies Spartanburg County service and advertises septic pumping, repair, installation, and emergency response.",
+      "coverage_basis": "The company-owned website identifies Spartanburg County service and advertises septic pumping, repair, installation, and emergency response.",
+      "hours_note": "The company website advertises 24-hour service."
+    },
+    {
+      "id": "pro-septic-services-east-tennessee",
+      "business_name": "Pro Septic Services",
+      "website": "https://prosepticservices.com/",
+      "public_phone": "865-601-1000",
+      "address": "148 Johnson Circle",
+      "city": "Lenoir City",
+      "state": "TN",
+      "zip_code": "37771",
+      "counties_served": [
+        "47093",
+        "47105",
+        "47145",
+        "47001",
+        "47009"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "repair",
+        "emergency",
+        "maintenance"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://prosepticservices.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes septic service in Knox, Loudon, Roane, Anderson, and Blount counties and advertises pumping, repairs, maintenance, and emergency response.",
+      "coverage_basis": "The company-owned website publishes septic service in Knox, Loudon, Roane, Anderson, and Blount counties and advertises pumping, repairs, maintenance, and emergency response.",
+      "hours_note": "The company website advertises emergency service."
+    },
+    {
+      "id": "reliable-septic-pumping-southern-california",
+      "business_name": "Reliable Septic Pumping",
+      "website": "https://www.reliablesepticpumping.com/",
+      "public_phone": "951-231-0590",
+      "address": "1756 Galloway Ln",
+      "city": "Corona",
+      "state": "CA",
+      "zip_code": "92881",
+      "counties_served": [
+        "06065",
+        "06071",
+        "06059",
+        "06073"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "repair",
+        "installation",
+        "locating",
+        "inspection",
+        "certification",
+        "maintenance"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://www.reliablesepticpumping.com/",
+        "https://www.reliablesepticpumping.com/service-area"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service in Riverside, San Bernardino, Orange, and San Diego counties and advertises pumping, repairs, installation, locating, inspections/certifications, and maintenance.",
+      "coverage_basis": "The company-owned website publishes service in Riverside, San Bernardino, Orange, and San Diego counties and advertises pumping, repairs, installation, locating, inspections/certifications, and maintenance.",
+      "public_email": "eagleoneex@gmail.com"
+    },
+    {
+      "id": "royal-flush-environmental-oregon",
+      "business_name": "Royal Flush Environmental Services",
+      "website": "https://royalflushservices.com/",
+      "public_phone": "541-687-6764",
+      "address": "2640 Hwy 99 N",
+      "city": "Eugene",
+      "state": "OR",
+      "zip_code": "97402",
+      "counties_served": [
+        "41039",
+        "41043",
+        "41003",
+        "41019"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "installation",
+        "repair",
+        "inspection",
+        "camera_inspection",
+        "drain_cleaning",
+        "excavation",
+        "emergency"
+      ],
+      "license_information": "The company website publishes Oregon DEQ #37035; verify current status and scope.",
+      "source_urls": [
+        "https://royalflushservices.com/",
+        "https://royalflushservices.com/service-area/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service in Lane, Linn, Benton, and Douglas counties and advertises pumping, installation, repairs, inspections, video work, drain service, excavation, and emergency response.",
+      "coverage_basis": "The company-owned website publishes service in Lane, Linn, Benton, and Douglas counties and advertises pumping, installation, repairs, inspections, video work, drain service, excavation, and emergency response.",
+      "public_email": "info@royalflushenv.com",
+      "hours_note": "The company website advertises 24/7 emergency service."
+    },
+    {
+      "id": "septicworkz-south-carolina",
+      "business_name": "SepticWorkz",
+      "website": "https://septicworkz.com/",
+      "public_phone": "843-543-3050",
+      "address": "2161 Great Cypress Rd",
+      "city": "Darlington",
+      "state": "SC",
+      "zip_code": "29540",
+      "counties_served": [
+        "45025",
+        "45027",
+        "45031",
+        "45033",
+        "45041",
+        "45043",
+        "45051",
+        "45055",
+        "45061",
+        "45067",
+        "45069",
+        "45089"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "inspection",
+        "repair",
+        "installation",
+        "engineered_systems",
+        "lift_station",
+        "emergency"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://septicworkz.com/service-area",
+        "https://septicworkz.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned service-area page explicitly lists Chesterfield, Clarendon, Darlington, Dillon, Florence, Georgetown, Horry, Kershaw, Lee, Marion, Marlboro, and Williamsburg counties and advertises pumping, inspections, repairs, installation, engineered systems, lift stations, and emergency work.",
+      "coverage_basis": "The company-owned service-area page explicitly lists Chesterfield, Clarendon, Darlington, Dillon, Florence, Georgetown, Horry, Kershaw, Lee, Marion, Marlboro, and Williamsburg counties and advertises pumping, inspections, repairs, installation, engineered systems, lift stations, and emergency work.",
+      "public_email": "contact@septicworkz.com",
+      "hours_note": "The company website advertises 24/7 service."
+    },
+    {
+      "id": "southern-septic-solutions-north-florida",
+      "business_name": "Southern Septic Solutions",
+      "website": "https://southernsepticsolutions.com/",
+      "public_phone": "850-841-9066",
+      "address": "2674 Baldwin Drive South",
+      "city": "Tallahassee",
+      "state": "FL",
+      "zip_code": "32309",
+      "counties_served": [
+        "12073",
+        "12065",
+        "12129",
+        "12039",
+        "12079"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "installation",
+        "inspection",
+        "drainfield",
+        "repair",
+        "maintenance",
+        "soil_testing",
+        "permit_assistance"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://southernsepticsolutions.com/",
+        "https://southernsepticsolutions.com/service-areas/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service in Leon, Jefferson, Wakulla, Gadsden, and Madison counties and advertises pumping, installation, inspections, drainfield work, repairs, maintenance, soil evaluations, and permit assistance.",
+      "coverage_basis": "The company-owned website publishes service in Leon, Jefferson, Wakulla, Gadsden, and Madison counties and advertises pumping, installation, inspections, drainfield work, repairs, maintenance, soil evaluations, and permit assistance."
+    },
+    {
+      "id": "stay-septic-northeast-ohio",
+      "business_name": "STAY Septic",
+      "website": "https://stayseptic.com/",
+      "public_phone": "330-706-9234",
+      "address": "",
+      "city": "New Franklin",
+      "state": "OH",
+      "zip_code": "",
+      "counties_served": [
+        "39153",
+        "39133",
+        "39151",
+        "39103",
+        "39169"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "sump_pump",
+        "maintenance"
+      ],
+      "license_information": "The company website states that it is licensed by the Ohio Department of Health; verify current status and scope.",
+      "source_urls": [
+        "https://stayseptic.com/",
+        "https://stayseptic.com/service-area/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service in Summit, Portage, Stark, Medina, and Wayne counties and advertises septic pumping, sump service, and maintenance.",
+      "coverage_basis": "The company-owned website publishes service in Summit, Portage, Stark, Medina, and Wayne counties and advertises septic pumping, sump service, and maintenance."
+    },
+    {
+      "id": "steel-septic-arizona",
+      "business_name": "Steel Septic",
+      "website": "https://steelseptic.com/",
+      "public_phone": "480-995-0878",
+      "address": "13026 N Cave Creek Rd, Suite 205",
+      "city": "Phoenix",
+      "state": "AZ",
+      "zip_code": "85022",
+      "counties_served": [
+        "04013"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "maintenance"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://steelseptic.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes Maricopa County/Phoenix-area septic pumping and maintenance service and lists Phoenix and Queen Creek locations.",
+      "coverage_basis": "The company-owned website publishes Maricopa County/Phoenix-area septic pumping and maintenance service and lists Phoenix and Queen Creek locations."
+    },
+    {
+      "id": "sunset-septic-services-arizona",
+      "business_name": "Sunset Septic Services",
+      "website": "https://sunsetsepticaz.com/",
+      "public_phone": "480-988-1401",
+      "address": "P.O. Box 9602",
+      "city": "Chandler Heights",
+      "state": "AZ",
+      "zip_code": "85127",
+      "counties_served": [
+        "04013",
+        "04021"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "installation",
+        "repair",
+        "maintenance",
+        "inspection",
+        "site_evaluation",
+        "soil_testing",
+        "alternative_systems",
+        "emergency"
+      ],
+      "license_information": "The company website publishes Arizona ROC 261035, ADEQ certification information, and license 113053 IC; verify current status and scope.",
+      "source_urls": [
+        "https://sunsetsepticaz.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes septic service in Maricopa and Pinal counties and describes pumping, installation, repair, maintenance, site/soil testing, certifications, alternative systems, and emergency work.",
+      "coverage_basis": "The company-owned website publishes septic service in Maricopa and Pinal counties and describes pumping, installation, repair, maintenance, site/soil testing, certifications, alternative systems, and emergency work."
+    },
+    {
+      "id": "tn-septic-tank-sumter-sc",
+      "business_name": "T&N Septic Tank Co.",
+      "website": "https://www.tandnseptictank.com/",
+      "public_phone": "803-481-2428",
+      "address": "2140 US 521 South",
+      "city": "Sumter",
+      "state": "SC",
+      "zip_code": "29153",
+      "counties_served": [
+        "45085",
+        "45027",
+        "45061"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "installation",
+        "repair",
+        "inspection",
+        "drainfield",
+        "grease_trap",
+        "land_clearing",
+        "emergency",
+        "engineered_systems"
+      ],
+      "license_information": "The company website describes Master Tier 3 and engineered-system capability; verify current certification and scope.",
+      "source_urls": [
+        "https://www.tandnseptictank.com/local-septic-company",
+        "https://www.tandnseptictank.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes named service communities in Sumter, Clarendon, and Lee counties and advertises pumping, installation, repair, inspections, drainfields, grease traps, land clearing, engineered systems, and emergency service. Confirm availability for the exact property.",
+      "coverage_basis": "The company-owned website publishes named service communities in Sumter, Clarendon, and Lee counties and advertises pumping, installation, repair, inspections, drainfields, grease traps, land clearing, engineered systems, and emergency service. Confirm availability for the exact property.",
+      "hours_note": "The company website advertises 24-hour service."
+    },
+    {
+      "id": "tiger-tank-pumping-northwest-wa",
+      "business_name": "Tiger Tank Pumping",
+      "website": "https://tigertankpumping.com/",
+      "public_phone": "360-421-1063",
+      "address": "",
+      "city": "Bow",
+      "state": "WA",
+      "zip_code": "98232",
+      "counties_served": [
+        "53057",
+        "53073"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "inspection",
+        "installation",
+        "repair",
+        "maintenance"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://tigertankpumping.com/",
+        "https://tigertankpumping.com/service-area/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service in Skagit and Whatcom counties and advertises septic pumping, inspections, installation, repairs, and maintenance.",
+      "coverage_basis": "The company-owned website publishes service in Skagit and Whatcom counties and advertises septic pumping, inspections, installation, repairs, and maintenance."
+    },
+    {
+      "id": "top-notch-septic-chesterfield-lancaster",
+      "business_name": "Top Notch Septic Services",
+      "website": "https://www.topnotchsepticservices.com/",
+      "public_phone": "843-962-8034",
+      "address": "",
+      "city": "Pageland",
+      "state": "SC",
+      "zip_code": "",
+      "counties_served": [
+        "45025",
+        "45057"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "repair",
+        "installation",
+        "maintenance",
+        "commercial"
+      ],
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
+      "source_urls": [
+        "https://www.topnotchsepticservices.com/"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service in the Chesterfield and Lancaster County area and advertises pumping, repairs, installation, maintenance, and commercial septic work.",
+      "coverage_basis": "The company-owned website publishes service in the Chesterfield and Lancaster County area and advertises pumping, repairs, installation, maintenance, and commercial septic work."
+    },
+    {
+      "id": "weaver-excavating-septic-ennis-tx",
+      "business_name": "Weaver Excavating & Septic",
+      "website": "https://weaverexcavating.net/",
+      "public_phone": "903-603-2200",
+      "city": "Eustace",
+      "state": "TX",
+      "zip_code": "75124",
+      "counties_served": [
+        "48213",
+        "48257",
+        "48467",
+        "48139",
+        "48349",
+        "48217"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "installation",
+        "repair",
+        "maintenance",
+        "excavation"
+      ],
+      "license_information": "Company website displays Texas license OS0025734; verify current scope and status before hiring.",
+      "source_urls": [
+        "https://weaverexcavating.net/service-areas/"
+      ],
+      "date_added": "2026-09-01",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned service-area page explicitly lists Henderson, Kaufman, Van Zandt, Ellis, Navarro, and Hill counties and advertises pumping, installation, repairs, maintenance contracts, and excavation."
+    },
+    {
       "id": "west-ga-plumbing-septic",
       "business_name": "West GA Plumbing and Septic",
       "website": "https://www.westgaps.com/",
@@ -657,203 +2091,121 @@
       "coverage_notes": "The company-owned service-area page explicitly lists Douglas, Haralson, Carroll, Paulding, Polk, Coweta, Heard, Floyd, Cobb, and Bartow counties. Its septic page advertises pumping, maintenance, inspections, repairs, field-line and tank replacement, drainfield work, installation, hydrojetting, and emergency service."
     },
     {
-      "id": "asap-septic-middle-georgia",
-      "business_name": "ASAP Septic",
-      "website": "https://www.asapsepticllc.com/",
-      "public_phone": "478-308-2811",
-      "city": "Cochran",
-      "state": "GA",
-      "zip_code": "31014",
-      "counties_served": [
-        "13021",
-        "13175",
-        "13023",
-        "13093",
-        "13091",
-        "13225",
-        "13153",
-        "13079",
-        "13235",
-        "13289"
-      ],
-      "zip_codes_served": [],
-      "service_categories": [
-        "pumping",
-        "inspection",
-        "installation",
-        "replacement",
-        "repair",
-        "commercial",
-        "grease_trap",
-        "rv"
-      ],
-      "license_information": "Verify current Georgia certification, county permitting credentials, insurance, and the permitted scope of work before hiring.",
-      "source_urls": [
-        "https://www.asapsepticllc.com/service-area",
-        "https://www.asapsepticllc.com/contact"
-      ],
-      "date_added": "2026-09-02",
-      "date_last_verified": "2026-09-02",
-      "status": "active",
-      "sponsored": false,
-      "affiliate": false,
-      "coverage_notes": "The company-owned service-area page explicitly lists septic service in Bibb, Laurens, Bleckley, Dooly, Dodge, Peach, Houston, Crawford, Pulaski, and Twiggs counties. The site advertises pumping and inspections, new installation, replacement, repairs, residential and commercial septic service, grease-trap work, and RV tank pumping."
-    },
-    {
-      "id": "coastal-georgia-septic",
-      "business_name": "Coastal Georgia Septic",
-      "website": "https://coastalgeorgiaseptic.com/",
-      "public_phone": "912-476-0063",
-      "city": "Brunswick",
-      "state": "GA",
+      "id": "westwood-septic-service",
+      "business_name": "Westwood Septic Service",
+      "website": "https://westwoodsepticservice.com/",
+      "public_phone": "602-276-1113",
+      "address": "",
+      "city": "Phoenix",
+      "state": "AZ",
       "zip_code": "",
       "counties_served": [
-        "13127",
-        "13191",
-        "13039"
+        "04013"
       ],
       "zip_codes_served": [],
       "service_categories": [
         "pumping",
         "cleaning",
         "inspection",
-        "installation",
-        "repair",
-        "replacement",
-        "drainfield"
-      ],
-      "license_information": "The company-owned website states that the business is licensed, state certified, and insured; verify current Georgia credentials, county requirements, insurance, and service scope before hiring.",
-      "source_urls": [
-        "https://coastalgeorgiaseptic.com/faq",
-        "https://coastalgeorgiaseptic.com/septic-pumping",
-        "https://coastalgeorgiaseptic.com/septic-installation"
-      ],
-      "date_added": "2026-09-02",
-      "date_last_verified": "2026-09-02",
-      "status": "active",
-      "sponsored": false,
-      "affiliate": false,
-      "coverage_notes": "The company-owned website explicitly states service throughout Glynn, McIntosh, and Camden counties and advertises septic pumping, cleaning, real-estate inspections, repairs, drainfield replacement, and new conventional, mound, and Eljen system installation."
-    },
-    {
-      "id": "bob-fitzpatrick-septic-ne-georgia",
-      "business_name": "Bob Fitzpatrick Septic",
-      "website": "https://www.bobfitzpatrickseptic.com/",
-      "public_phone": "706-308-7633",
-      "city": "Danielsville",
-      "state": "GA",
-      "zip_code": "30633",
-      "counties_served": [
-        "13195",
-        "13059",
-        "13219",
-        "13119",
-        "13157",
-        "13221",
-        "13105",
-        "13147",
-        "13011",
-        "13013"
-      ],
-      "zip_codes_served": [],
-      "service_categories": [
-        "pumping",
-        "cleaning",
-        "installation",
-        "repair",
-        "inspection",
-        "maintenance",
-        "commercial",
-        "grease_trap",
-        "sewer_pump",
-        "emergency"
-      ],
-      "license_information": "Verify current Georgia certification, county permitting credentials, insurance, and the permitted scope of work before hiring.",
-      "source_urls": [
-        "https://www.bobfitzpatrickseptic.com/"
-      ],
-      "date_added": "2026-09-02",
-      "date_last_verified": "2026-09-02",
-      "status": "active",
-      "sponsored": false,
-      "affiliate": false,
-      "coverage_notes": "The company-owned website explicitly lists Madison, Clarke, Oconee, Franklin, Jackson, Oglethorpe, Elbert, Hart, Banks, and Barrow counties and advertises septic cleaning and pumping, new installation, repairs, inspections, sewer-system maintenance, grease-trap pumping, sewer-pump work, and emergency service."
-    },
-    {
-      "id": "advance-septic-solutions-metro-east-georgia",
-      "business_name": "Advance Septic Solutions",
-      "website": "https://advanceseptic.com/",
-      "public_phone": "678-940-0226",
-      "city": "Conyers",
-      "state": "GA",
-      "zip_code": "30094",
-      "counties_served": [
-        "13217",
-        "13247",
-        "13135",
-        "13159",
-        "13211",
-        "13297",
-        "13151"
-      ],
-      "zip_codes_served": [],
-      "service_categories": [
-        "pumping",
-        "installation",
-        "repair",
-        "inspection",
-        "maintenance",
-        "replacement",
-        "drainfield",
+        "locating",
         "grease_trap",
         "lift_station",
-        "commercial",
-        "emergency"
+        "sand_trap",
+        "sump_pump",
+        "risers"
       ],
-      "license_information": "The company-owned website describes licensed and insured septic service; verify current Georgia certification, county permitting credentials, insurance, and the permitted scope of work before hiring.",
+      "license_information": "The company website publishes ADEQ #113477 and Maricopa County permit SW2503758; verify current status and scope.",
       "source_urls": [
-        "https://advanceseptic.com/septic-tank-service-areas/",
-        "https://advanceseptic.com/"
+        "https://westwoodsepticservice.com/"
       ],
       "date_added": "2026-09-02",
       "date_last_verified": "2026-09-02",
       "status": "active",
       "sponsored": false,
       "affiliate": false,
-      "coverage_notes": "The company-owned service-area page explicitly identifies Newton, Rockdale, Gwinnett, Jasper, Morgan, Walton, and Henry as the counties closest to its home base and states that service is available in all or parts of the listed areas. The site advertises pumping, installation, repair, inspection, maintenance, drainfield, grease-trap, lift-station, commercial, and emergency work; confirm availability for the exact address."
+      "coverage_notes": "The company-owned website publishes Phoenix Valley/Maricopa County service and describes pumping, cleaning, ADEQ inspections, locating, grease traps, lift stations, sand traps, sump service, and risers.",
+      "coverage_basis": "The company-owned website publishes Phoenix Valley/Maricopa County service and describes pumping, cleaning, ADEQ inspections, locating, grease traps, lift stations, sand traps, sump service, and risers."
     },
     {
-      "id": "carlton-septic-colquitt-ga",
-      "business_name": "Carlton Septic Service",
-      "website": "https://www.carltonseptic.com/",
-      "public_phone": "229-985-2861",
-      "city": "Moultrie",
-      "state": "GA",
-      "zip_code": "",
+      "id": "williams-bay-environmental-northern-michigan",
+      "business_name": "Williams & Bay Environmental",
+      "website": "https://www.williamspumping.com/",
+      "public_phone": "231-228-7499",
+      "address": "9317 S Nash Rd",
+      "city": "Maple City",
+      "state": "MI",
+      "zip_code": "49664",
       "counties_served": [
-        "13071"
+        "26089",
+        "26055",
+        "26019",
+        "26165",
+        "26009",
+        "26079",
+        "26101",
+        "26113"
       ],
       "zip_codes_served": [],
       "service_categories": [
         "pumping",
-        "installation",
-        "repair",
+        "cleaning",
         "inspection",
         "maintenance",
-        "drainfield",
-        "commercial",
-        "emergency"
+        "grease_trap",
+        "portable_sanitation"
       ],
-      "license_information": "Verify current Georgia certification, county permitting credentials, insurance, and the permitted scope of work before hiring.",
+      "license_information": "Verify current licensing, registration, insurance, and authorized service scope directly before hiring.",
       "source_urls": [
-        "https://www.carltonseptic.com/"
+        "https://www.williamspumping.com/",
+        "https://www.williamspumping.com/service-area"
       ],
       "date_added": "2026-09-02",
       "date_last_verified": "2026-09-02",
       "status": "active",
       "sponsored": false,
       "affiliate": false,
-      "coverage_notes": "The company-owned website explicitly states service throughout Colquitt County and advertises septic pumping, installation, system and drainfield repairs, camera inspections, maintenance, commercial septic work, and emergency repairs."
+      "coverage_notes": "The company-owned website publishes service in Leelanau, Grand Traverse, Benzie, Wexford, Antrim, Kalkaska, Manistee, and Missaukee counties and advertises septic pumping/cleaning, inspections, maintenance, grease-trap, and related environmental services.",
+      "coverage_basis": "The company-owned website publishes service in Leelanau, Grand Traverse, Benzie, Wexford, Antrim, Kalkaska, Manistee, and Missaukee counties and advertises septic pumping/cleaning, inspections, maintenance, grease-trap, and related environmental services.",
+      "public_email": "info@williamspumping.com"
+    },
+    {
+      "id": "yoder-septic-panhandle-fl",
+      "business_name": "Yoder Septic",
+      "website": "https://www.yoderseptic.com/",
+      "public_phone": "850-674-2716",
+      "address": "15646 SW Abe Springs Rd",
+      "city": "Blountstown",
+      "state": "FL",
+      "zip_code": "32424",
+      "counties_served": [
+        "12013",
+        "12077",
+        "12063",
+        "12045",
+        "12005"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "installation",
+        "repair",
+        "pumping"
+      ],
+      "license_information": "The company website publishes Florida license SR0900933; verify current status and scope.",
+      "source_urls": [
+        "https://www.yoderseptic.com/",
+        "https://www.yoderseptic.com/service-area"
+      ],
+      "date_added": "2026-09-02",
+      "date_last_verified": "2026-09-02",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website publishes service in Calhoun, Liberty, Jackson, Gulf, and Bay counties and advertises septic installation, repair, and pumping.",
+      "coverage_basis": "The company-owned website publishes service in Calhoun, Liberty, Jackson, Gulf, and Bay counties and advertises septic installation, repair, and pumping."
     }
+  ],
+  "catalog_layers": [
+    "provider-overrides.json",
+    "provider-expansion-services-near-me-2026-09-02.json"
   ]
 }
