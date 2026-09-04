@@ -660,6 +660,20 @@
       "relevance_score": 26.0,
       "date_added": "2026-09-04",
       "id": "citrus-to-septic-tank-size-calculator-0047"
+    },
+    {
+      "source_url": "https://septicscope.com/counties/florida/hernando/",
+      "target_url": "https://septicscope.com/guides/septic-tank-size-calculator/",
+      "anchor_text": "Septic tank size calculator: start with bedrooms, finish with your local code",
+      "summary": "Use this related homeowner guide for the next practical decision, checklist, or maintenance step.",
+      "source_page_type": "county_page",
+      "target_page_type": "guide",
+      "reason": "contextual_internal_link_for_underlinked_or_low-navigation_page",
+      "source_outgoing_internal_links": 6,
+      "target_inbound_internal_links": 49,
+      "relevance_score": 26.0,
+      "date_added": "2026-09-04",
+      "id": "hernando-to-septic-tank-size-calculator-0048"
     }
   ]
 }
