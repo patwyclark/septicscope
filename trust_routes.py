@@ -5,6 +5,12 @@ from pathlib import Path
 import re
 
 
+LEGACY_REDIRECTS = {
+    "/privacy.html": "/privacy/",
+    "/corrections.html": "/contact/",
+}
+
+
 def _verified_count(site: Path) -> int:
     total = 0
     for path in site.glob("counties/*/*/index.html"):
@@ -54,16 +60,33 @@ def _refresh_home_metric(site: Path, verified: int) -> None:
 def _ensure_redirects(site: Path) -> None:
     redirects = site / "_redirects"
     existing = redirects.read_text(encoding="utf-8", errors="replace") if redirects.exists() else ""
-    wanted = [
-        "/privacy.html /privacy/ 301",
-        "/corrections.html /contact/ 301",
-    ]
+    wanted = [f"{source} {target} 301" for source, target in LEGACY_REDIRECTS.items()]
     lines = existing.rstrip("\n").splitlines() if existing.strip() else []
     for rule in wanted:
         source = rule.split()[0]
         if not any(line.strip().startswith(source + " ") for line in lines):
             lines.append(rule)
     redirects.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _remove_redirect_sources_from_sitemap(site: Path) -> None:
+    """Keep legacy 301 aliases available without advertising them to search engines."""
+    sitemap = site / "sitemap.xml"
+    if not sitemap.exists():
+        return
+    text = sitemap.read_text(encoding="utf-8", errors="replace")
+    original = text
+    for source in LEGACY_REDIRECTS:
+        url = f"https://septicscope.com{source}"
+        # Sitemap entries are generated as compact <url> blocks. Remove the full block
+        # containing the redirect source regardless of optional lastmod/changefreq tags.
+        pattern = re.compile(
+            rf"<url>\s*<loc>{re.escape(url)}</loc>.*?</url>",
+            flags=re.I | re.S,
+        )
+        text = pattern.sub("", text)
+    if text != original:
+        sitemap.write_text(text, encoding="utf-8")
 
 
 def finalize(root: Path | str | None = None) -> None:
@@ -75,9 +98,12 @@ def finalize(root: Path | str | None = None) -> None:
     verified = _verified_count(site)
     _refresh_home_metric(site, verified)
 
-    # Preserve the old public URLs with server-level 301s while leaving the original
-    # generated files untouched for static integrity checks. Cloudflare Pages applies
-    # these redirects before serving those legacy files.
+    # Preserve old public URLs with server-level 301s, but never include redirect
+    # sources in the sitemap. Search engines should discover only the canonical routes.
     _ensure_redirects(site)
+    _remove_redirect_sources_from_sitemap(site)
 
-    print(f"Trust-route compatibility complete: homepage count={verified}; legacy privacy/corrections redirect rules installed")
+    print(
+        f"Trust-route compatibility complete: homepage count={verified}; "
+        "legacy privacy/corrections redirects installed and excluded from sitemap"
+    )
