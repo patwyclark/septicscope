@@ -19,6 +19,7 @@ on:
       - "county_lookup_experience.py"
       - "homepage_experience.py"
       - "septic_service_quality.py"
+      - "trust_routes.py"
       - "data/provider-overrides.json"
       - "data/provider-expansion-*.json"
       - "build_site.py"
