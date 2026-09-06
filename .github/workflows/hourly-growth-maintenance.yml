@@ -9,6 +9,7 @@ on:
       - "tools/provider_discovery_parts/**"
       - "tools/continuous_growth.py"
       - "tools/seo_hourly_audit.py"
+      - "tools/indexing_hygiene.py"
       - "tools/indexnow_submit.py"
       - "tools/sync_curated_providers.py"
       - "provider_experience.py"
@@ -65,6 +66,7 @@ jobs:
           python tools/provider_discovery.py --self-test
           python tools/continuous_growth.py --self-test
           python tools/seo_hourly_audit.py --self-test
+          python tools/indexing_hygiene.py --self-test
           python tools/indexnow_submit.py /dev/null --self-test
           python tools/sync_curated_providers.py --self-test
 
@@ -130,6 +132,19 @@ jobs:
           set -o pipefail
           python audit_site.py 2>&1 | tee hourly-internal-audit.txt
 
+      - name: Audit Google indexing hygiene on generated and live sitemaps
+        id: indexing_audit
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          {
+            echo "=== Generated sitemap ==="
+            python tools/indexing_hygiene.py --site site
+            echo
+            echo "=== Live sitemap ==="
+            python tools/indexing_hygiene.py --production
+          } 2>&1 | tee hourly-indexing-audit.txt
+
       - name: Check external government, source and county-local provider links
         id: external_audit
         continue-on-error: true
@@ -192,10 +207,12 @@ jobs:
             hourly-seo-report.json
             hourly-changed-urls.json
             hourly-internal-audit.txt
+            hourly-indexing-audit.txt
             hourly-external-audit.txt
             hourly-adsense-audit.txt
             post-rebase-seo-report.json
             post-rebase-internal-audit.txt
+            post-rebase-indexing-audit.txt
             post-rebase-external-audit.txt
             post-rebase-adsense-audit.txt
             site/index.html
@@ -218,6 +235,7 @@ jobs:
         run: |
           test "${{ steps.seo_audit.outcome }}" = "success"
           test "${{ steps.internal_audit.outcome }}" = "success"
+          test "${{ steps.indexing_audit.outcome }}" = "success"
           test "${{ steps.external_audit.outcome }}" = "success"
           test "${{ steps.adsense_audit.outcome }}" = "success"
 
@@ -246,6 +264,7 @@ jobs:
             python tools/seo_hourly_audit.py --site site --report post-rebase-seo-report.json
             set -o pipefail
             python audit_site.py 2>&1 | tee post-rebase-internal-audit.txt
+            python tools/indexing_hygiene.py --site site 2>&1 | tee post-rebase-indexing-audit.txt
             python audit_site.py --external 2>&1 | tee post-rebase-external-audit.txt
             python adsense_audit.py 2>&1 | tee post-rebase-adsense-audit.txt
           fi
@@ -281,6 +300,10 @@ jobs:
           else:
               raise SystemExit(f'Production did not reach {expected} within 6 minutes')
           PY
+
+      - name: Recheck production sitemap after deployment
+        if: steps.commit.outputs.sha != ''
+        run: python tools/indexing_hygiene.py --production
 
       - name: Notify Bing and other IndexNow participants about changed public URLs
         if: steps.commit.outputs.sha != ''
