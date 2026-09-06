@@ -5,9 +5,14 @@ from pathlib import Path
 import re
 
 
+# These historic .html URLs remain valid aliases for users and old backlinks, but
+# the public platform redirects them to their clean canonical routes. They must
+# therefore never be advertised in the sitemap or treated as indexable source files.
 LEGACY_REDIRECTS = {
     "/privacy.html": "/privacy/",
     "/corrections.html": "/contact/",
+    "/sources.html": "/sources",
+    "/disclaimer.html": "/disclaimer",
 }
 
 
@@ -70,7 +75,7 @@ def _ensure_redirects(site: Path) -> None:
 
 
 def _remove_redirect_sources_from_sitemap(site: Path) -> None:
-    """Keep legacy 301 aliases available without advertising them to search engines."""
+    """Keep legacy aliases available without advertising redirects to search engines."""
     sitemap = site / "sitemap.xml"
     if not sitemap.exists():
         return
@@ -78,8 +83,6 @@ def _remove_redirect_sources_from_sitemap(site: Path) -> None:
     original = text
     for source in LEGACY_REDIRECTS:
         url = f"https://septicscope.com{source}"
-        # Sitemap entries are generated as compact <url> blocks. Remove the full block
-        # containing the redirect source regardless of optional lastmod/changefreq tags.
         pattern = re.compile(
             rf"<url>\s*<loc>{re.escape(url)}</loc>.*?</url>",
             flags=re.I | re.S,
@@ -87,6 +90,35 @@ def _remove_redirect_sources_from_sitemap(site: Path) -> None:
         text = pattern.sub("", text)
     if text != original:
         sitemap.write_text(text, encoding="utf-8")
+
+
+def _mark_redirect_source_files_noindex(site: Path) -> None:
+    """Make static alias files match their public redirect/non-indexable intent.
+
+    Cloudflare serves the redirect before these files are exposed, but the marker keeps
+    local audits from misclassifying the implementation file as a canonical landing page.
+    """
+    for source in LEGACY_REDIRECTS:
+        rel = source.lstrip("/")
+        path = site / rel
+        if not path.is_file() or path.suffix.lower() != ".html":
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        if re.search(r'<meta\s+[^>]*name=["\']robots["\'][^>]*>', text, flags=re.I):
+            text = re.sub(
+                r'<meta\s+[^>]*name=["\']robots["\'][^>]*>',
+                '<meta name="robots" content="noindex,follow">',
+                text,
+                count=1,
+                flags=re.I,
+            )
+        elif "</head>" in text:
+            text = text.replace(
+                "</head>",
+                '<meta name="robots" content="noindex,follow"></head>',
+                1,
+            )
+        path.write_text(text, encoding="utf-8")
 
 
 def finalize(root: Path | str | None = None) -> None:
@@ -98,12 +130,13 @@ def finalize(root: Path | str | None = None) -> None:
     verified = _verified_count(site)
     _refresh_home_metric(site, verified)
 
-    # Preserve old public URLs with server-level 301s, but never include redirect
-    # sources in the sitemap. Search engines should discover only the canonical routes.
+    # Preserve old URLs for users/backlinks while giving crawlers only direct,
+    # canonical destinations in the sitemap.
     _ensure_redirects(site)
     _remove_redirect_sources_from_sitemap(site)
+    _mark_redirect_source_files_noindex(site)
 
     print(
         f"Trust-route compatibility complete: homepage count={verified}; "
-        "legacy privacy/corrections redirects installed and excluded from sitemap"
+        "legacy trust aliases redirect and are excluded from indexing/sitemap"
     )
