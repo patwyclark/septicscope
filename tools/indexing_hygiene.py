@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Audit SepticScope sitemap URLs for Google-indexing hygiene.
 
-The static audit prevents noindex, redirected/non-canonical, or missing pages from
-being published in the sitemap. The production audit checks the live sitemap and
-verifies that every listed URL returns 200 without redirecting, is indexable, and
-self-canonicalizes. This specifically targets Search Console exclusion classes
-such as "Page with redirect" and "Excluded by noindex tag" without forcing
-unfinished county-help pages to become indexable.
+The static audit prevents noindex, redirected/non-canonical, obvious soft-404, or
+missing pages from being published in the sitemap. It also verifies that robots.txt
+keeps the county tree crawlable so Google can actually observe noindex directives on
+unfinished county-help pages. The production audit checks the live sitemap and robots
+file and verifies that every listed URL returns 200 without redirecting, is indexable,
+and self-canonicalizes. This specifically targets Search Console exclusion classes
+such as "Page with redirect" and "Excluded by noindex tag" without forcing unfinished
+county-help pages to become indexable.
 """
 from __future__ import annotations
 
@@ -24,6 +26,7 @@ import xml.etree.ElementTree as ET
 
 BASE = "https://septicscope.com"
 DOMAIN = "septicscope.com"
+EXPECTED_SITEMAP_DIRECTIVE = f"Sitemap: {BASE}/sitemap.xml"
 
 
 class HeadInspector(HTMLParser):
@@ -86,6 +89,50 @@ def inspect_html(text: str) -> tuple[list[str], str]:
     return parser.canonicals, robots
 
 
+def looks_like_soft_404(text: str) -> bool:
+    """Return True only for conservative, high-confidence soft-404 markers.
+
+    The check intentionally avoids generic words such as "missing" or "not found"
+    outside the title/H1 so ordinary educational content is not misclassified.
+    Research-stage county pages are also treated as non-indexable landing pages if a
+    future regression accidentally drops their noindex directive.
+    """
+    lower = text.lower()
+    if "local guide in progress" in lower:
+        return True
+    markers = (
+        r"<title[^>]*>\s*(?:404\b|page\s+not\s+found\b|not\s+found\b)",
+        r"<h1[^>]*>\s*(?:404\b|page\s+not\s+found\b|not\s+found\b)",
+        r"<h1[^>]*>[^<]{0,80}\bpage\s+does\s+not\s+exist\b",
+    )
+    return any(re.search(pattern, text, flags=re.I) for pattern in markers)
+
+
+def audit_robots_text(text: str, *, label: str) -> list[str]:
+    """Check robots rules that materially affect indexing hygiene."""
+    errors: list[str] = []
+    normalized_lines = []
+    for raw in text.splitlines():
+        line = raw.split("#", 1)[0].strip()
+        if line:
+            normalized_lines.append(line)
+
+    if not any(line.lower() == EXPECTED_SITEMAP_DIRECTIVE.lower() for line in normalized_lines):
+        errors.append(f"{label} does not advertise {BASE}/sitemap.xml")
+
+    for line in normalized_lines:
+        if not line.lower().startswith("disallow:"):
+            continue
+        value = line.split(":", 1)[1].strip()
+        if value == "/":
+            errors.append(f"{label} blocks the entire site")
+        if value in {"/counties", "/counties/", "/counties/*"}:
+            errors.append(
+                f"{label} blocks the county tree; unfinished noindex pages must remain crawlable"
+            )
+    return errors
+
+
 def redirect_sources(site: Path) -> set[str]:
     path = site / "_redirects"
     if not path.exists():
@@ -113,13 +160,27 @@ def redirect_sources(site: Path) -> set[str]:
 
 def audit_static(site: Path) -> list[str]:
     errors: list[str] = []
+
+    robots_path = site / "robots.txt"
+    if not robots_path.exists():
+        errors.append("Generated robots.txt is missing")
+    else:
+        errors.extend(
+            audit_robots_text(
+                robots_path.read_text(encoding="utf-8", errors="replace"),
+                label="Generated robots.txt",
+            )
+        )
+
     sitemap = site / "sitemap.xml"
     if not sitemap.exists():
-        return ["Generated sitemap.xml is missing"]
+        errors.append("Generated sitemap.xml is missing")
+        return errors
     try:
         urls = parse_sitemap(sitemap.read_text(encoding="utf-8", errors="replace"))
     except Exception as exc:
-        return [f"Generated sitemap cannot be parsed: {exc}"]
+        errors.append(f"Generated sitemap cannot be parsed: {exc}")
+        return errors
     if not urls:
         errors.append("Generated sitemap contains no URLs")
         return errors
@@ -151,6 +212,8 @@ def audit_static(site: Path) -> list[str]:
             errors.append(f"Sitemap page does not self-canonicalize: {raw_url} -> {canonicals[0]}")
         if re.search(r"<meta[^>]+http-equiv=[\"']?refresh", text, flags=re.I):
             errors.append(f"Meta-refresh page appears in sitemap: {raw_url}")
+        if looks_like_soft_404(text):
+            errors.append(f"Obvious soft-404/research-stage page appears in sitemap: {raw_url}")
     return errors
 
 
@@ -203,21 +266,34 @@ def audit_live_url(url: str) -> str | None:
         return f"Live sitemap URL must have one canonical ({len(canonicals)} found): {url}"
     if normalize_url(canonicals[0]) != expected:
         return f"Live sitemap URL canonical mismatch: {url} -> {canonicals[0]}"
+    if looks_like_soft_404(body):
+        return f"Live sitemap URL looks like a soft-404/research-stage page: {url}"
     return None
 
 
 def audit_production() -> tuple[list[str], int]:
     errors: list[str] = []
+
+    try:
+        robots_status, robots_text, _robots_headers = fetch_without_redirect(BASE + "/robots.txt")
+    except Exception as exc:
+        errors.append(f"Live robots.txt could not be fetched: {type(exc).__name__}: {exc}")
+    else:
+        if robots_status != 200:
+            errors.append(f"Live robots.txt does not return 200: {robots_status}")
+        else:
+            errors.extend(audit_robots_text(robots_text, label="Live robots.txt"))
+
     try:
         status, xml_text, _headers = fetch_without_redirect(BASE + "/sitemap.xml", limit=4_000_000)
     except Exception as exc:
-        return [f"Live sitemap could not be fetched: {type(exc).__name__}: {exc}"], 0
+        return errors + [f"Live sitemap could not be fetched: {type(exc).__name__}: {exc}"], 0
     if status != 200:
-        return [f"Live sitemap does not return 200: {status}"], 0
+        return errors + [f"Live sitemap does not return 200: {status}"], 0
     try:
         urls = parse_sitemap(xml_text)
     except Exception as exc:
-        return [f"Live sitemap cannot be parsed: {exc}"], 0
+        return errors + [f"Live sitemap cannot be parsed: {exc}"], 0
     if len(urls) != len(set(urls)):
         errors.append("Live sitemap contains duplicate URLs")
     with concurrent.futures.ThreadPoolExecutor(max_workers=20) as pool:
@@ -232,6 +308,11 @@ def self_test() -> None:
         site = Path(tmp)
         (site / "ok").mkdir()
         (site / "hidden").mkdir()
+        (site / "soft-404").mkdir()
+        (site / "robots.txt").write_text(
+            f"User-agent: *\nAllow: /\n{EXPECTED_SITEMAP_DIRECTIVE}\n",
+            encoding="utf-8",
+        )
         (site / "ok" / "index.html").write_text(
             '<html><head><title>OK</title><meta name="robots" content="index,follow">'
             '<link rel="canonical" href="https://septicscope.com/ok/"></head><body>ok</body></html>',
@@ -242,12 +323,20 @@ def self_test() -> None:
             '<link rel="canonical" href="https://septicscope.com/hidden/"></head></html>',
             encoding="utf-8",
         )
+        (site / "soft-404" / "index.html").write_text(
+            '<html><head><title>Page not found</title>'
+            '<meta name="robots" content="index,follow">'
+            '<link rel="canonical" href="https://septicscope.com/soft-404/"></head>'
+            '<body><h1>Page not found</h1></body></html>',
+            encoding="utf-8",
+        )
         (site / "sitemap.xml").write_text(
             '<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
             '<url><loc>https://septicscope.com/ok/</loc></url></urlset>',
             encoding="utf-8",
         )
         assert not audit_static(site)
+
         (site / "sitemap.xml").write_text(
             '<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
             '<url><loc>https://septicscope.com/hidden/</loc></url></urlset>',
@@ -255,6 +344,21 @@ def self_test() -> None:
         )
         failures = audit_static(site)
         assert any("Noindex page appears in sitemap" in item for item in failures)
+
+        (site / "sitemap.xml").write_text(
+            '<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+            '<url><loc>https://septicscope.com/soft-404/</loc></url></urlset>',
+            encoding="utf-8",
+        )
+        failures = audit_static(site)
+        assert any("soft-404" in item.lower() for item in failures)
+
+        (site / "robots.txt").write_text(
+            f"User-agent: *\nDisallow: /counties/\n{EXPECTED_SITEMAP_DIRECTIVE}\n",
+            encoding="utf-8",
+        )
+        failures = audit_static(site)
+        assert any("county tree" in item.lower() for item in failures)
     print("PASS: indexing hygiene self-test")
 
 
@@ -283,7 +387,7 @@ def main() -> int:
         for error in errors:
             print(" -", error, file=sys.stderr)
         return 1
-    print("PASS: sitemap contains only direct, indexable, self-canonical URLs")
+    print("PASS: robots and sitemap expose only crawlable, direct, indexable, self-canonical URLs")
     return 0
 
 
