@@ -59,8 +59,8 @@ HI_COUNTIES = [
     },
     {
         'county': 'Maui',
-        'local_label': 'County of Maui official website',
-        'local_url': 'https://www.mauicounty.gov/',
+        'local_label': 'County of Maui government departments',
+        'local_url': 'https://www.mauicounty.gov/67/Government',
         'routing': (
             'For property in Maui County, start with the state Wastewater Branch for the onsite wastewater '
             'approval path. Use the County of Maui website to identify the current building, planning, zoning, '
