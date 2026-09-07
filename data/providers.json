@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-09-02",
+  "last_updated": "2026-09-06",
   "ordering_policy": "Ordinary listings use neutral ordering. Sponsored or promoted placement must be clearly labeled and paid links must use rel=sponsored.",
   "verification_policy": "Only verifiable public business information may be published. Google Search may be used manually to discover a business, but the published facts must be confirmed on the company-owned website or an official public-agency directory. Do not infer service areas, copy reviews, or display ratings that cannot be maintained accurately.",
   "correction_process": "Business owners and users may report corrections, closures, removals, or listing claims through https://septicscope.com/contact/.",
@@ -817,6 +817,43 @@
       "affiliate": false,
       "coverage_notes": "The company-owned website publishes service throughout Horry County and advertises septic installation, pumping, repair, lift-station service, and line clearing.",
       "coverage_basis": "The company-owned website publishes service throughout Horry County and advertises septic installation, pumping, repair, lift-station service, and line clearing."
+    },
+    {
+      "id": "cruse-pumping-backhoe-north-texas",
+      "business_name": "Cruse Pumping & Backhoe Service, Inc.",
+      "website": "https://crusepumping.com/",
+      "public_phone": "817-430-1531",
+      "address": "P.O. Box 430",
+      "city": "Roanoke",
+      "state": "TX",
+      "zip_code": "76262",
+      "counties_served": [
+        "48121",
+        "48439",
+        "48497"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "installation",
+        "repair",
+        "maintenance",
+        "inspection",
+        "aerobic"
+      ],
+      "license_information": "The company-owned website states that the business holds Texas OSSF Installer II, service-contract-provider, and waste-hauler licensing. Verify current state credentials, local registration, insurance, and authorized service scope before hiring.",
+      "source_urls": [
+        "https://crusepumping.com/",
+        "https://www.crusepumping.com/contact.html"
+      ],
+      "date_added": "2026-09-06",
+      "date_last_verified": "2026-09-06",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly lists Denton, Tarrant, and Wise counties in its service area and describes septic and aerobic tank pumping/cleaning, conventional and aerobic system installation, repairs, annual aerobic inspection service, and pump/compressor maintenance.",
+      "coverage_basis": "The company-owned website explicitly lists Denton, Tarrant, and Wise counties in its service area and describes septic and aerobic tank pumping/cleaning, conventional and aerobic system installation, repairs, annual aerobic inspection service, and pump/compressor maintenance."
     },
     {
       "id": "desert-septic-casa-grande",
@@ -2206,6 +2243,7 @@
   ],
   "catalog_layers": [
     "provider-overrides.json",
+    "provider-expansion-denton-cruse-2026-09-06.json",
     "provider-expansion-services-near-me-2026-09-02.json"
   ]
 }
