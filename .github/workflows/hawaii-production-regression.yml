@@ -122,7 +122,8 @@ jobs:
               ),
               "/counties/hawaii/maui/": (
                   "Maui County",
-                  "County of Maui official website",
+                  "County of Maui government departments",
+                  "https://www.mauicounty.gov/67/Government",
                   "County-specific details not independently confirmed",
               ),
               "/sitemap.xml": tuple(
