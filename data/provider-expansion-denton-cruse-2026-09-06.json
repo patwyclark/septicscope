@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "last_updated": "2026-09-06",
+  "research_method": "Business discovered through public web research and published only from company-owned pages. County coverage and services are limited to what the provider explicitly states; no ratings, reviews, or inferred service areas are used as evidence.",
+  "ordering_policy": "Ordinary listings are neutrally ordered. Sponsored placement must be labeled and paid links must use rel=sponsored.",
+  "providers": [
+    {
+      "id": "cruse-pumping-backhoe-north-texas",
+      "business_name": "Cruse Pumping & Backhoe Service, Inc.",
+      "website": "https://crusepumping.com/",
+      "public_phone": "817-430-1531",
+      "address": "P.O. Box 430",
+      "city": "Roanoke",
+      "state": "TX",
+      "zip_code": "76262",
+      "counties_served": [
+        "48121",
+        "48439",
+        "48497"
+      ],
+      "zip_codes_served": [],
+      "service_categories": [
+        "pumping",
+        "cleaning",
+        "installation",
+        "repair",
+        "maintenance",
+        "inspection",
+        "aerobic"
+      ],
+      "license_information": "The company-owned website states that the business holds Texas OSSF Installer II, service-contract-provider, and waste-hauler licensing. Verify current state credentials, local registration, insurance, and authorized service scope before hiring.",
+      "source_urls": [
+        "https://crusepumping.com/",
+        "https://www.crusepumping.com/contact.html"
+      ],
+      "date_added": "2026-09-06",
+      "date_last_verified": "2026-09-06",
+      "status": "active",
+      "sponsored": false,
+      "affiliate": false,
+      "coverage_notes": "The company-owned website explicitly lists Denton, Tarrant, and Wise counties in its service area and describes septic and aerobic tank pumping/cleaning, conventional and aerobic system installation, repairs, annual aerobic inspection service, and pump/compressor maintenance.",
+      "coverage_basis": "The company-owned website explicitly lists Denton, Tarrant, and Wise counties in its service area and describes septic and aerobic tank pumping/cleaning, conventional and aerobic system installation, repairs, annual aerobic inspection service, and pump/compressor maintenance."
+    }
+  ]
+}
