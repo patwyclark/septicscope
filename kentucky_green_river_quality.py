@@ -6,8 +6,57 @@ import re
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "site"
+GRDHD_DAVIESS = "https://healthdepartment.org/location/daviess-county-community-health-center/"
 GRDHD_WEBSTER = "https://healthdepartment.org/location/webster-county-health-center/"
 GRDHD_UNION = "https://healthdepartment.org/location/union-county-health-center/"
+
+
+def enhance_daviess() -> None:
+    page = OUTPUT / "counties" / "kentucky" / "daviess" / "index.html"
+    if not page.exists():
+        raise RuntimeError("Expected verified Daviess County page is missing")
+
+    text = page.read_text(encoding="utf-8")
+    heading = "Daviess County local septic starting point"
+    if heading not in text:
+        section = (
+            "<h2>Daviess County local septic starting point</h2>"
+            "<p>Green River District Health Department says onsite-sewage site-evaluation "
+            "applications are made in person at the applicant's county health center and directs "
+            "project questions to the Environmentalist at the local health center. For Daviess "
+            "County, GRDHD lists the Daviess County Community Health Center at 1600 Breckenridge "
+            "Street, Owensboro, KY 42303, phone 270-686-7744, with published hours of 8:00 a.m. "
+            "to 4:30 p.m. Monday through Friday. Bring the location map and site drawing described "
+            "in the district's onsite-sewage guidance, and confirm current Environmental Health "
+            "availability plus whether a plat, survey, floor plan, or blueprint is required for "
+            "your project before making a trip or submitting materials.</p>"
+        )
+        marker = "<h2>Official sources</h2>"
+        if marker not in text:
+            raise RuntimeError("Daviess County official-sources marker is missing")
+        text = text.replace(marker, section + marker, 1)
+
+    source = (
+        f'<li><a href="{GRDHD_DAVIESS}" rel="nofollow">'
+        "Green River District Health Department — Daviess County Community Health Center"
+        "</a></li>"
+    )
+    sources_marker = "<h2>Official sources</h2><ul>"
+    if GRDHD_DAVIESS not in text:
+        if sources_marker not in text:
+            raise RuntimeError("Daviess County official-source list is missing")
+        text = text.replace(sources_marker, sources_marker + source, 1)
+
+    text = re.sub(
+        r"Official sources checked [^<]+",
+        "Official sources checked September 8, 2026",
+        text,
+        count=1,
+    )
+    page.write_text(text, encoding="utf-8")
+
+    if heading not in text or GRDHD_DAVIESS not in text:
+        raise RuntimeError("Daviess County quality enhancement failed")
 
 
 def enhance_webster() -> None:
@@ -106,6 +155,9 @@ def enhance_union() -> None:
 
 
 if __name__ == "__main__":
+    enhance_daviess()
     enhance_webster()
     enhance_union()
-    print("Kentucky Green River quality pass complete: Webster and Union local guidance refreshed")
+    print(
+        "Kentucky Green River quality pass complete: Daviess, Webster, and Union local guidance refreshed"
+    )
