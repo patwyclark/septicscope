@@ -8,6 +8,7 @@ KY_SYSTEM_REG = 'https://apps.legislature.ky.gov/law/kar/titles/902/010/085/'
 GRDHD_SEPTIC = 'https://healthdepartment.org/onsite-sewage-septic-systems/'
 GRDHD_CONTACT = 'https://healthdepartment.org/contact-locations/'
 GRDHD_HOME = 'https://healthdepartment.org/'
+GRDHD_HENDERSON = 'https://healthdepartment.org/location/henderson-county-health-center/'
 BRDHD_EDMONSON = 'https://www.barrenriverhealth.org/locations/edmonson-county-health-department'
 
 GRDHD_COUNTIES = {
@@ -49,6 +50,11 @@ for county, (phone, address) in GRDHD_COUNTIES.items():
             ('Residential septic tank capacity is tied to bedroom count',
              'Kentucky 902 KAR 10:085 Section 6 sets minimum working liquid capacity for a single-family residential septic tank by bedroom count. Table 2 requires at least 1,000 gallons for three or fewer bedrooms without a garbage disposal (1,250 gallons with one), 1,250 or 1,500 gallons for four bedrooms, and 1,500 or 1,750 gallons for five bedrooms; each additional bedroom adds 250 gallons. These are statewide minimums, not a substitute for the Daviess County site evaluation or permitted design. Soil group, site conditions, pretreatment requirements, and other parcel-specific factors can change what Green River District Health Department approves.')
         )
+    if county == 'Henderson':
+        sections.append(
+            ('Henderson County local starting point',
+             'GRDHD directs site-evaluation applicants to apply in person at their county health center and to contact the Environmentalist at the local center for onsite-sewage questions. For Henderson County, GRDHD lists the Henderson County Health Center at 472 Klutey Park Plaza, Henderson, KY 42420, phone 270-826-3951, with public hours of 7:45 a.m. to 4:30 p.m. Monday through Friday. Confirm current Environmental Health availability and any county-specific plat, survey, or floor-plan requirements before making a trip or submitting plans.')
+        )
     sources = [
         ('Kentucky CHFS — Onsite Sewage Disposal Systems Program', KY_CHFS),
         ('Kentucky CHFS — Local Health Departments', KY_LHD),
@@ -58,7 +64,16 @@ for county, (phone, address) in GRDHD_COUNTIES.items():
         ('Green River District Health Department — county contacts and locations', GRDHD_CONTACT),
         ('Green River District Health Department — official site', GRDHD_HOME),
     ]
-    verified_date = 'September 7, 2026' if county == 'Daviess' else 'August 29, 2026'
+    if county == 'Henderson':
+        sources.append(
+            ('Green River District Health Department — Henderson County Health Center', GRDHD_HENDERSON)
+        )
+    if county == 'Daviess':
+        verified_date = 'September 7, 2026'
+    elif county == 'Henderson':
+        verified_date = 'September 8, 2026'
+    else:
+        verified_date = 'August 29, 2026'
     url = write_county_page(
         'Kentucky', 'kentucky', county,
         'Green River District Health Department, administering Kentucky’s local onsite sewage program',
