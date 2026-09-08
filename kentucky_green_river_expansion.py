@@ -43,6 +43,11 @@ for county, (phone, address) in GRDHD_COUNTIES.items():
         ('Permit duration and site-specific limitations',
          'Kentucky regulation 902 KAR 10:085 states that the construction permit is issued by a certified inspector and expires one year from issuance unless an extension is granted. The approved system depends on the site evaluation, including soil, slope, groundwater, restrictive horizons, available area, setbacks, and other parcel-specific conditions.'),
     ]
+    if county == 'Daviess':
+        sections.append(
+            ('Residential septic tank capacity is tied to bedroom count',
+             'Kentucky 902 KAR 10:085 Section 6 sets minimum working liquid capacity for a single-family residential septic tank by bedroom count. Table 2 requires at least 1,000 gallons for three or fewer bedrooms without a garbage disposal (1,250 gallons with one), 1,250 or 1,500 gallons for four bedrooms, and 1,500 or 1,750 gallons for five bedrooms; each additional bedroom adds 250 gallons. These are statewide minimums, not a substitute for the Daviess County site evaluation or permitted design. Soil group, site conditions, pretreatment requirements, and other parcel-specific factors can change what Green River District Health Department approves.')
+        )
     sources = [
         ('Kentucky CHFS — Onsite Sewage Disposal Systems Program', KY_CHFS),
         ('Kentucky CHFS — Local Health Departments', KY_LHD),
@@ -52,10 +57,11 @@ for county, (phone, address) in GRDHD_COUNTIES.items():
         ('Green River District Health Department — county contacts and locations', GRDHD_CONTACT),
         ('Green River District Health Department — official site', GRDHD_HOME),
     ]
+    verified_date = 'September 7, 2026' if county == 'Daviess' else 'August 29, 2026'
     url = write_county_page(
         'Kentucky', 'kentucky', county,
         'Green River District Health Department, administering Kentucky’s local onsite sewage program',
-        contact, sections, sources, verified='August 29, 2026'
+        contact, sections, sources, verified=verified_date
     )
     ky_grdhd_urls.append(url)
     ky_grdhd_links.append((county, 'Green River District Health Department'))
