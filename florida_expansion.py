@@ -4,6 +4,7 @@ exec((ROOT / 'florida_expansion_base.py').read_text(encoding='utf-8'), globals()
 exec((ROOT / 'florida_second_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'florida_hillsborough_expansion.py').read_text(encoding='utf-8'), globals())
 exec((ROOT / 'florida_orange_expansion.py').read_text(encoding='utf-8'), globals())
+exec((ROOT / 'florida_duval_expansion.py').read_text(encoding='utf-8'), globals())
 
 # Run the latest supplemental county batches before the nationwide fallback layer so
 # verified local pages survive the final national county-directory generation.
