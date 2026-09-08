@@ -9,6 +9,7 @@ GRDHD_SEPTIC = 'https://healthdepartment.org/onsite-sewage-septic-systems/'
 GRDHD_CONTACT = 'https://healthdepartment.org/contact-locations/'
 GRDHD_HOME = 'https://healthdepartment.org/'
 GRDHD_HENDERSON = 'https://healthdepartment.org/location/henderson-county-health-center/'
+GRDHD_OHIO = 'https://healthdepartment.org/location/ohio-county-health-center/'
 BRDHD_EDMONSON = 'https://www.barrenriverhealth.org/locations/edmonson-county-health-department'
 
 GRDHD_COUNTIES = {
@@ -55,6 +56,11 @@ for county, (phone, address) in GRDHD_COUNTIES.items():
             ('Henderson County local starting point',
              'GRDHD directs site-evaluation applicants to apply in person at their county health center and to contact the Environmentalist at the local center for onsite-sewage questions. For Henderson County, GRDHD lists the Henderson County Health Center at 472 Klutey Park Plaza, Henderson, KY 42420, phone 270-826-3951, with public hours of 7:45 a.m. to 4:30 p.m. Monday through Friday. Confirm current Environmental Health availability and any county-specific plat, survey, or floor-plan requirements before making a trip or submitting plans.')
         )
+    if county == 'Ohio':
+        sections.append(
+            ('Ohio County local starting point',
+             'GRDHD directs site-evaluation applicants to apply in person at their county health center and to contact the Environmentalist at the local center for onsite-sewage questions. For Ohio County, GRDHD lists the Ohio County Health Center at 1336 Clay Street, Hartford, KY 42347, phone 270-298-3663, with public hours of 7:30 a.m. to 4:30 p.m. Monday through Friday. Confirm current Environmental Health availability and any county-specific plat, survey, or floor-plan requirements before making a trip or submitting plans.')
+        )
     sources = [
         ('Kentucky CHFS — Onsite Sewage Disposal Systems Program', KY_CHFS),
         ('Kentucky CHFS — Local Health Departments', KY_LHD),
@@ -68,9 +74,13 @@ for county, (phone, address) in GRDHD_COUNTIES.items():
         sources.append(
             ('Green River District Health Department — Henderson County Health Center', GRDHD_HENDERSON)
         )
+    if county == 'Ohio':
+        sources.append(
+            ('Green River District Health Department — Ohio County Health Center', GRDHD_OHIO)
+        )
     if county == 'Daviess':
         verified_date = 'September 7, 2026'
-    elif county == 'Henderson':
+    elif county in {'Henderson', 'Ohio'}:
         verified_date = 'September 8, 2026'
     else:
         verified_date = 'August 29, 2026'
