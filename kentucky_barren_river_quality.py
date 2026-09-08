@@ -7,6 +7,7 @@ import re
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "site"
 BRDHD_LOGAN = "https://www.barrenriverhealth.org/locations/logan-county-health-department"
+BRDHD_METCALFE = "https://www.barrenriverhealth.org/locations/metcalfe-county-health-department"
 
 
 def enhance_logan() -> None:
@@ -57,6 +58,57 @@ def enhance_logan() -> None:
         raise RuntimeError("Logan County quality enhancement failed")
 
 
+def enhance_metcalfe() -> None:
+    page = OUTPUT / "counties" / "kentucky" / "metcalfe" / "index.html"
+    if not page.exists():
+        raise RuntimeError("Expected verified Metcalfe County page is missing")
+
+    text = page.read_text(encoding="utf-8")
+    heading = "Metcalfe County onsite-sewage contact and local office"
+    if heading not in text:
+        section = (
+            "<h2>Metcalfe County onsite-sewage contact and local office</h2>"
+            "<p>Barren River District Health Department currently lists Katie Matthews, RN, at "
+            "270-432-3214 ext. 483 as the associated onsite-sewage contact for Barren, Hart, and "
+            "Metcalfe counties. The district’s onsite-sewage program performs soil evaluations, "
+            "reviews installation drawings before permits are issued, and inspects systems after "
+            "installation; its current page also publishes the DFS-319 site-evaluation application, "
+            "DFS-326 existing-sewage-system application, DFS-330 installer affidavit, and BRDHD "
+            "owner affidavit. BRDHD lists the Metcalfe County Health Department at 615 West "
+            "Stockton Street, Edmonton, KY 42129, phone 270-432-3214, with public hours of "
+            "8:00 a.m. to 4:00 p.m. Monday through Friday. Confirm current staff availability and "
+            "the forms required for the specific project before submitting plans or scheduling an "
+            "evaluation.</p>"
+        )
+        marker = "<h2>Official sources</h2>"
+        if marker not in text:
+            raise RuntimeError("Metcalfe County official-sources marker is missing")
+        text = text.replace(marker, section + marker, 1)
+
+    source = (
+        f'<li><a href="{BRDHD_METCALFE}" rel="nofollow">'
+        "Barren River District Health Department — Metcalfe County Health Department"
+        "</a></li>"
+    )
+    sources_marker = "<h2>Official sources</h2><ul>"
+    if BRDHD_METCALFE not in text:
+        if sources_marker not in text:
+            raise RuntimeError("Metcalfe County official-source list is missing")
+        text = text.replace(sources_marker, sources_marker + source, 1)
+
+    text = re.sub(
+        r"Official sources checked [^<]+",
+        "Official sources checked September 8, 2026",
+        text,
+        count=1,
+    )
+    page.write_text(text, encoding="utf-8")
+
+    if heading not in text or BRDHD_METCALFE not in text:
+        raise RuntimeError("Metcalfe County quality enhancement failed")
+
+
 if __name__ == "__main__":
     enhance_logan()
-    print("Kentucky Barren River quality pass complete: Logan County local guidance refreshed")
+    enhance_metcalfe()
+    print("Kentucky Barren River quality pass complete: Logan and Metcalfe local guidance refreshed")
