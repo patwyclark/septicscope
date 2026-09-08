@@ -3,6 +3,8 @@
 
 NKY_SEPTIC = 'https://nkyhealth.org/septic/'
 NKY_TRUCKS = 'https://nkyhealth.org/septictrucks/'
+NKY_REQUESTS = 'https://nkyhealth.org/requests/'
+NKY_LOCATIONS = 'https://nkyhealth.org/ourlocations/'
 KY_PERMIT_REG = 'https://apps.legislature.ky.gov/law/kar/titles/902/010/110/'
 KY_SYSTEM_REG = 'https://apps.legislature.ky.gov/law/kar/titles/902/010/085/'
 
@@ -25,13 +27,25 @@ for county in NKY_COUNTIES:
             ('Residential septic tank capacity is tied to bedroom count',
              'Kentucky 902 KAR 10:085 Section 6 sets minimum working liquid capacity for a single-family residential septic tank by bedroom count. Table 2 requires at least 1,000 gallons for three or fewer bedrooms without a garbage disposal (1,250 gallons with one), 1,250 or 1,500 gallons for four bedrooms, and 1,500 or 1,750 gallons for five bedrooms; each additional bedroom adds 250 gallons. These are state minimums, not a substitute for the permitted design: Northern Kentucky Health Department should confirm the final system because site conditions, soil group, and approved pretreatment type can change what is required.')
         )
+    if county == 'Grant':
+        sections.extend([
+            ('Grant County local starting point',
+             'Northern Kentucky Health Department lists the Grant County Health Center at 234 Barnes Road, Williamstown, KY 41097, with a published phone number of 859-824-5074. Use the septic program for site-evaluation, permit, and inspection questions; the county health-center listing is a useful local starting point when you need help reaching the appropriate environmental-health staff.'),
+            ('How to request existing septic records',
+             'Northern Kentucky Health Department says an onsite-septic public-record request requires both its Open Records Request Form and the Onsite Sewage Request for Public Records Attachment Form. This is the documented records route for owners, buyers, inspectors, and contractors trying to locate an existing septic permit or related onsite-sewage record in Grant County; follow the current submission instructions on the Health Department records page rather than relying on an informal search alone.')
+        ])
     sources=[
         ('Northern Kentucky Health Department — Septic System Inspections', NKY_SEPTIC),
         ('Northern Kentucky Health Department — Septic Trucks and Disposal Sites', NKY_TRUCKS),
         ('Kentucky 902 KAR 10:110 — onsite sewage permit issuance', KY_PERMIT_REG),
         ('Kentucky 902 KAR 10:085 — onsite sewage systems and site evaluation', KY_SYSTEM_REG),
     ]
-    nky_urls.append(write_county_page('Kentucky','kentucky',county,'Northern Kentucky Health Department — Environmental Health / Septic Program',contact,sections,sources,verified='August 30, 2026'))
+    if county == 'Grant':
+        sources.extend([
+            ('Northern Kentucky Health Department — locations and Grant County Health Center', NKY_LOCATIONS),
+            ('Northern Kentucky Health Department — onsite septic public-record requests', NKY_REQUESTS),
+        ])
+    nky_urls.append(write_county_page('Kentucky','kentucky',county,'Northern Kentucky Health Department — Environmental Health / Septic Program',contact,sections,sources,verified='September 8, 2026' if county == 'Grant' else 'August 30, 2026'))
 
 # Do not rebuild the Kentucky hub here. Earlier Kentucky expansion layers already
 # maintain the complete statewide county index. Replacing that hub with only this
