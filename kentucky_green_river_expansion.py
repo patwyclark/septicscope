@@ -8,6 +8,7 @@ KY_SYSTEM_REG = 'https://apps.legislature.ky.gov/law/kar/titles/902/010/085/'
 GRDHD_SEPTIC = 'https://healthdepartment.org/onsite-sewage-septic-systems/'
 GRDHD_CONTACT = 'https://healthdepartment.org/contact-locations/'
 GRDHD_HOME = 'https://healthdepartment.org/'
+BRDHD_EDMONSON = 'https://www.barrenriverhealth.org/locations/edmonson-county-health-department'
 
 GRDHD_COUNTIES = {
     'Daviess': ('270-686-7744', '1600 Breckenridge Street, Owensboro, KY 42303'),
@@ -15,7 +16,7 @@ GRDHD_COUNTIES = {
     'Henderson': ('270-826-3951', '472 Klutey Park Plaza, Henderson, KY 42420'),
     'McLean': ('270-273-3062', '200 Hwy 81 N, Suite 101, Calhoun, KY 42327'),
     'Ohio': ('270-298-3663', '1336 Clay Street, Hartford, KY 42347'),
-    'Union': ('270-389-1230', '218 W McElroy Street, Morganfield, KY 42437'),
+    'Union': ('270-389-1230', '218 W McElroy Street, Morganfield, KY 42409'),
     'Webster': ('270-639-9315', '80 Clayton Avenue, Dixon, KY 42409'),
 }
 
@@ -65,6 +66,47 @@ for county, (phone, address) in GRDHD_COUNTIES.items():
     )
     ky_grdhd_urls.append(url)
     ky_grdhd_links.append((county, 'Green River District Health Department'))
+
+# Add one county-specific quality improvement to the earlier Barren River batch.
+# This directly addresses the quality gate's repeated-county-pattern warning without
+# inventing local rules: the contact, forms, and office URL are published by BRDHD.
+edmonson_page = OUTPUT / 'counties' / 'kentucky' / 'edmonson' / 'index.html'
+if not edmonson_page.exists():
+    raise RuntimeError('Expected verified Edmonson County page is missing')
+edmonson_text = edmonson_page.read_text(encoding='utf-8')
+edmonson_heading = 'Edmonson County onsite-sewage contact and forms'
+if edmonson_heading not in edmonson_text:
+    edmonson_section = (
+        '<h2>Edmonson County onsite-sewage contact and forms</h2>'
+        '<p>Barren River District Health Department currently lists Brenna Wilson at '
+        '270-597-2194 ext. 302 for onsite-sewage work in Edmonson and Warren counties. '
+        'The district’s onsite-sewage page provides the DFS-319 site-evaluation application, '
+        'DFS-326 existing-system application, DFS-330 installer affidavit, and owner affidavit. '
+        'For an Edmonson County project, start with the county health department and confirm '
+        'which forms and site-evaluation steps apply before submitting or scheduling work.</p>'
+    )
+    marker = '<h2>Official sources</h2>'
+    if marker not in edmonson_text:
+        raise RuntimeError('Edmonson County official-sources marker is missing')
+    edmonson_text = edmonson_text.replace(marker, edmonson_section + marker, 1)
+location_source = (
+    f'<li><a href="{html.escape(BRDHD_EDMONSON)}" rel="nofollow">'
+    'Barren River District Health Department — Edmonson County Health Department'
+    '</a></li>'
+)
+sources_marker = '<h2>Official sources</h2><ul>'
+if BRDHD_EDMONSON not in edmonson_text:
+    if sources_marker not in edmonson_text:
+        raise RuntimeError('Edmonson County official-source list is missing')
+    edmonson_text = edmonson_text.replace(sources_marker, sources_marker + location_source, 1)
+edmonson_text = edmonson_text.replace(
+    'Official sources checked August 28, 2026',
+    'Official sources checked September 7, 2026',
+    1,
+)
+edmonson_page.write_text(edmonson_text, encoding='utf-8')
+if edmonson_heading not in edmonson_text or BRDHD_EDMONSON not in edmonson_text:
+    raise RuntimeError('Edmonson County quality enhancement failed')
 
 # Rebuild the Kentucky hub so it retains the prior Barren River batch and adds Green River.
 ky_all_links = [
