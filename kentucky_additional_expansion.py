@@ -34,18 +34,25 @@ for county in NKY_COUNTIES:
             ('How to request existing septic records',
              'Northern Kentucky Health Department says an onsite-septic public-record request requires both its Open Records Request Form and the Onsite Sewage Request for Public Records Attachment Form. This is the documented records route for owners, buyers, inspectors, and contractors trying to locate an existing septic permit or related onsite-sewage record in Grant County; follow the current submission instructions on the Health Department records page rather than relying on an informal search alone.')
         ])
+    if county == 'Kenton':
+        sections.extend([
+            ('Kenton County local starting point',
+             'Northern Kentucky Health Department lists the Kenton County Health Center at 1415 James Simpson Jr. Way, Covington, KY 41011, with a published phone number of 859-431-3345. Septic permitting and inspection work is handled through the district Environmental Health and Safety program; NKY Health says its District Office at 8001 Veterans Memorial Drive in Florence is where environmental-health permit and inspection fees, plans, forms, and associated costs can be handled.'),
+            ('How to request an existing Kenton County septic record',
+             'Northern Kentucky Health Department says an onsite-septic public-record request requires both its Open Records Request Form and the Onsite Sewage Request for Public Records Attachment Form. The department directs completed forms to its records contact or to the District Office at 8001 Veterans Memorial Drive, Florence, KY 41042. This is the documented route for owners, buyers, inspectors, and contractors trying to locate an existing onsite-sewage record in Kenton County.')
+        ])
     sources=[
         ('Northern Kentucky Health Department — Septic System Inspections', NKY_SEPTIC),
         ('Northern Kentucky Health Department — Septic Trucks and Disposal Sites', NKY_TRUCKS),
         ('Kentucky 902 KAR 10:110 — onsite sewage permit issuance', KY_PERMIT_REG),
         ('Kentucky 902 KAR 10:085 — onsite sewage systems and site evaluation', KY_SYSTEM_REG),
     ]
-    if county == 'Grant':
+    if county in {'Grant','Kenton'}:
         sources.extend([
-            ('Northern Kentucky Health Department — locations and Grant County Health Center', NKY_LOCATIONS),
+            ('Northern Kentucky Health Department — locations and county health centers', NKY_LOCATIONS),
             ('Northern Kentucky Health Department — onsite septic public-record requests', NKY_REQUESTS),
         ])
-    nky_urls.append(write_county_page('Kentucky','kentucky',county,'Northern Kentucky Health Department — Environmental Health / Septic Program',contact,sections,sources,verified='September 8, 2026' if county == 'Grant' else 'August 30, 2026'))
+    nky_urls.append(write_county_page('Kentucky','kentucky',county,'Northern Kentucky Health Department — Environmental Health / Septic Program',contact,sections,sources,verified='September 8, 2026' if county in {'Grant','Kenton'} else 'August 30, 2026'))
 
 # Do not rebuild the Kentucky hub here. Earlier Kentucky expansion layers already
 # maintain the complete statewide county index. Replacing that hub with only this
