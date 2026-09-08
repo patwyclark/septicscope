@@ -21,6 +21,7 @@ CORE_BUILD = ROOT / "site_core_build.py"
 POST_BUILD_SCRIPTS = (
     "kentucky_barren_river_quality.py",
     "kentucky_nky_quality.py",
+    "kentucky_green_river_quality.py",
     "drainfield_guide.py",
     "tank_size_calculator.py",
     "septic_maintenance_checklist.py",
