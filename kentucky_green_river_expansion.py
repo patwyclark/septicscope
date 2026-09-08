@@ -11,6 +11,8 @@ GRDHD_HOME = 'https://healthdepartment.org/'
 GRDHD_HENDERSON = 'https://healthdepartment.org/location/henderson-county-health-center/'
 GRDHD_OHIO = 'https://healthdepartment.org/location/ohio-county-health-center/'
 BRDHD_EDMONSON = 'https://www.barrenriverhealth.org/locations/edmonson-county-health-department'
+LOUISVILLE_ONSITE = 'https://louisvilleky.gov/government/health-wellness/onsite-septic-system-program'
+LOUISVILLE_PLAN_REVIEW = 'https://louisvilleky.gov/government/health-wellness/services/public-health-plan-review'
 
 GRDHD_COUNTIES = {
     'Daviess': ('270-686-7744', '1600 Breckenridge Street, Owensboro, KY 42303'),
@@ -92,6 +94,43 @@ for county, (phone, address) in GRDHD_COUNTIES.items():
     ky_grdhd_urls.append(url)
     ky_grdhd_links.append((county, 'Green River District Health Department'))
 
+# Jefferson County / Louisville Metro has its own local onsite-sewage program and
+# publishes a detailed permit workflow. Adding it here before the nationwide lookup
+# layer converts a high-population research-stage helper into a source-checked guide.
+jefferson_contact = (
+    'Louisville Metro Department of Public Health and Wellness — Onsite Septic System Program. '
+    'Program contact: 502-574-6655; 400 East Gray Street, Louisville, KY 40202. '
+    'Louisville Metro states that all work on an onsite sewage treatment and disposal system requires a permit from LMPHW.'
+)
+jefferson_sections = [
+    ('Louisville Metro is the local septic permitting authority',
+     'Louisville Metro Department of Public Health and Wellness states that all work performed on an onsite sewage treatment and disposal system requires a permit from LMPHW. Kentucky’s statewide onsite-sewage program is administered through local health departments, so Jefferson County property owners should use the Louisville Metro Onsite Septic System Program for the current local permit process.'),
+    ('New systems start with a Louisville Metro site evaluation',
+     'For a new installation, LMPHW directs applicants to submit its Application for Site Evaluation to the Onsite Program and pay the published site-evaluation fee. The current program page lists a $375 site-evaluation fee. After the application and payment are submitted, the applicant works with a septic installer to schedule the evaluation, and LMPHW completes the site evaluation before the system design and construction-permit steps move forward. Confirm the current fee and form version before submitting.'),
+    ('Design review, construction permit, and inspection come before cover',
+     'Louisville Metro’s published sequence says the installer designs the system after the site evaluation, submits the drawings and grade shots to LMPHW, and LMPHW reviews that submission. The program currently lists a $425 onsite sewage disposal system construction-permit fee. After installation, all system components must be inspected before they are covered with soil. Do not treat the site evaluation alone as authorization to install or cover the system.'),
+    ('Repairs and alterations have separate local permit paths',
+     'The Louisville Metro onsite program separately lists repair and alteration permit fees in addition to the new-system construction permit. Its current fee schedule lists $175 for a repair permit and $300 for an alteration permit. Because scope, fees, and forms can change, confirm whether the planned work is classified as a repair, alteration, or new installation with LMPHW before paying or scheduling construction.'),
+    ('Existing septic records are requested through Louisville Metro open records',
+     'LMPHW directs requests for septic-system information through the Louisville Metro Government open-records process. The onsite program says a request should include the property address, requester and contact information, subdivision and lot number, any former address if applicable, and the property acreage. That route is useful for owners, buyers, inspectors, and contractors trying to locate an existing septic record before planning work.'),
+    ('Residential plan review can also apply to septic-served property',
+     'Louisville Metro Public Health Plan Review states that residential property served by an onsite sewage disposal system must submit a site plan showing structures, property lines, and the entire septic system, along with a floor plan for proposed structures and existing occupied structures. The page currently lists a $25 residential plan-review fee. Confirm the current submittal and payment instructions with the agency for the specific project.'),
+    ('Kentucky installer and homeowner-permit rules still apply',
+     'Kentucky CHFS states that local health department septic inspectors perform site evaluations and inspections and that certified Kentucky onsite septic installers install systems based on the approved evaluation. A homeowner who wants to install his or her own system must obtain the applicable homeowner permit through the local health department. Louisville Metro’s local instructions and the current Kentucky regulations should be checked together before work begins.'),
+]
+jefferson_sources = [
+    ('Louisville Metro Department of Public Health and Wellness — Onsite Septic System Program', LOUISVILLE_ONSITE),
+    ('Louisville Metro Department of Public Health and Wellness — Public Health Plan Review', LOUISVILLE_PLAN_REVIEW),
+    ('Kentucky CHFS — Onsite Sewage Disposal Systems Program', KY_CHFS),
+    ('902 KAR 10:110 — Issuance of onsite sewage disposal permits', KY_PERMIT_REG),
+    ('902 KAR 10:085 — Kentucky onsite sewage disposal systems', KY_SYSTEM_REG),
+]
+ky_jefferson_url = write_county_page(
+    'Kentucky', 'kentucky', 'Jefferson',
+    'Louisville Metro Department of Public Health and Wellness — Onsite Septic System Program',
+    jefferson_contact, jefferson_sections, jefferson_sources, verified='September 8, 2026'
+)
+
 # Add one county-specific quality improvement to the earlier Barren River batch.
 # This directly addresses the quality gate's repeated-county-pattern warning without
 # inventing local rules: the contact, forms, and office URL are published by BRDHD.
@@ -133,7 +172,8 @@ edmonson_page.write_text(edmonson_text, encoding='utf-8')
 if edmonson_heading not in edmonson_text or BRDHD_EDMONSON not in edmonson_text:
     raise RuntimeError('Edmonson County quality enhancement failed')
 
-# Rebuild the Kentucky hub so it retains the prior Barren River batch and adds Green River.
+# Rebuild the Kentucky hub so it retains the prior Barren River batch and adds Green River
+# plus the independently administered Louisville Metro / Jefferson County guide.
 ky_all_links = [
     ('Barren', 'Barren River District Health Department'),
     ('Butler', 'Barren River District Health Department'),
@@ -143,12 +183,12 @@ ky_all_links = [
     ('Metcalfe', 'Barren River District Health Department'),
     ('Simpson', 'Barren River District Health Department'),
     ('Warren', 'Barren River District Health Department'),
-] + ky_grdhd_links
+] + ky_grdhd_links + [('Jefferson', 'Louisville Metro Department of Public Health and Wellness')]
 write_hub(
     'Kentucky', 'kentucky',
     sorted(ky_all_links),
     'Kentucky administers onsite sewage disposal through local health departments. Local certified inspectors perform parcel-specific site evaluations and inspections, while statewide regulations establish the permit, installer, design, and site-evaluation framework.',
-    'This hub currently includes 15 verified counties across the Barren River and Green River public-health districts. Each county guide identifies the applicable local health authority and links to current state and district sources.'
+    'This hub currently includes 16 verified counties across the Barren River and Green River public-health districts plus Louisville Metro. Each county guide identifies the applicable local health authority and links to current state and local sources.'
 )
 
 county_index = OUTPUT / 'counties' / 'index.html'
@@ -156,21 +196,22 @@ if county_index.exists():
     text = county_index.read_text(encoding='utf-8')
     old = 'Browse 8 verified Kentucky county septic guides'
     if old in text:
-        text = text.replace(old, 'Browse 15 verified Kentucky county septic guides')
+        text = text.replace(old, 'Browse 16 verified Kentucky county septic guides')
         county_index.write_text(text, encoding='utf-8')
 
 sitemap = OUTPUT / 'sitemap.xml'
-new_urls = ky_grdhd_urls
+new_urls = ky_grdhd_urls + [ky_jefferson_url]
 if sitemap.exists():
     sm = sitemap.read_text(encoding='utf-8')
 else:
     sm = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>'
-entries = ''.join(f'<url><loc>{u}</loc><lastmod>2026-08-29</lastmod></url>' for u in new_urls if u not in sm)
+entries = ''.join(f'<url><loc>{u}</loc><lastmod>2026-09-08</lastmod></url>' for u in new_urls if u not in sm)
 if entries:
     sm = sm.replace('</urlset>', entries + '</urlset>')
     sitemap.write_text(sm, encoding='utf-8')
 
 print(f'Kentucky Green River expansion complete: +{len(ky_grdhd_urls)} verified county guides')
+print('Kentucky Jefferson County expansion complete: +1 verified county guide')
 
 # Continue with the next validated local-authority batch.
 exec((ROOT / 'virginia_rappahannock_rapidan_expansion.py').read_text(encoding='utf-8'), globals())
