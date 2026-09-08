@@ -1,5 +1,5 @@
 # SepticScope Kentucky additional expansion — Northern Kentucky Health Department batch.
-# Verified from Kentucky regulations and official NKY Health sources on 2026-08-30.
+# Verified from Kentucky regulations and official local-health-department sources.
 
 NKY_SEPTIC = 'https://nkyhealth.org/septic/'
 NKY_TRUCKS = 'https://nkyhealth.org/septictrucks/'
@@ -7,6 +7,9 @@ NKY_REQUESTS = 'https://nkyhealth.org/requests/'
 NKY_LOCATIONS = 'https://nkyhealth.org/ourlocations/'
 KY_PERMIT_REG = 'https://apps.legislature.ky.gov/law/kar/titles/902/010/110/'
 KY_SYSTEM_REG = 'https://apps.legislature.ky.gov/law/kar/titles/902/010/085/'
+KY_ONSITE_PROGRAM = 'https://www.chfs.ky.gov/agencies/dph/dphps/emb/Pages/environmentmgmt.aspx'
+FAYETTE_ONSITE = 'https://www.lfchd.org/onsite-sewage-septic-tank-program/'
+FAYETTE_PERMITS = 'https://www.lfchd.org/get-a-permit/'
 
 NKY_COUNTIES = ['Boone','Campbell','Grant','Kenton']
 nky_urls=[]
@@ -54,6 +57,40 @@ for county in NKY_COUNTIES:
         ])
     nky_urls.append(write_county_page('Kentucky','kentucky',county,'Northern Kentucky Health Department — Environmental Health / Septic Program',contact,sections,sources,verified='September 8, 2026' if county in {'Grant','Kenton'} else 'August 30, 2026'))
 
+# Lexington-Fayette has its own local health department and publishes a specific onsite
+# sewage workflow. Keep this separate from the Northern Kentucky district batch so the
+# guide never implies that NKY Health has jurisdiction in Fayette County.
+fayette_contact=(
+    'Lexington-Fayette County Health Department Environmental Health administers the local onsite '
+    'sewage program. The department lists 650 Newtown Pike, Lexington, KY 40508; Environmental '
+    'Health questions at 859-231-9791; onsite@lfchd.org; and current onsite-program hours of '
+    'Tuesday and Thursday, 8:00-9:30 a.m. Confirm current hours before traveling.'
+)
+fayette_sections=[
+    ('Fayette County requires the local health department permit',
+     'Lexington-Fayette County Health Department states that all individual sewage disposal systems installed in Fayette County must be permitted through the health department. Kentucky 902 KAR 10:110 likewise requires a local-health-department onsite sewage permit before a regulated system is constructed, installed, or altered.'),
+    ('Start with the lot and soil evaluation',
+     'When a lot-approval application is received, Lexington-Fayette County Health Department says an environmentalist performs a site evaluation to determine whether the property is suitable and where the sewage system can be located. The department says that evaluation also determines the design, type, and size of the system, so an online sizing rule should not be treated as the permitted design.'),
+    ('Existing-system evaluations are available for property transactions',
+     'The local onsite-sewage program says it also performs lot evaluations on properties that are for sale to check the functioning of existing onsite sewage systems. Owners and buyers should contact Environmental Health for the current request process and any access or documentation requirements before relying on an older system record.'),
+    ('Installation still follows Kentucky statewide permit rules',
+     'Kentucky 902 KAR 10:110 generally issues construction permits to certified installers, while a qualifying homeowner may receive a homeowner permit when the regulation’s conditions are met. Kentucky CHFS says local health department inspectors perform site evaluations and inspections and that certified Kentucky installers must install systems based on the site evaluation.'),
+    ('Report onsite sewage problems to the local program',
+     'Lexington-Fayette County Health Department says its onsite sewage program investigates public complaints concerning onsite sewage problems. Use the current Environmental Health contact information for a Fayette County sewage complaint or project-specific question.')
+]
+fayette_sources=[
+    ('Lexington-Fayette County Health Department — Onsite Sewage Program', FAYETTE_ONSITE),
+    ('Lexington-Fayette County Health Department — Environmental Health permits', FAYETTE_PERMITS),
+    ('Kentucky CHFS — Onsite Sewage Disposal Systems Program', KY_ONSITE_PROGRAM),
+    ('Kentucky 902 KAR 10:110 — onsite sewage permit issuance', KY_PERMIT_REG),
+    ('Kentucky 902 KAR 10:085 — onsite sewage systems and site evaluation', KY_SYSTEM_REG),
+]
+fayette_url=write_county_page(
+    'Kentucky','kentucky','Fayette',
+    'Lexington-Fayette County Health Department — Environmental Health / Onsite Sewage Program',
+    fayette_contact,fayette_sections,fayette_sources,verified='September 8, 2026'
+)
+
 # Do not rebuild the Kentucky hub here. Earlier Kentucky expansion layers already
 # maintain the complete statewide county index. Replacing that hub with only this
 # verified subset would drop existing county links and break the nationwide audit.
@@ -61,15 +98,17 @@ for county in NKY_COUNTIES:
 sitemap=OUTPUT/'sitemap.xml'
 if sitemap.exists():
     sm=sitemap.read_text(encoding='utf-8')
-    entries=''.join(f'<url><loc>{u}</loc><lastmod>2026-08-30</lastmod></url>' for u in nky_urls if u not in sm)
+    dated_urls=[(u,'2026-08-30') for u in nky_urls] + [(fayette_url,'2026-09-08')]
+    entries=''.join(f'<url><loc>{u}</loc><lastmod>{lastmod}</lastmod></url>' for u,lastmod in dated_urls if u not in sm)
     if entries:
         sitemap.write_text(sm.replace('</urlset>',entries+'</urlset>'),encoding='utf-8')
 
-for county in NKY_COUNTIES:
+for county in NKY_COUNTIES + ['Fayette']:
     p=OUTPUT/'counties'/'kentucky'/slugify(county)/'index.html'
     t=p.read_text(encoding='utf-8')
     if 'Local septic rules not yet verified' in t or 'OFFICIAL SOURCES CHECKED' not in t.upper() or 'Official sources' not in t:
-        raise RuntimeError(f'Northern Kentucky verified page failed: {county}')
+        raise RuntimeError(f'Kentucky verified page failed: {county}')
 
 print(f'Northern Kentucky expansion complete: +{len(nky_urls)} verified county guides')
+print('Lexington-Fayette County quality expansion complete: +1 verified county guide')
 exec((ROOT / 'illinois_expansion.py').read_text(encoding='utf-8'), globals())
