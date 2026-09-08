@@ -20,6 +20,11 @@ for county in NKY_COUNTIES:
         ('Inspection is part of the local program','Northern Kentucky Health Department states that it provides septic-system inspections throughout Boone, Campbell, Grant, and Kenton counties. Septic work should remain available for the required inspection and approval rather than being covered before the local inspector has completed the applicable review.'),
         ('Septage hauling is also locally inspected','Northern Kentucky Health Department separately inspects septic trucks and approved disposal sites operating in the same four counties at least annually. This does not replace the construction permit, but it provides a local compliance check for companies pumping and transporting septage.')
     ]
+    if county == 'Campbell':
+        sections.append(
+            ('Residential septic tank capacity is tied to bedroom count',
+             'Kentucky 902 KAR 10:085 Section 6 sets minimum working liquid capacity for a single-family residential septic tank by bedroom count. Table 2 requires at least 1,000 gallons for three or fewer bedrooms without a garbage disposal (1,250 gallons with one), 1,250 or 1,500 gallons for four bedrooms, and 1,500 or 1,750 gallons for five bedrooms; each additional bedroom adds 250 gallons. These are state minimums, not a substitute for the permitted design: Northern Kentucky Health Department should confirm the final system because site conditions, soil group, and approved pretreatment type can change what is required.')
+        )
     sources=[
         ('Northern Kentucky Health Department — Septic System Inspections', NKY_SEPTIC),
         ('Northern Kentucky Health Department — Septic Trucks and Disposal Sites', NKY_TRUCKS),
