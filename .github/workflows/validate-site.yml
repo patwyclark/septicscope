@@ -19,7 +19,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,16 +33,16 @@ jobs:
         run: |
           python -m compileall -q -x '(^|/)(site|\.septicscope-build)/' .
           python tools/provider_discovery.py --self-test
-          python tools/continuous_growth.py --self-test
           python tools/seo_hourly_audit.py --self-test
+          python tools/indexing_hygiene.py --self-test
           python tools/indexnow_submit.py /dev/null --self-test
           python tools/sync_curated_providers.py --self-test
 
-      - name: Build complete production site
+      - name: Build complete quality-gated production site
         run: python build_site.py
 
-      - name: Verify county lookup and gated service-directory behavior
-        id: inventory
+      - name: Verify focused public footprint and recovery policy
+        id: recovery
         continue-on-error: true
         run: |
           test -f site/deployment-manifest.txt
@@ -51,189 +51,166 @@ jobs:
           test -f site/data/national-coverage-manifest.json
           test -f site/data/keyword-map.json
           test -f site/data/source-catalog.json
-          test -f site/data/provider-directory.json
           test -f site/data/project-audit-summary.json
           test -f site/data/project-audit-summary.txt
           test -f site/data/hourly-seo-build-report.json
-          test -f site/data/continuous-growth-report.json
+          test -f site/data/adsense-quality-recovery.json
+          test -f site/data/adsense-quality-recovery.txt
           test -f site/data/county-lookup.json
-          test -f site/data/service-directory-status.json
-          test -f site/data/septic-services-near-me.json
           test -f site/assets/county-lookup.js
-          test -f site/assets/septic-services-near-me.css
-          test -f site/assets/septic-services-near-me.js
-          test -f site/f1c5f33bc7de84c635e009f874dc4be9.txt
+          test -f site/index.html
+          test -f site/counties/index.html
+          test -f site/guides/index.html
+          test -f site/faq/index.html
+          test -f site/about/index.html
+          test -f site/privacy/index.html
+          test -f site/contact/index.html
           test -f site/providers/index.html
           test -f site/septic-services-near-me/index.html
-          test -f site/counties/index.html
-          test -f site/counties/maryland/baltimore/index.html
-          test -f site/counties/maryland/baltimore-city/index.html
-          test -f site/counties/missouri/st-louis/index.html
-          test -f site/counties/missouri/st-louis-city/index.html
-          test -f site/counties/virginia/fairfax/index.html
-          test -f site/counties/virginia/fairfax-city/index.html
-          test -f site/counties/north-carolina/guilford/index.html
-          test -f site/counties/alabama/mobile/index.html
-          test -f site/counties/tennessee/bedford/index.html
-          test -f site/counties/idaho/ada/index.html
-          test -f site/guides/septic-drainfield-repair-replacement/index.html
-          test -f site/guides/septic-tank-size-calculator/index.html
           test -f site/guides/septic-maintenance-checklist/index.html
-          test -f site/guides/types-of-septic-systems/index.html
-          test -f site/guides/septic-system-winter-care/index.html
           test -f site/guides/septic-inspection-checklist/index.html
+          test -f site/guides/septic-drainfield-repair-replacement/index.html
+          test -f site/guides/types-of-septic-systems/index.html
           test -f site/guides/septic-system-lifespan/index.html
           node --check site/assets/county-lookup.js
-          node --check site/assets/septic-services-near-me.js
+          python quality_recovery.py --check
           python site_inventory.py --check
           python tools/seo_hourly_audit.py --site site --report validation-seo-report.json
-          python tools/continuous_growth.py --site site --state data/growth-links.json --report validation-growth-report.json
           python - <<'PY'
           import json
-          import re
+          from html.parser import HTMLParser
           from pathlib import Path
+          import re
+          import xml.etree.ElementTree as ET
           from urllib.parse import urlparse
 
-          summary = json.loads(Path('site/data/project-audit-summary.json').read_text())
+          ADSENSE = 'ca-pub-8782868222380999'
+          SITE = Path('site')
+          recovery = json.loads((SITE / 'data/adsense-quality-recovery.json').read_text())
+          baseline = json.loads(Path('data/quality-baseline.json').read_text())
+          summary = json.loads((SITE / 'data/project-audit-summary.json').read_text())
           counts = summary['counts']
+
+          if not recovery.get('recovery_mode'):
+              raise SystemExit('Quality recovery mode is not active')
+          approved = int(recovery.get('quality_approved_counties', 0))
+          if approved < int(baseline['minimum_verified_counties']):
+              raise SystemExit(f'Only {approved} county guides passed the local-quality gate')
+          if approved > int(baseline['maximum_indexable_county_guides']):
+              raise SystemExit(f'{approved} county guides remain indexable; recovery footprint is too broad')
+          retained_guides = int(recovery.get('retained_long_form_guides', 0))
+          if retained_guides < int(baseline['minimum_retained_long_form_guides']):
+              raise SystemExit(f'Only {retained_guides} long-form guides survived')
+          if int(recovery.get('sitemap_urls', 99999)) > int(baseline['maximum_recovery_sitemap_urls']):
+              raise SystemExit('Recovery sitemap exceeds the quality ceiling')
+
           required_zero = {
-              'pages_without_primary_keywords',
-              'duplicate_title_groups',
-              'duplicate_h1_groups',
-              'duplicate_meta_description_groups',
-              'canonical_errors',
-              'canonical_domain_conflicts',
-              'accessibility_warnings',
-              'legacy_brand_occurrences',
+              'pages_without_primary_keywords', 'duplicate_title_groups',
+              'duplicate_h1_groups', 'duplicate_meta_description_groups',
+              'canonical_errors', 'canonical_domain_conflicts',
+              'accessibility_warnings', 'legacy_brand_occurrences',
           }
-          failures = {key: counts[key] for key in required_zero if counts[key] != 0}
+          failures = {key: counts.get(key) for key in required_zero if counts.get(key) != 0}
           if failures:
               raise SystemExit(f'Final metadata/SEO quality counts are not zero: {failures}')
-
-          home = Path('site/index.html').read_text(encoding='utf-8')
-          home_visible = re.sub(r'<[^>]+>', ' ', home)
-          home_visible = re.sub(r'\s+', ' ', home_visible)
-          expected = {
-              'verified county guides': counts['verified_county_guides'],
-              'FAQ articles': counts['faq_articles'],
-              'septic guides': counts['guide_articles_and_tools'],
-          }
-          for label, value in expected.items():
-              if not re.search(rf'\b{value:,}\s+{re.escape(label)}\b', home_visible, flags=re.I):
-                  raise SystemExit(f'Homepage does not show current metric: {value:,} {label}')
-          if 'data-county-lookup-root' not in home or '/assets/county-lookup.js' not in home:
-              raise SystemExit('Homepage county lookup is missing')
-          for forbidden in ('href="/septic-services-near-me/', "href='/septic-services-near-me/", 'href="/providers/', "href='/providers/"):
-              if forbidden in home:
-                  raise SystemExit(f'Homepage still promotes an incomplete service directory: {forbidden}')
-          if re.search(r'Browse\s+Indiana\s+septic', home_visible, flags=re.I):
-              raise SystemExit('Obsolete Indiana-only homepage promotion remains')
-
-          county_page = Path('site/counties/index.html').read_text(encoding='utf-8')
-          if 'data-county-lookup-root' not in county_page or 'County FIPS' not in county_page:
-              raise SystemExit('County directory does not include ZIP/city/county/FIPS lookup')
-          if 'noindex' in county_page.lower():
-              raise SystemExit('County lookup must remain indexable')
-
-          county_data = json.loads(Path('site/data/county-lookup.json').read_text())
-          county_rows = county_data.get('counties', [])
-          if county_data.get('record_count') != 3144 or len(county_rows) != 3144:
-              raise SystemExit('County lookup does not contain all 3,144 county-equivalents')
-          if len({row.get('f') for row in county_rows}) != 3144:
-              raise SystemExit('County lookup contains duplicate county FIPS records')
-          incomplete_counties = [row for row in county_rows if not row.get('f') or not row.get('n') or not row.get('s') or not row.get('u')]
-          if incomplete_counties:
-              raise SystemExit('County lookup contains incomplete records')
-
-          service_data = json.loads(Path('site/data/septic-services-near-me.json').read_text())
-          service_providers = service_data.get('providers', [])
-          service_counties = service_data.get('counties', [])
-          if len(service_counties) != 3144 or len({row.get('f') for row in service_counties}) != 3144:
-              raise SystemExit('Background provider coverage dataset is not nationally complete')
-          provider_ids = [row.get('id') for row in service_providers]
-          if len(provider_ids) != len(set(provider_ids)):
-              raise SystemExit('Provider dataset contains duplicate provider IDs')
-          incomplete_providers = [
-              row.get('id') for row in service_providers
-              if not row.get('name') or not row.get('phone') or not row.get('source')
-              or not row.get('fips') or not row.get('services') or not row.get('coverage')
-          ]
-          if incomplete_providers:
-              raise SystemExit(f'Provider records are missing required evidence fields: {incomplete_providers[:10]}')
-          if counts['provider_listings'] != len(service_providers):
+          if counts.get('verified_county_guides') != approved:
               raise SystemExit(
-                  f'Inventory/provider data drift: {counts["provider_listings"]} versus {len(service_providers)}'
+                  f'Inventory/recovery county count drift: {counts.get("verified_county_guides")} versus {approved}'
               )
 
-          status = json.loads(Path('site/data/service-directory-status.json').read_text())
-          covered = {
-              str(fips)
-              for provider in service_providers
-              for fips in provider.get('fips', [])
-          }
-          if status.get('covered_counties') != len(covered):
-              raise SystemExit('Service-directory coverage status does not match provider data')
-          expected_public = len(covered) == 3144
-          if bool(status.get('public')) != expected_public:
-              raise SystemExit('Service-directory launch gate is inconsistent')
+          home = (SITE / 'index.html').read_text(encoding='utf-8')
+          home_visible = re.sub(r'<[^>]+>', ' ', home)
+          home_visible = re.sub(r'\s+', ' ', home_visible)
+          for phrase in (
+              'Practical septic guidance for real property decisions',
+              'Fewer pages, stronger reasons to trust each one',
+              'data-county-lookup-root',
+          ):
+              if phrase not in home:
+                  raise SystemExit(f'Quality-first homepage is missing {phrase!r}')
+          for phrase in ('3,144 county and county-equivalent pages', 'High-coverage state hubs'):
+              if phrase in home_visible:
+                  raise SystemExit(f'Homepage still markets volume rather than value: {phrase}')
+          if ADSENSE not in home:
+              raise SystemExit('Homepage is missing AdSense site code')
 
-          locator = Path('site/septic-services-near-me/index.html').read_text(encoding='utf-8')
-          provider_page = Path('site/providers/index.html').read_text(encoding='utf-8')
-          sitemap = Path('site/sitemap.xml').read_text(encoding='utf-8')
-          if expected_public:
-              if 'noindex' in locator.lower() or 'data-provider-card' not in locator:
-                  raise SystemExit('Complete service search should be public')
-              if 'noindex' in provider_page.lower():
-                  raise SystemExit('Complete provider directory should be public')
-              if sitemap.count('https://septicscope.com/septic-services-near-me/') != 1:
-                  raise SystemExit('Public service search must appear once in the sitemap')
-          else:
-              if 'noindex,follow' not in locator.replace(' ', '').lower() or 'data-provider-card' in locator:
-                  raise SystemExit('Incomplete service search must be hidden and non-searchable')
-              if 'noindex,follow' not in provider_page.replace(' ', '').lower():
-                  raise SystemExit('Incomplete provider directory must be noindex')
-              provider_body = provider_page.split('<main', 1)[-1]
-              if '<article class="ss-provider-card">' in provider_body:
-                  raise SystemExit('Incomplete national provider directory must not show listing cards')
-              if 'https://septicscope.com/septic-services-near-me/' in sitemap or 'https://septicscope.com/providers/' in sitemap:
-                  raise SystemExit('Incomplete service pages must be absent from the sitemap')
-              public_refs = []
-              for page in Path('site').rglob('*.html'):
-                  if page in {Path('site/septic-services-near-me/index.html'), Path('site/providers/index.html')}:
-                      continue
-                  text = page.read_text(encoding='utf-8', errors='replace').lower()
-                  if 'href="/septic-services-near-me/' in text or "href='/septic-services-near-me/" in text:
-                      public_refs.append(str(page))
-                  if 'href="/providers/' in text or "href='/providers/" in text:
-                      public_refs.append(str(page))
-              if public_refs:
-                  raise SystemExit(f'Incomplete service-directory links remain public: {public_refs[:10]}')
+          faq = (SITE / 'faq/index.html').read_text(encoding='utf-8')
+          if faq.count('<h2>') < 10 or '"@type": "FAQPage"' not in faq or ADSENSE not in faq:
+              raise SystemExit('Consolidated FAQ hub is incomplete')
+          about = (SITE / 'about/index.html').read_text(encoding='utf-8')
+          if 'How automation is used' not in about or 'Advertising and commercial separation' not in about:
+              raise SystemExit('Editorial transparency page is incomplete')
+          if ADSENSE in about:
+              raise SystemExit('About/editorial policy must remain ad-free')
 
-          growth_state = json.loads(Path('data/growth-links.json').read_text())
-          growth_report = json.loads(Path('site/data/continuous-growth-report.json').read_text())
-          if growth_state.get('schema_version') != 1 or not isinstance(growth_state.get('links'), list):
-              raise SystemExit('Continuous-growth state schema is invalid')
-          if growth_report.get('mode') != 'plan_only':
-              raise SystemExit('Production build must never mutate continuous-growth state')
-          for item in growth_state['links']:
-              source = str(item.get('source_url', ''))
-              target = str(item.get('target_url', ''))
-              if not source.startswith('https://septicscope.com/') or not target.startswith('https://septicscope.com/'):
-                  raise SystemExit(f'Invalid growth-link URL pair: {source} -> {target}')
-              source_path = urlparse(source).path.strip('/')
-              page = Path('site/index.html') if not source_path else Path('site') / source_path / 'index.html'
-              if not page.exists():
-                  raise SystemExit(f'Growth-link source page is missing: {source}')
-              text = page.read_text(encoding='utf-8')
-              if 'noindex' not in text.lower() and 'data-septicscope-growth-links="1"' not in text:
-                  raise SystemExit(f'Growth-link module was not rendered on {source}')
-              if urlparse(target).path not in text:
-                  raise SystemExit(f'Growth-link target is not present on {source}: {target}')
+          county_data = json.loads((SITE / 'data/county-lookup.json').read_text())
+          county_rows = county_data.get('counties', [])
+          if county_data.get('record_count') != 3144 or len(county_rows) != 3144:
+              raise SystemExit('County lookup does not retain all 3,144 county-equivalents')
+          if len({row.get('f') for row in county_rows}) != 3144:
+              raise SystemExit('County lookup contains duplicate county FIPS records')
+          if sum(bool(row.get('v')) for row in county_rows) != approved:
+              raise SystemExit('County lookup approved-guide flags drift from quality report')
 
-          key = Path('site/f1c5f33bc7de84c635e009f874dc4be9.txt').read_text().strip()
-          if key != 'f1c5f33bc7de84c635e009f874dc4be9':
-              raise SystemExit('IndexNow key file is invalid')
-          print('PASS: county lookup restored and incomplete global service search remains hidden')
+          def html_path(url):
+              p = urlparse(url).path.strip('/')
+              return SITE / p / 'index.html' if p else SITE / 'index.html'
+
+          for item in recovery.get('approved_counties', []):
+              path = html_path(item['url'])
+              raw = path.read_text(encoding='utf-8')
+              if 'noindex' in raw.lower() or ADSENSE not in raw:
+                  raise SystemExit(f'Approved county is not indexable/monetizable: {item["url"]}')
+              if item.get('main_words', 0) < 300 or item.get('external_sources', 0) < 3 or item.get('local_sources', 0) < 1:
+                  raise SystemExit(f'Approved county lacks recovery evidence: {item}')
+              if item.get('shared_template_ratio', 1) > 0.48:
+                  raise SystemExit(f'Approved county remains too template-heavy: {item}')
+
+          # Every noindex page must be ad-free; navigation/trust hubs are ad-free even when indexable.
+          noindex_with_ads = []
+          for path in SITE.rglob('*.html'):
+              raw = path.read_text(encoding='utf-8', errors='replace')
+              if 'noindex' in raw.lower() and ADSENSE in raw:
+                  noindex_with_ads.append(str(path))
+          if noindex_with_ads:
+              raise SystemExit(f'Noindex pages still carry AdSense: {noindex_with_ads[:10]}')
+          for relative in ('counties/index.html', 'guides/index.html', 'privacy/index.html', 'contact/index.html', 'about/index.html', 'providers/index.html', 'septic-services-near-me/index.html'):
+              raw = (SITE / relative).read_text(encoding='utf-8')
+              if ADSENSE in raw:
+                  raise SystemExit(f'Navigation/trust/unfinished page still carries ads: {relative}')
+
+          for path in SITE.glob('counties/*/index.html'):
+              raw = path.read_text(encoding='utf-8')
+              if 'noindex' not in raw.lower() or ADSENSE in raw:
+                  raise SystemExit(f'Navigation-only state hub must be noindex/ad-free: {path}')
+          for path in SITE.glob('faq/*/index.html'):
+              raw = path.read_text(encoding='utf-8')
+              if 'noindex' not in raw.lower() or ADSENSE in raw:
+                  raise SystemExit(f'Consolidated FAQ leaf must be noindex/ad-free: {path}')
+
+          growth = json.loads(Path('data/growth-links.json').read_text())
+          if growth.get('links'):
+              raise SystemExit('Repetitive automatic growth links remain active')
+          workflow = Path('.github/workflows/hourly-growth-maintenance.yml').read_text()
+          if 'cron:' in workflow or '--apply-one' in workflow or 'git push origin HEAD:main' in workflow:
+              raise SystemExit('Automatic scheduled content mutation is still enabled')
+
+          sitemap_root = ET.parse(SITE / 'sitemap.xml').getroot()
+          ns = {'s': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          sitemap_urls = [(node.text or '').strip() for node in sitemap_root.findall('.//s:loc', ns)]
+          if len(sitemap_urls) != recovery.get('sitemap_urls'):
+              raise SystemExit('Sitemap count drift from quality report')
+          if len(sitemap_urls) != len(set(sitemap_urls)):
+              raise SystemExit('Sitemap contains duplicate URLs')
+          for url in sitemap_urls:
+              raw = html_path(url).read_text(encoding='utf-8')
+              if 'noindex' in raw.lower():
+                  raise SystemExit(f'Noindex page appears in focused sitemap: {url}')
+
+          print(
+              f'PASS: quality recovery retains {approved} county guides, '
+              f'{retained_guides} national guides, and {len(sitemap_urls)} sitemap URLs'
+          )
           PY
 
       - name: Audit every generated page and internal link
@@ -244,6 +221,14 @@ jobs:
           set -o pipefail
           python audit_site.py 2>&1 | tee internal-audit.txt
 
+      - name: Audit indexing hygiene
+        id: indexing_audit
+        if: always()
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python tools/indexing_hygiene.py --site site 2>&1 | tee indexing-audit.txt
+
       - name: Check external government and source links
         id: external_audit
         if: always()
@@ -252,7 +237,7 @@ jobs:
           set -o pipefail
           python audit_site.py --external 2>&1 | tee external-audit.txt
 
-      - name: Audit AdSense readiness and county source quality
+      - name: Audit AdSense readiness and content quality
         id: adsense_audit
         if: always()
         continue-on-error: true
@@ -260,40 +245,37 @@ jobs:
           set -o pipefail
           python adsense_audit.py 2>&1 | tee adsense-audit.txt
 
-      - name: Upload audit diagnostics and representative pages
+      - name: Upload recovery diagnostics and representative pages
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: site-audit-diagnostics
+          name: adsense-quality-recovery-diagnostics
           path: |
             internal-audit.txt
+            indexing-audit.txt
             external-audit.txt
             adsense-audit.txt
             validation-seo-report.json
-            validation-growth-report.json
             site/index.html
+            site/faq/index.html
+            site/about/index.html
             site/counties/index.html
-            site/assets/county-lookup.js
-            site/data/county-lookup.json
-            site/septic-services-near-me/index.html
-            site/providers/index.html
-            site/data/service-directory-status.json
-            site/data/septic-services-near-me.json
+            site/sitemap.xml
+            site/_redirects
             site/build-info.json
+            site/data/adsense-quality-recovery.json
+            site/data/adsense-quality-recovery.txt
             site/data/national-coverage-manifest.json
             site/data/keyword-map.json
-            site/data/source-catalog.json
-            site/data/provider-directory.json
             site/data/project-audit-summary.json
             site/data/project-audit-summary.txt
-            site/data/hourly-seo-build-report.json
-            site/data/continuous-growth-report.json
-          retention-days: 14
+          retention-days: 30
 
       - name: Enforce all quality gates
         if: always()
         run: |
-          test "${{ steps.inventory.outcome }}" = "success"
+          test "${{ steps.recovery.outcome }}" = "success"
           test "${{ steps.internal_audit.outcome }}" = "success"
+          test "${{ steps.indexing_audit.outcome }}" = "success"
           test "${{ steps.external_audit.outcome }}" = "success"
           test "${{ steps.adsense_audit.outcome }}" = "success"
