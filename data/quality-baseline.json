@@ -1,6 +1,11 @@
 {
   "expected_county_equivalents": 3144,
-  "minimum_verified_counties": 450,
-  "established_at_commit": "226152c4f85407415b2f82f5ebf7cca1941b5d5f",
-  "established_date": "2026-09-02"
+  "minimum_verified_counties": 20,
+  "maximum_indexable_county_guides": 100,
+  "minimum_retained_long_form_guides": 8,
+  "maximum_recovery_sitemap_urls": 140,
+  "quality_mode": "strict_locally_differentiated_only",
+  "established_at_commit": "61937510a4cf8b49145c1dba4b303bf4ae3cf363",
+  "established_date": "2026-09-09",
+  "reason": "Replace the previous page-count floor with a strict local-evidence floor after AdSense rejected the site for low-value content."
 }
