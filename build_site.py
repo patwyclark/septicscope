@@ -76,7 +76,7 @@ def _run() -> None:
     county_lookup = ROOT / "county_lookup_experience.py"
     homepage_experience = ROOT / "homepage_experience.py"
     service_quality = ROOT / "septic_service_quality.py"
-    quality_recovery = ROOT / "quality_recovery.py"
+    quality_recovery = ROOT / "quality_recovery_execute.py"
     quality_finalize = ROOT / "quality_recovery_finalize.py"
     redirect_hygiene = ROOT / "recovery_redirect_hygiene.py"
     quality_navigation = ROOT / "quality_recovery_navigation.py"
