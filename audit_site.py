@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parent
 SITE = ROOT / 'site'
 DOMAIN = 'septicscope.com'
 BASE = f'https://{DOMAIN}'
+ADSENSE_CLIENT = 'ca-pub-8782868222380999'
 
 
 @dataclass
@@ -153,16 +154,18 @@ def main() -> int:
     internal_links = 0
     external_urls: set[str] = set()
     canonical_to_page: dict[str, Path] = {}
-    lookup_pages = 0
+    withheld_county_pages = 0
     verified_county_pages = 0
 
     for path, info in pages.items():
         src_path = page_url_path(path)
         is_404 = path.name == '404.html'
-        is_lookup = 'Local guide in progress' in info.text
-        is_county_leaf = len(path.relative_to(SITE).parts) == 4 and path.relative_to(SITE).parts[0] == 'counties' and path.name == 'index.html'
-        if is_lookup:
-            lookup_pages += 1
+        parts = path.relative_to(SITE).parts
+        is_county_leaf = len(parts) == 4 and parts[0] == 'counties' and path.name == 'index.html'
+        is_withheld_county = is_county_leaf and 'noindex' in info.robots
+        is_original_lookup_copy = 'Local guide in progress' in info.text
+        if is_withheld_county:
+            withheld_county_pages += 1
         elif is_county_leaf:
             verified_county_pages += 1
 
@@ -187,27 +190,24 @@ def main() -> int:
         if 'septicscope.pages.dev' in raw:
             errors.append(f'pages.dev reference remains in HTML: {src_path}')
 
-        if is_lookup:
+        if is_withheld_county:
             robots = info.robots.replace(' ', '')
             if 'noindex' not in robots or 'follow' not in robots:
-                errors.append(f'Lookup page missing noindex,follow: {src_path}')
-            # Transparent language such as "not yet verified" is appropriate on an
-            # in-progress regulatory page. Only fail wording that actively tells a
-            # visitor the page itself is unusable or unsafe to consult.
-            discouraging = (
-                'Do not rely on this page',
-                'This page is not reliable',
-                'This page cannot be relied on',
-            )
-            if any(phrase.lower() in info.text.lower() for phrase in discouraging):
-                errors.append(f'Unwelcoming legacy lookup wording remains: {src_path}')
-            if 'usa.gov/states/' not in raw or 'epa.gov/septic/state-septic-system-program-contacts' not in raw:
-                errors.append(f'Lookup page missing official help links: {src_path}')
+                errors.append(f'Withheld county page missing noindex,follow: {src_path}')
+            if ADSENSE_CLIENT in raw or 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js' in raw:
+                errors.append(f'Withheld/noindex county page still carries AdSense code: {src_path}')
+            if is_original_lookup_copy:
+                if 'usa.gov/states/' not in raw or 'epa.gov/septic/state-septic-system-program-contacts' not in raw:
+                    errors.append(f'Original county help page is missing official starting points: {src_path}')
+            elif 'septicscope-quality-status' not in raw:
+                errors.append(f'Quality-withheld county page lacks a machine-readable quality marker: {src_path}')
         elif is_county_leaf:
             if 'noindex' in info.robots:
-                errors.append(f'Verified county page is noindex: {src_path}')
+                errors.append(f'Published county page is noindex: {src_path}')
             if 'Official sources' not in info.text:
-                errors.append(f'Verified county page missing Official sources section: {src_path}')
+                errors.append(f'Published county page missing Official sources section: {src_path}')
+            if 'Permitting authority' not in info.text:
+                errors.append(f'Published county page missing Permitting authority section: {src_path}')
 
         for href in info.hrefs:
             parsed = urllib.parse.urlparse(href)
@@ -273,8 +273,8 @@ def main() -> int:
     print('SepticScope full-site audit')
     print(f'HTML pages: {len(html_files):,}')
     print(f'Internal links checked: {internal_links:,}')
-    print(f'Verified county leaf pages: {verified_county_pages:,}')
-    print(f'In-progress county help pages: {lookup_pages:,}')
+    print(f'Published county leaf pages: {verified_county_pages:,}')
+    print(f'Withheld/noindex county pages: {withheld_county_pages:,}')
     print(f'Sitemap URLs: {len(sitemap_urls):,}')
     print(f'Unique external anchor URLs: {len(external_urls):,}')
 
@@ -307,8 +307,10 @@ def main() -> int:
 
     if errors:
         print(f'ERRORS ({len(errors)}):', file=sys.stderr)
-        for error in errors:
+        for error in errors[:500]:
             print(' -', error, file=sys.stderr)
+        if len(errors) > 500:
+            print(f' - ... {len(errors)-500} more errors', file=sys.stderr)
         return 1
 
     print('PASS: no hard site-integrity errors found')
