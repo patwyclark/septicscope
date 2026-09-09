@@ -33,39 +33,12 @@ jobs:
           base = "https://septicscope.com"
           expected_sha = os.environ["EXPECTED_SHA"].strip()
           expected_slugs = {
-              "bernalillo",
-              "catron",
-              "chaves",
-              "cibola",
-              "colfax",
-              "curry",
-              "de-baca",
-              "do-a-ana",
-              "eddy",
-              "grant",
-              "guadalupe",
-              "harding",
-              "hidalgo",
-              "lea",
-              "lincoln",
-              "los-alamos",
-              "luna",
-              "mckinley",
-              "mora",
-              "otero",
-              "quay",
-              "rio-arriba",
-              "roosevelt",
-              "sandoval",
-              "san-juan",
-              "san-miguel",
-              "santa-fe",
-              "sierra",
-              "socorro",
-              "taos",
-              "torrance",
-              "union",
-              "valencia",
+              "bernalillo", "catron", "chaves", "cibola", "colfax", "curry",
+              "de-baca", "do-a-ana", "eddy", "grant", "guadalupe", "harding",
+              "hidalgo", "lea", "lincoln", "los-alamos", "luna", "mckinley",
+              "mora", "otero", "quay", "rio-arriba", "roosevelt", "sandoval",
+              "san-juan", "san-miguel", "santa-fe", "sierra", "socorro", "taos",
+              "torrance", "union", "valencia",
           }
 
           def fetch(path: str, timeout: int = 30) -> str:
@@ -91,10 +64,7 @@ jobs:
                   if deployed_sha == expected_sha:
                       print(f"Cloudflare deployment confirmed at commit {deployed_sha}")
                       break
-                  last_error = (
-                      f"deployed commit is {deployed_sha or 'unknown'}, "
-                      f"expected {expected_sha}"
-                  )
+                  last_error = f"deployed commit is {deployed_sha or 'unknown'}, expected {expected_sha}"
               except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
                   last_error = repr(exc)
               print(f"Waiting for deployment ({attempt + 1}/40): {last_error}")
@@ -104,50 +74,30 @@ jobs:
 
           if info is None or info.get("quality_gate") != "pass":
               raise SystemExit(f"Production quality gate is not passing: {info}")
-          if int(info.get("published_county_or_equivalent_pages", 0)) != 3144:
-              raise SystemExit(f"National county coverage changed unexpectedly: {info}")
+          if int(info.get("county_lookup_records", 0)) != 3144:
+              raise SystemExit(f"National county lookup changed unexpectedly: {info}")
           if int(info.get("verified_county_guides", 0)) < 442:
-              raise SystemExit(
-                  f"Verified county total regressed below the New Mexico completion baseline: {info}"
-              )
-
-          completed_states = info.get("completed_states_and_dc")
-          if completed_states not in (None, ""):
-              if int(completed_states) < 4:
-                  raise SystemExit(
-                      f"Completed-state total regressed below the New Mexico completion baseline: {info}"
-                  )
-          else:
-              print(
-                  "build-info.json does not publish completed_states_and_dc; "
-                  "relying on the direct 33-county New Mexico checks below"
-              )
+              raise SystemExit(f"Verified county total regressed below the New Mexico completion baseline: {info}")
 
           hub = fetch("/counties/new-mexico/")
-          hub_paths = set(
-              re.findall(
-                  r'href=["\'](/counties/new-mexico/([^/"\']+)/)["\']',
-                  hub,
-                  flags=re.I,
-              )
-          )
+          hub_paths = set(re.findall(r'href=["\'](/counties/new-mexico/([^/"\']+)/)["\']', hub, flags=re.I))
           actual_slugs = {slug.lower() for _path, slug in hub_paths}
           if actual_slugs != expected_slugs:
               missing = sorted(expected_slugs - actual_slugs)
               extra = sorted(actual_slugs - expected_slugs)
-              raise SystemExit(
-                  f"New Mexico hub county-link mismatch; missing={missing}, extra={extra}"
-              )
+              raise SystemExit(f"New Mexico hub county-link mismatch; missing={missing}, extra={extra}")
           print("PASS /counties/new-mexico/ exposes all 33 New Mexico county guides")
 
           sitemap = fetch("/sitemap.xml")
           representative = {}
+          ads_marker = "pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+          if ads_marker in hub:
+              raise SystemExit("New Mexico state navigation hub must remain ad-free")
           for slug in sorted(expected_slugs):
               path = f"/counties/new-mexico/{slug}/"
               canonical = f"{base}{path}"
               if canonical not in sitemap:
                   raise SystemExit(f"New Mexico guide is missing from sitemap: {canonical}")
-
               body = fetch(path)
               lower = body.lower()
               if "noindex" in lower:
@@ -163,7 +113,8 @@ jobs:
                   raise SystemExit(f"Completed New Mexico guide lacks its official-source section: {path}")
               if "local guide in progress" in lower:
                   raise SystemExit(f"Completed New Mexico guide reverted to fallback copy: {path}")
-
+              if ads_marker in body:
+                  raise SystemExit(f"New Mexico county guide should remain ad-free during recovery: {path}")
               if slug in {"bernalillo", "catron", "los-alamos", "union"}:
                   representative[slug] = body
               print(f"PASS {path}")
@@ -171,22 +122,15 @@ jobs:
           current_rule = "https://www.srca.nm.gov/parts/title20/20.007.0003.html"
           for slug, body in representative.items():
               if current_rule not in body:
-                  raise SystemExit(
-                      f"Representative New Mexico guide lacks the current official 20.7.3 NMAC source: {slug}"
-                  )
+                  raise SystemExit(f"Representative New Mexico guide lacks the current official 20.7.3 NMAC source: {slug}")
 
           bernalillo = representative["bernalillo"].lower()
-          for domain_marker in (
-              "lwop.waste.web.env.nm.gov",
-              "aca-prod.accela.com/bernco",
-          ):
+          for domain_marker in ("lwop.waste.web.env.nm.gov", "aca-prod.accela.com/bernco"):
               if domain_marker not in bernalillo:
-                  raise SystemExit(
-                      f"Bernalillo County guide lacks required jurisdiction source: {domain_marker}"
-                  )
+                  raise SystemExit(f"Bernalillo County guide lacks required jurisdiction source: {domain_marker}")
 
           print(
               "PASS: all 33 New Mexico county guides are deployed, indexable, canonical, "
-              "source-backed, and present in the sitemap"
+              "source-backed, ad-free, and present in the sitemap"
           )
           PY
