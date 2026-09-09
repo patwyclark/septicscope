@@ -2,9 +2,9 @@
 
 Cloudflare Pages and GitHub Actions must both run only this file. The historical
 site generator is preserved as site_core_build.py; supplemental guides, trust
-hardening, provider rendering, county lookup, gated service search, homepage
-experience, contextual links, SEO safeguards and machine-readable inventories
-are executed in a deterministic order so CI and production cannot drift.
+hardening, provider rendering, county lookup, gated service search, quality-first
+publication, SEO safeguards and machine-readable inventories are executed in a
+deterministic order so CI and production cannot drift.
 """
 from __future__ import annotations
 
@@ -29,6 +29,7 @@ POST_BUILD_SCRIPTS = (
     "septic_winter_guide.py",
     "septic_inspection_checklist.py",
     "septic_system_lifespan_guide.py",
+    "septic_records_guide.py",
     "site_quality_polish.py",
     "external_source_hygiene.py",
 )
@@ -76,12 +77,13 @@ def _run() -> None:
     county_lookup = ROOT / "county_lookup_experience.py"
     homepage_experience = ROOT / "homepage_experience.py"
     service_quality = ROOT / "septic_service_quality.py"
+    adsense_recovery = ROOT / "adsense_recovery.py"
     seo_review = ROOT / "tools" / "seo_hourly_audit.py"
     growth_planner = ROOT / "tools" / "continuous_growth.py"
 
-    # The first inventory creates the national county manifest. Provider modules may
-    # continue to enrich counties where public evidence exists, while the global service
-    # directory remains hidden until all 3,144 county-equivalents have coverage.
+    # First create the national county manifest from the historical build, render all
+    # evidence-backed experiences, then remove every unverified county placeholder.
+    # The lookup keeps all 3,144 FIPS records without publishing 2,000+ construction pages.
     _run_script(inventory, env=env)
     _run_script(provider_experience, env=env)
     _run_script(growth_experience, env=env)
@@ -89,11 +91,20 @@ def _run() -> None:
     _run_script(county_lookup, env=env)
     _run_script(homepage_experience, env=env)
     _run_script(service_quality, env=env)
+    _run_script(adsense_recovery, env=env)
 
-    # Refresh inventory before the SEO gate so final public/noindex decisions and the
-    # restored county lookup are reflected in the keyword map and sitemap review.
+    # Re-inventory the quality-filtered output, then regenerate the two public entry
+    # points from the final verified/lookup-only statuses. A second recovery pass keeps
+    # those regenerated pages consistent with the AdSense placement allowlist.
+    _run_script(inventory, env=env)
+    _run_script(county_lookup, env=env)
+    _run_script(homepage_experience, env=env)
+    _run_script(service_quality, env=env)
+    _run_script(adsense_recovery, env=env)
     _run_script(inventory, env=env)
 
+    # Conservative SEO repairs may add only missing metadata essentials. The final
+    # recovery pass reasserts publication, advertising, trust and sitemap safeguards.
     _run_script(
         seo_review,
         "--site",
@@ -103,7 +114,7 @@ def _run() -> None:
         "--apply-safe",
         env=env,
     )
-
+    _run_script(adsense_recovery, env=env)
     _run_script(inventory, env=env)
     _run_script(
         seo_review,
