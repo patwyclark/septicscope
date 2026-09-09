@@ -33,21 +33,9 @@ jobs:
           base = "https://septicscope.com"
           expected_sha = os.environ["EXPECTED_SHA"].strip()
           expected_slugs = {
-              "apache",
-              "cochise",
-              "coconino",
-              "gila",
-              "graham",
-              "greenlee",
-              "la-paz",
-              "maricopa",
-              "mohave",
-              "navajo",
-              "pima",
-              "pinal",
-              "santa-cruz",
-              "yavapai",
-              "yuma",
+              "apache", "cochise", "coconino", "gila", "graham", "greenlee",
+              "la-paz", "maricopa", "mohave", "navajo", "pima", "pinal",
+              "santa-cruz", "yavapai", "yuma",
           }
 
           def fetch(path: str, timeout: int = 30) -> str:
@@ -73,10 +61,7 @@ jobs:
                   if deployed_sha == expected_sha:
                       print(f"Cloudflare deployment confirmed at commit {deployed_sha}")
                       break
-                  last_error = (
-                      f"deployed commit is {deployed_sha or 'unknown'}, "
-                      f"expected {expected_sha}"
-                  )
+                  last_error = f"deployed commit is {deployed_sha or 'unknown'}, expected {expected_sha}"
               except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
                   last_error = repr(exc)
               print(f"Waiting for deployment ({attempt + 1}/40): {last_error}")
@@ -86,28 +71,18 @@ jobs:
 
           if info is None or info.get("quality_gate") != "pass":
               raise SystemExit(f"Production quality gate is not passing: {info}")
-          if int(info.get("published_county_or_equivalent_pages", 0)) != 3144:
-              raise SystemExit(f"National county coverage changed unexpectedly: {info}")
+          if int(info.get("county_lookup_records", 0)) != 3144:
+              raise SystemExit(f"National county lookup changed unexpectedly: {info}")
           if int(info.get("verified_county_guides", 0)) < 450:
-              raise SystemExit(
-                  f"Verified county total regressed below the Arizona completion baseline: {info}"
-              )
+              raise SystemExit(f"Verified county total regressed below the Arizona completion baseline: {info}")
 
           hub = fetch("/counties/arizona/")
-          hub_paths = set(
-              re.findall(
-                  r'href=["\'](/counties/arizona/([^/"\']+)/)["\']',
-                  hub,
-                  flags=re.I,
-              )
-          )
+          hub_paths = set(re.findall(r'href=["\'](/counties/arizona/([^/"\']+)/)["\']', hub, flags=re.I))
           actual_slugs = {slug.lower() for _path, slug in hub_paths}
           if actual_slugs != expected_slugs:
               missing = sorted(expected_slugs - actual_slugs)
               extra = sorted(actual_slugs - expected_slugs)
-              raise SystemExit(
-                  f"Arizona hub county-link mismatch; missing={missing}, extra={extra}"
-              )
+              raise SystemExit(f"Arizona hub county-link mismatch; missing={missing}, extra={extra}")
           print("PASS /counties/arizona/ exposes all 15 Arizona county guides")
 
           sitemap = fetch("/sitemap.xml")
@@ -116,7 +91,6 @@ jobs:
               canonical = f"{base}{path}"
               if canonical not in sitemap:
                   raise SystemExit(f"Arizona guide is missing from sitemap: {canonical}")
-
               body = fetch(path)
               lower = body.lower()
               if "noindex" in lower:
@@ -128,32 +102,18 @@ jobs:
               )
               if not canonical_pattern.search(body):
                   raise SystemExit(f"Completed Arizona guide has the wrong canonical: {path}")
-
-              required_markers = (
-                  "Official sources",
-                  "Report outdated county information",
-              )
-              missing_markers = [
-                  marker for marker in required_markers if marker.lower() not in lower
-              ]
+              required_markers = ("Official sources", "Report outdated county information")
+              missing_markers = [marker for marker in required_markers if marker.lower() not in lower]
               if missing_markers:
-                  raise SystemExit(
-                      f"{path} is missing required verified-guide markers: {missing_markers}"
-                  )
-              if not any(
-                  marker in lower
-                  for marker in (
-                      "adeq",
-                      "arizona department of environmental quality",
-                  )
-              ):
-                  raise SystemExit(
-                      f"{path} does not identify Arizona's state environmental authority"
-                  )
+                  raise SystemExit(f"{path} is missing required verified-guide markers: {missing_markers}")
+              if not any(marker in lower for marker in ("adeq", "arizona department of environmental quality")):
+                  raise SystemExit(f"{path} does not identify Arizona's state environmental authority")
+              if "pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" in body:
+                  raise SystemExit(f"County guide should remain ad-free during AdSense recovery: {path}")
               print(f"PASS {path}")
 
           print(
               "PASS: all 15 Arizona county guides are deployed, indexable, canonical, "
-              "state/local scoped, source-backed, and present in the sitemap"
+              "source-backed, ad-free, and present in the sitemap"
           )
           PY
