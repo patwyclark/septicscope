@@ -41,48 +41,46 @@ jobs:
       - name: Build complete production site
         run: python build_site.py
 
-      - name: Verify county lookup and gated service-directory behavior
+      - name: Verify quality-first county publication and AdSense recovery
         id: inventory
         continue-on-error: true
         run: |
           test -f site/deployment-manifest.txt
           cat site/deployment-manifest.txt
-          test -f site/build-info.json
-          test -f site/data/national-coverage-manifest.json
-          test -f site/data/keyword-map.json
-          test -f site/data/source-catalog.json
-          test -f site/data/provider-directory.json
-          test -f site/data/project-audit-summary.json
-          test -f site/data/project-audit-summary.txt
-          test -f site/data/hourly-seo-build-report.json
-          test -f site/data/continuous-growth-report.json
-          test -f site/data/county-lookup.json
-          test -f site/data/service-directory-status.json
-          test -f site/data/septic-services-near-me.json
-          test -f site/assets/county-lookup.js
-          test -f site/assets/septic-services-near-me.css
-          test -f site/assets/septic-services-near-me.js
-          test -f site/f1c5f33bc7de84c635e009f874dc4be9.txt
-          test -f site/providers/index.html
-          test -f site/septic-services-near-me/index.html
-          test -f site/counties/index.html
-          test -f site/counties/maryland/baltimore/index.html
-          test -f site/counties/maryland/baltimore-city/index.html
-          test -f site/counties/missouri/st-louis/index.html
-          test -f site/counties/missouri/st-louis-city/index.html
-          test -f site/counties/virginia/fairfax/index.html
-          test -f site/counties/virginia/fairfax-city/index.html
-          test -f site/counties/north-carolina/guilford/index.html
-          test -f site/counties/alabama/mobile/index.html
-          test -f site/counties/tennessee/bedford/index.html
-          test -f site/counties/idaho/ada/index.html
-          test -f site/guides/septic-drainfield-repair-replacement/index.html
-          test -f site/guides/septic-tank-size-calculator/index.html
-          test -f site/guides/septic-maintenance-checklist/index.html
-          test -f site/guides/types-of-septic-systems/index.html
-          test -f site/guides/septic-system-winter-care/index.html
-          test -f site/guides/septic-inspection-checklist/index.html
-          test -f site/guides/septic-system-lifespan/index.html
+          for path in \
+            site/build-info.json \
+            site/data/national-coverage-manifest.json \
+            site/data/keyword-map.json \
+            site/data/source-catalog.json \
+            site/data/provider-directory.json \
+            site/data/project-audit-summary.json \
+            site/data/project-audit-summary.txt \
+            site/data/hourly-seo-build-report.json \
+            site/data/continuous-growth-report.json \
+            site/data/county-lookup.json \
+            site/data/service-directory-status.json \
+            site/data/adsense-readiness.json \
+            site/data/septic-services-near-me.json \
+            site/assets/county-lookup.js \
+            site/assets/septic-services-near-me.css \
+            site/assets/septic-services-near-me.js \
+            site/f1c5f33bc7de84c635e009f874dc4be9.txt \
+            site/providers/index.html \
+            site/septic-services-near-me/index.html \
+            site/counties/index.html \
+            site/about/index.html \
+            site/privacy/index.html \
+            site/contact/index.html \
+            site/guides/find-septic-system-records/index.html \
+            site/guides/septic-drainfield-repair-replacement/index.html \
+            site/guides/septic-tank-size-calculator/index.html \
+            site/guides/septic-maintenance-checklist/index.html \
+            site/guides/types-of-septic-systems/index.html \
+            site/guides/septic-system-winter-care/index.html \
+            site/guides/septic-inspection-checklist/index.html \
+            site/guides/septic-system-lifespan/index.html; do
+            test -f "$path"
+          done
           node --check site/assets/county-lookup.js
           node --check site/assets/septic-services-near-me.js
           python site_inventory.py --check
@@ -94,8 +92,12 @@ jobs:
           from pathlib import Path
           from urllib.parse import urlparse
 
-          summary = json.loads(Path('site/data/project-audit-summary.json').read_text())
+          ROOT = Path('site')
+          summary = json.loads((ROOT / 'data/project-audit-summary.json').read_text())
           counts = summary['counts']
+          info = json.loads((ROOT / 'build-info.json').read_text())
+          readiness = json.loads((ROOT / 'data/adsense-readiness.json').read_text())
+
           required_zero = {
               'pages_without_primary_keywords',
               'duplicate_title_groups',
@@ -105,112 +107,167 @@ jobs:
               'canonical_domain_conflicts',
               'accessibility_warnings',
               'legacy_brand_occurrences',
+              'in_progress_county_help_pages',
+              'missing_county_equivalent_pages',
           }
-          failures = {key: counts[key] for key in required_zero if counts[key] != 0}
+          failures = {key: counts.get(key) for key in required_zero if counts.get(key) != 0}
           if failures:
-              raise SystemExit(f'Final metadata/SEO quality counts are not zero: {failures}')
+              raise SystemExit(f'Final metadata/publication quality counts are not zero: {failures}')
 
-          home = Path('site/index.html').read_text(encoding='utf-8')
-          home_visible = re.sub(r'<[^>]+>', ' ', home)
-          home_visible = re.sub(r'\s+', ' ', home_visible)
-          expected = {
-              'verified county guides': counts['verified_county_guides'],
+          verified = int(counts['verified_county_guides'])
+          published = int(counts['published_county_or_equivalent_pages'])
+          lookup_only = int(counts['lookup_only_counties'])
+          if int(counts.get('county_lookup_records', 0)) != 3144:
+              raise SystemExit(f'National lookup count is wrong: {counts}')
+          if published != verified:
+              raise SystemExit(f'Only verified county guides should be published: {published} versus {verified}')
+          if published + lookup_only != 3144:
+              raise SystemExit(f'Published and lookup-only county totals do not reconcile: {counts}')
+          if int(info.get('county_lookup_records', 0)) != 3144:
+              raise SystemExit(f'build-info lost national lookup coverage: {info}')
+          if int(info.get('published_county_or_equivalent_pages', -1)) != verified:
+              raise SystemExit(f'build-info publishes non-verified county pages: {info}')
+          if int(info.get('lookup_only_counties', -1)) != lookup_only:
+              raise SystemExit(f'build-info lookup-only count is inconsistent: {info}')
+
+          home = (ROOT / 'index.html').read_text(encoding='utf-8')
+          home_visible = re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', home))
+          expected_metrics = {
+              'verified county guides': verified,
               'FAQ articles': counts['faq_articles'],
               'septic guides': counts['guide_articles_and_tools'],
           }
-          for label, value in expected.items():
+          for label, value in expected_metrics.items():
               if not re.search(rf'\b{value:,}\s+{re.escape(label)}\b', home_visible, flags=re.I):
                   raise SystemExit(f'Homepage does not show current metric: {value:,} {label}')
           if 'data-county-lookup-root' not in home or '/assets/county-lookup.js' not in home:
               raise SystemExit('Homepage county lookup is missing')
+          if '3,144' not in home_visible or 'lookup records' not in home_visible.lower():
+              raise SystemExit('Homepage does not describe the national data as lookup records')
           for forbidden in ('href="/septic-services-near-me/', "href='/septic-services-near-me/", 'href="/providers/', "href='/providers/"):
-              if forbidden in home:
-                  raise SystemExit(f'Homepage still promotes an incomplete service directory: {forbidden}')
-          if re.search(r'Browse\s+Indiana\s+septic', home_visible, flags=re.I):
-              raise SystemExit('Obsolete Indiana-only homepage promotion remains')
+              if forbidden in home.lower():
+                  raise SystemExit(f'Homepage promotes an incomplete service directory: {forbidden}')
 
-          county_page = Path('site/counties/index.html').read_text(encoding='utf-8')
+          county_page = (ROOT / 'counties/index.html').read_text(encoding='utf-8')
           if 'data-county-lookup-root' not in county_page or 'County FIPS' not in county_page:
               raise SystemExit('County directory does not include ZIP/city/county/FIPS lookup')
           if 'noindex' in county_page.lower():
               raise SystemExit('County lookup must remain indexable')
+          if 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js' in county_page:
+              raise SystemExit('County lookup is a utility screen and must remain ad-free')
 
-          county_data = json.loads(Path('site/data/county-lookup.json').read_text())
+          county_data = json.loads((ROOT / 'data/county-lookup.json').read_text())
           county_rows = county_data.get('counties', [])
           if county_data.get('record_count') != 3144 or len(county_rows) != 3144:
               raise SystemExit('County lookup does not contain all 3,144 county-equivalents')
           if len({row.get('f') for row in county_rows}) != 3144:
               raise SystemExit('County lookup contains duplicate county FIPS records')
-          incomplete_counties = [row for row in county_rows if not row.get('f') or not row.get('n') or not row.get('s') or not row.get('u')]
-          if incomplete_counties:
-              raise SystemExit('County lookup contains incomplete records')
+          bad = [
+              row.get('f') for row in county_rows
+              if not row.get('f') or not row.get('n') or not row.get('s')
+              or not row.get('g') or not row.get('e')
+              or bool(row.get('v')) != bool(row.get('u'))
+          ]
+          if bad:
+              raise SystemExit(f'County lookup publication fields are invalid: {bad[:10]}')
+          denton = next((row for row in county_rows if row.get('f') == '48121'), None)
+          if not denton or not denton.get('v') or denton.get('u') != '/counties/texas/denton/':
+              raise SystemExit(f'Denton County published lookup sample is wrong: {denton}')
+          fairfax_city = next((row for row in county_rows if row.get('f') == '51600'), None)
+          if not fairfax_city:
+              raise SystemExit('Fairfax City lookup record is missing')
+          fairfax_city_file = ROOT / 'counties/virginia/fairfax-city/index.html'
+          if fairfax_city.get('v'):
+              if not fairfax_city.get('u') or not fairfax_city_file.exists():
+                  raise SystemExit('Verified Fairfax City would need a published page')
+          else:
+              if fairfax_city.get('u') or fairfax_city_file.exists():
+                  raise SystemExit('Lookup-only Fairfax City must not open a filler county page')
 
-          service_data = json.loads(Path('site/data/septic-services-near-me.json').read_text())
-          service_providers = service_data.get('providers', [])
+          leaf_pages = list((ROOT / 'counties').glob('*/*/index.html'))
+          if len(leaf_pages) != verified:
+              raise SystemExit(f'Published county file count does not match verified total: {len(leaf_pages)} vs {verified}')
+          filler = []
+          for page in ROOT.rglob('*.html'):
+              if page in {ROOT / 'providers/index.html', ROOT / 'septic-services-near-me/index.html'}:
+                  continue
+              lower = page.read_text(encoding='utf-8', errors='replace').lower()
+              if 'local guide in progress' in lower or 'while we finish this local guide' in lower:
+                  filler.append(str(page))
+          if filler:
+              raise SystemExit(f'Public filler/construction county pages remain: {filler[:10]}')
+
+          if int(readiness.get('county_lookup_records', 0)) != 3144:
+              raise SystemExit(f'AdSense readiness lookup count is wrong: {readiness}')
+          if int(readiness.get('placeholder_county_pages', -1)) != 0:
+              raise SystemExit(f'AdSense readiness still reports placeholder pages: {readiness}')
+          if int(readiness.get('published_source_verified_county_guides', -1)) != verified:
+              raise SystemExit(f'AdSense readiness county count is wrong: {readiness}')
+          if int(readiness.get('monetized_substantive_pages', 0)) < 1:
+              raise SystemExit(f'AdSense site code is not present on substantive pages: {readiness}')
+
+          ads_marker = 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js'
+          if ads_marker not in home:
+              raise SystemExit('Homepage is missing the AdSense site code')
+          for page in [
+              ROOT / 'counties/index.html',
+              ROOT / 'about/index.html',
+              ROOT / 'privacy/index.html',
+              ROOT / 'contact/index.html',
+              ROOT / 'counties/virginia/fairfax/index.html',
+          ]:
+              if page.exists() and ads_marker in page.read_text(encoding='utf-8', errors='replace'):
+                  raise SystemExit(f'AdSense code appears on an ad-free utility/policy/county page: {page}')
+
+          about = (ROOT / 'about/index.html').read_text(encoding='utf-8')
+          for phrase in ('SepticScope Editorial Desk', 'How automation and AI are used', 'Advertising and editorial independence'):
+              if phrase not in about:
+                  raise SystemExit(f'About page is missing publisher transparency: {phrase}')
+          privacy = (ROOT / 'privacy/index.html').read_text(encoding='utf-8')
+          if 'Optional location lookup' not in privacy or 'does not store the coordinates' not in privacy:
+              raise SystemExit('Privacy policy does not disclose optional geolocation processing')
+          records_guide = (ROOT / 'guides/find-septic-system-records/index.html').read_text(encoding='utf-8')
+          if 'How to find septic system records' not in records_guide or len(re.findall(r'\b\w+\b', re.sub(r'<[^>]+>', ' ', records_guide))) < 900:
+              raise SystemExit('Substantive septic system records guide is missing or too thin')
+
+          service_data = json.loads((ROOT / 'data/septic-services-near-me.json').read_text())
+          providers = service_data.get('providers', [])
           service_counties = service_data.get('counties', [])
           if len(service_counties) != 3144 or len({row.get('f') for row in service_counties}) != 3144:
               raise SystemExit('Background provider coverage dataset is not nationally complete')
-          provider_ids = [row.get('id') for row in service_providers]
+          provider_ids = [row.get('id') for row in providers]
           if len(provider_ids) != len(set(provider_ids)):
               raise SystemExit('Provider dataset contains duplicate provider IDs')
           incomplete_providers = [
-              row.get('id') for row in service_providers
+              row.get('id') for row in providers
               if not row.get('name') or not row.get('phone') or not row.get('source')
               or not row.get('fips') or not row.get('services') or not row.get('coverage')
           ]
           if incomplete_providers:
               raise SystemExit(f'Provider records are missing required evidence fields: {incomplete_providers[:10]}')
-          if counts['provider_listings'] != len(service_providers):
-              raise SystemExit(
-                  f'Inventory/provider data drift: {counts["provider_listings"]} versus {len(service_providers)}'
-              )
+          if counts['provider_listings'] != len(providers):
+              raise SystemExit(f'Inventory/provider data drift: {counts["provider_listings"]} versus {len(providers)}')
 
-          status = json.loads(Path('site/data/service-directory-status.json').read_text())
-          covered = {
-              str(fips)
-              for provider in service_providers
-              for fips in provider.get('fips', [])
-          }
+          status = json.loads((ROOT / 'data/service-directory-status.json').read_text())
+          covered = {str(fips) for provider in providers for fips in provider.get('fips', [])}
           if status.get('covered_counties') != len(covered):
               raise SystemExit('Service-directory coverage status does not match provider data')
           expected_public = len(covered) == 3144
           if bool(status.get('public')) != expected_public:
               raise SystemExit('Service-directory launch gate is inconsistent')
-
-          locator = Path('site/septic-services-near-me/index.html').read_text(encoding='utf-8')
-          provider_page = Path('site/providers/index.html').read_text(encoding='utf-8')
-          sitemap = Path('site/sitemap.xml').read_text(encoding='utf-8')
-          if expected_public:
-              if 'noindex' in locator.lower() or 'data-provider-card' not in locator:
-                  raise SystemExit('Complete service search should be public')
-              if 'noindex' in provider_page.lower():
-                  raise SystemExit('Complete provider directory should be public')
-              if sitemap.count('https://septicscope.com/septic-services-near-me/') != 1:
-                  raise SystemExit('Public service search must appear once in the sitemap')
-          else:
+          locator = (ROOT / 'septic-services-near-me/index.html').read_text(encoding='utf-8')
+          provider_page = (ROOT / 'providers/index.html').read_text(encoding='utf-8')
+          sitemap = (ROOT / 'sitemap.xml').read_text(encoding='utf-8')
+          if not expected_public:
               if 'noindex,follow' not in locator.replace(' ', '').lower() or 'data-provider-card' in locator:
-                  raise SystemExit('Incomplete service search must be hidden and non-searchable')
+                  raise SystemExit('Incomplete service search must remain hidden and non-searchable')
               if 'noindex,follow' not in provider_page.replace(' ', '').lower():
                   raise SystemExit('Incomplete provider directory must be noindex')
-              provider_body = provider_page.split('<main', 1)[-1]
-              if '<article class="ss-provider-card">' in provider_body:
-                  raise SystemExit('Incomplete national provider directory must not show listing cards')
               if 'https://septicscope.com/septic-services-near-me/' in sitemap or 'https://septicscope.com/providers/' in sitemap:
                   raise SystemExit('Incomplete service pages must be absent from the sitemap')
-              public_refs = []
-              for page in Path('site').rglob('*.html'):
-                  if page in {Path('site/septic-services-near-me/index.html'), Path('site/providers/index.html')}:
-                      continue
-                  text = page.read_text(encoding='utf-8', errors='replace').lower()
-                  if 'href="/septic-services-near-me/' in text or "href='/septic-services-near-me/" in text:
-                      public_refs.append(str(page))
-                  if 'href="/providers/' in text or "href='/providers/" in text:
-                      public_refs.append(str(page))
-              if public_refs:
-                  raise SystemExit(f'Incomplete service-directory links remain public: {public_refs[:10]}')
 
           growth_state = json.loads(Path('data/growth-links.json').read_text())
-          growth_report = json.loads(Path('site/data/continuous-growth-report.json').read_text())
+          growth_report = json.loads((ROOT / 'data/continuous-growth-report.json').read_text())
           if growth_state.get('schema_version') != 1 or not isinstance(growth_state.get('links'), list):
               raise SystemExit('Continuous-growth state schema is invalid')
           if growth_report.get('mode') != 'plan_only':
@@ -221,7 +278,7 @@ jobs:
               if not source.startswith('https://septicscope.com/') or not target.startswith('https://septicscope.com/'):
                   raise SystemExit(f'Invalid growth-link URL pair: {source} -> {target}')
               source_path = urlparse(source).path.strip('/')
-              page = Path('site/index.html') if not source_path else Path('site') / source_path / 'index.html'
+              page = ROOT / 'index.html' if not source_path else ROOT / source_path / 'index.html'
               if not page.exists():
                   raise SystemExit(f'Growth-link source page is missing: {source}')
               text = page.read_text(encoding='utf-8')
@@ -230,10 +287,13 @@ jobs:
               if urlparse(target).path not in text:
                   raise SystemExit(f'Growth-link target is not present on {source}: {target}')
 
-          key = Path('site/f1c5f33bc7de84c635e009f874dc4be9.txt').read_text().strip()
+          key = (ROOT / 'f1c5f33bc7de84c635e009f874dc4be9.txt').read_text().strip()
           if key != 'f1c5f33bc7de84c635e009f874dc4be9':
               raise SystemExit('IndexNow key file is invalid')
-          print('PASS: county lookup restored and incomplete global service search remains hidden')
+          print(
+              'PASS: national FIPS lookup is complete, filler county pages are unpublished, '
+              'and AdSense is restricted to substantive content'
+          )
           PY
 
       - name: Audit every generated page and internal link
@@ -252,7 +312,7 @@ jobs:
           set -o pipefail
           python audit_site.py --external 2>&1 | tee external-audit.txt
 
-      - name: Audit AdSense readiness and county source quality
+      - name: Audit AdSense low-value recovery
         id: adsense_audit
         if: always()
         continue-on-error: true
@@ -272,9 +332,13 @@ jobs:
             validation-seo-report.json
             validation-growth-report.json
             site/index.html
+            site/about/index.html
+            site/privacy/index.html
             site/counties/index.html
             site/assets/county-lookup.js
             site/data/county-lookup.json
+            site/data/adsense-readiness.json
+            site/guides/find-septic-system-records/index.html
             site/septic-services-near-me/index.html
             site/providers/index.html
             site/data/service-directory-status.json
