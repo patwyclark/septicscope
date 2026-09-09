@@ -29,6 +29,7 @@ POST_BUILD_SCRIPTS = (
     "septic_winter_guide.py",
     "septic_inspection_checklist.py",
     "septic_system_lifespan_guide.py",
+    "homebuyer_guide_quality.py",
     "site_quality_polish.py",
     "external_source_hygiene.py",
 )
@@ -76,6 +77,7 @@ def _run() -> None:
     homepage_experience = ROOT / "homepage_experience.py"
     service_quality = ROOT / "septic_service_quality.py"
     quality_recovery = ROOT / "quality_recovery.py"
+    quality_finalize = ROOT / "quality_recovery_finalize.py"
     seo_review = ROOT / "tools" / "seo_hourly_audit.py"
 
     # The first inventory creates the national county manifest used by the lookup and
@@ -92,6 +94,7 @@ def _run() -> None:
     # homepage and About page, demotes repetitive or insufficiently local county pages,
     # removes ads from navigation/noindex pages, and creates a focused sitemap.
     _run_script(quality_recovery, env=env)
+    _run_script(quality_finalize, env=env)
 
     # Final inventories and SEO checks must inspect the post-recovery output rather
     # than the larger pre-recovery generator footprint.
