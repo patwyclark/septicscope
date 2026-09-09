@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-09-08",
+  "last_updated": "2026-09-09",
   "policy": "Each record adds one contextual internal link chosen from the generated site's real page graph. Links must connect genuinely related SepticScope resources and may not be added merely to increase keyword frequency.",
   "links": [
     {
@@ -2242,6 +2242,20 @@
       "relevance_score": 26.0,
       "date_added": "2026-09-08",
       "id": "genesee-to-septic-tank-size-calculator-0160"
+    },
+    {
+      "source_url": "https://septicscope.com/counties/michigan/ingham/",
+      "target_url": "https://septicscope.com/guides/septic-tank-size-calculator/",
+      "anchor_text": "Septic tank size calculator: start with bedrooms, finish with your local code",
+      "summary": "Use this related homeowner guide for the next practical decision, checklist, or maintenance step.",
+      "source_page_type": "county_page",
+      "target_page_type": "guide",
+      "reason": "contextual_internal_link_for_underlinked_or_low-navigation_page",
+      "source_outgoing_internal_links": 6,
+      "target_inbound_internal_links": 162,
+      "relevance_score": 26.0,
+      "date_added": "2026-09-09",
+      "id": "ingham-to-septic-tank-size-calculator-0161"
     }
   ]
 }
