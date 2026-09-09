@@ -1,51 +1,22 @@
-name: Hourly continuous SepticScope growth
+name: Manual SepticScope research and quality audit
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/hourly-growth-maintenance.yml"
-      - "tools/provider_discovery.py"
-      - "tools/provider_discovery_parts/**"
-      - "tools/continuous_growth.py"
-      - "tools/seo_hourly_audit.py"
-      - "tools/indexing_hygiene.py"
-      - "tools/indexnow_submit.py"
-      - "tools/sync_curated_providers.py"
-      - "provider_experience.py"
-      - "provider_curated_experience.py"
-      - "continuous_growth_experience.py"
-      - "septic_services_near_me.py"
-      - "county_lookup_experience.py"
-      - "homepage_experience.py"
-      - "septic_service_quality.py"
-      - "trust_routes.py"
-      - "data/provider-overrides.json"
-      - "data/provider-expansion-*.json"
-      - "build_site.py"
-  schedule:
-    - cron: "23 * * * *"
   workflow_dispatch:
     inputs:
       county_limit:
-        description: "Counties to review for provider evidence this run"
+        description: "Counties to inspect for provider evidence without publishing automatically"
         required: false
         default: "100"
-      dry_run:
-        description: "Research and audit without committing source changes"
-        required: false
-        type: boolean
-        default: false
-
-concurrency:
-  group: hourly-septicscope-growth
-  cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: manual-septicscope-research
+  cancel-in-progress: true
 
 jobs:
-  maintain:
+  audit:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -53,260 +24,70 @@ jobs:
     steps:
       - name: Checkout production branch
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Compile and self-test continuous growth tooling
+      - name: Compile source and self-test audit tooling
         run: |
           python -m compileall -q -x '(^|/)(site|\.septicscope-build)/' .
           python tools/provider_discovery.py --self-test
-          python tools/continuous_growth.py --self-test
           python tools/seo_hourly_audit.py --self-test
           python tools/indexing_hygiene.py --self-test
           python tools/indexnow_submit.py /dev/null --self-test
           python tools/sync_curated_providers.py --self-test
 
-      - name: Build current production site
+      - name: Build the quality-gated production site
         run: python build_site.py
 
-      - name: Review free official provider sources for 100 rotating counties
-        id: provider_research
+      - name: Inspect free official provider sources without changing the repository
         run: |
-          DRY_FLAG=""
-          if [ "${{ github.event.inputs.dry_run || 'false' }}" = "true" ]; then
-            DRY_FLAG="--dry-run"
-          fi
           python tools/provider_discovery.py \
             --county-limit "$COUNTY_LIMIT" \
             --max-additions "$COUNTY_LIMIT" \
             --search-budget 0 \
-            --report hourly-provider-report.json \
-            $DRY_FLAG
-          if git diff --quiet -- data/providers.json; then
-            echo "provider_data_changed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "provider_data_changed=true" >> "$GITHUB_OUTPUT"
-          fi
+            --dry-run \
+            --report provider-research-report.json
 
-      - name: Rebuild after provider additions
-        if: steps.provider_research.outputs.provider_data_changed == 'true'
-        run: python build_site.py
+      - name: Enforce quality-recovery policy
+        run: python quality_recovery.py --check
 
-      - name: Find and apply one additional safe compounding improvement
-        id: continuous_growth
-        run: |
-          APPLY_FLAG="--apply-one"
-          if [ "${{ github.event.inputs.dry_run || 'false' }}" = "true" ]; then
-            APPLY_FLAG=""
-          fi
-          python tools/continuous_growth.py \
-            --site site \
-            --state data/growth-links.json \
-            --report hourly-continuous-growth-report.json \
-            $APPLY_FLAG
-          if git diff --quiet -- data/growth-links.json; then
-            echo "growth_data_changed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "growth_data_changed=true" >> "$GITHUB_OUTPUT"
-          fi
+      - name: Review page-level search intent
+        run: python tools/seo_hourly_audit.py --site site --report seo-quality-report.json
 
-      - name: Rebuild after continuous-growth improvement
-        if: >-
-          steps.provider_research.outputs.provider_data_changed == 'true' ||
-          steps.continuous_growth.outputs.growth_data_changed == 'true'
-        run: python build_site.py
+      - name: Audit internal links and generated-site integrity
+        run: python audit_site.py | tee internal-audit.txt
 
-      - name: Review keyword intent and SEO essentials on every indexable page
-        id: seo_audit
-        continue-on-error: true
-        run: python tools/seo_hourly_audit.py --site site --report hourly-seo-report.json
+      - name: Audit generated indexing hygiene
+        run: python tools/indexing_hygiene.py --site site | tee indexing-audit.txt
 
-      - name: Audit every generated page and internal link
-        id: internal_audit
-        continue-on-error: true
-        run: |
-          set -o pipefail
-          python audit_site.py 2>&1 | tee hourly-internal-audit.txt
+      - name: Audit external sources
+        run: python audit_site.py --external | tee external-audit.txt
 
-      - name: Audit Google indexing hygiene on generated and live sitemaps
-        id: indexing_audit
-        continue-on-error: true
-        run: |
-          set -o pipefail
-          {
-            echo "=== Generated sitemap ==="
-            python tools/indexing_hygiene.py --site site
-            echo
-            echo "=== Live sitemap ==="
-            python tools/indexing_hygiene.py --production
-          } 2>&1 | tee hourly-indexing-audit.txt
+      - name: Audit AdSense and content quality
+        run: python adsense_audit.py | tee adsense-audit.txt
 
-      - name: Check external government, source and county-local provider links
-        id: external_audit
-        continue-on-error: true
-        run: |
-          set -o pipefail
-          python audit_site.py --external 2>&1 | tee hourly-external-audit.txt
-
-      - name: Audit AdSense, provider and county-source quality
-        id: adsense_audit
-        continue-on-error: true
-        run: |
-          set -o pipefail
-          python adsense_audit.py 2>&1 | tee hourly-adsense-audit.txt
-
-      - name: Build changed public URL list for search-engine notification
-        if: >-
-          steps.provider_research.outputs.provider_data_changed == 'true' ||
-          steps.continuous_growth.outputs.growth_data_changed == 'true'
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          hidden = {
-              'https://septicscope.com/providers/',
-              'https://septicscope.com/septic-services-near-me/',
-          }
-          urls = []
-          for name in ('hourly-provider-report.json', 'hourly-continuous-growth-report.json'):
-              path = Path(name)
-              if not path.exists():
-                  continue
-              try:
-                  data = json.loads(path.read_text(encoding='utf-8'))
-              except json.JSONDecodeError:
-                  continue
-              for url in data.get('changed_urls', []):
-                  if (
-                      isinstance(url, str)
-                      and url.startswith('https://septicscope.com/')
-                      and url not in hidden
-                      and url not in urls
-                  ):
-                      urls.append(url)
-          Path('hourly-changed-urls.json').write_text(
-              json.dumps({'changed_urls': urls}, indent=2) + '\n',
-              encoding='utf-8',
-          )
-          print(f'Prepared {len(urls)} changed public URLs; incomplete global service pages excluded')
-          PY
-
-      - name: Upload hourly growth diagnostics
+      - name: Upload research and audit diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: hourly-growth-diagnostics-${{ github.run_number }}
+          name: manual-quality-diagnostics-${{ github.run_number }}
           path: |
-            hourly-provider-report.json
-            hourly-continuous-growth-report.json
-            hourly-seo-report.json
-            hourly-changed-urls.json
-            hourly-internal-audit.txt
-            hourly-indexing-audit.txt
-            hourly-external-audit.txt
-            hourly-adsense-audit.txt
-            post-rebase-seo-report.json
-            post-rebase-internal-audit.txt
-            post-rebase-indexing-audit.txt
-            post-rebase-external-audit.txt
-            post-rebase-adsense-audit.txt
-            site/index.html
-            site/counties/index.html
-            site/assets/county-lookup.js
-            site/data/county-lookup.json
-            site/septic-services-near-me/index.html
-            site/providers/index.html
-            site/data/service-directory-status.json
-            site/data/septic-services-near-me.json
-            site/build-info.json
-            site/data/continuous-growth-report.json
+            provider-research-report.json
+            seo-quality-report.json
+            internal-audit.txt
+            indexing-audit.txt
+            external-audit.txt
+            adsense-audit.txt
+            site/data/adsense-quality-recovery.json
+            site/data/adsense-quality-recovery.txt
             site/data/project-audit-summary.json
             site/data/keyword-map.json
-            site/data/provider-directory.json
-          retention-days: 14
+            site/index.html
+            site/faq/index.html
+            site/about/index.html
+            site/counties/index.html
+          retention-days: 30
           if-no-files-found: warn
-
-      - name: Enforce hourly quality gates
-        run: |
-          test "${{ steps.seo_audit.outcome }}" = "success"
-          test "${{ steps.internal_audit.outcome }}" = "success"
-          test "${{ steps.indexing_audit.outcome }}" = "success"
-          test "${{ steps.external_audit.outcome }}" = "success"
-          test "${{ steps.adsense_audit.outcome }}" = "success"
-
-      - name: Commit and revalidate evidence-backed hourly growth changes
-        id: commit
-        if: >-
-          github.ref == 'refs/heads/main' &&
-          (github.event_name != 'workflow_dispatch' || github.event.inputs.dry_run != 'true') &&
-          (steps.provider_research.outputs.provider_data_changed == 'true' ||
-           steps.continuous_growth.outputs.growth_data_changed == 'true')
-        run: |
-          set -euo pipefail
-          git config user.name "SepticScope Growth Bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add data/providers.json data/growth-links.json
-          git commit -m "Hourly evidence-backed site growth $(date -u +'%Y-%m-%d %H:00 UTC')"
-
-          audited_base="$GITHUB_SHA"
-          git fetch origin main
-          current_upstream="$(git rev-parse origin/main)"
-          if [ "$current_upstream" != "$audited_base" ]; then
-            echo "main advanced during this run; rebasing and repeating every quality gate"
-            git rebase origin/main
-            rebased_sha="$(git rev-parse HEAD)"
-            GITHUB_SHA="$rebased_sha" python build_site.py
-            python tools/seo_hourly_audit.py --site site --report post-rebase-seo-report.json
-            set -o pipefail
-            python audit_site.py 2>&1 | tee post-rebase-internal-audit.txt
-            python tools/indexing_hygiene.py --site site 2>&1 | tee post-rebase-indexing-audit.txt
-            python audit_site.py --external 2>&1 | tee post-rebase-external-audit.txt
-            python adsense_audit.py 2>&1 | tee post-rebase-adsense-audit.txt
-          fi
-
-          git push origin HEAD:main
-          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-
-      - name: Wait for the changed pages to reach production
-        if: steps.commit.outputs.sha != ''
-        continue-on-error: true
-        env:
-          EXPECTED_SHA: ${{ steps.commit.outputs.sha }}
-        run: |
-          python - <<'PY'
-          import json, os, time
-          from urllib.error import HTTPError, URLError
-          from urllib.request import Request, urlopen
-          expected = os.environ['EXPECTED_SHA']
-          for _ in range(24):
-              try:
-                  request = Request(
-                      f"https://septicscope.com/build-info.json?v={int(time.time())}",
-                      headers={'User-Agent': 'SepticScope hourly deployment verifier', 'Cache-Control': 'no-cache'},
-                  )
-                  with urlopen(request, timeout=20) as response:
-                      info = json.load(response)
-                  if str(info.get('commit_sha', '')) == expected:
-                      print(f'Production reached {expected}')
-                      break
-              except (HTTPError, URLError, TimeoutError, json.JSONDecodeError):
-                  pass
-              time.sleep(15)
-          else:
-              raise SystemExit(f'Production did not reach {expected} within 6 minutes')
-          PY
-
-      - name: Recheck production sitemap after deployment
-        if: steps.commit.outputs.sha != ''
-        run: python tools/indexing_hygiene.py --production
-
-      - name: Notify Bing and other IndexNow participants about changed public URLs
-        if: steps.commit.outputs.sha != ''
-        continue-on-error: true
-        run: python tools/indexnow_submit.py hourly-changed-urls.json

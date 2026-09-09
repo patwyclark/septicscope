@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: verify-septicscope-quality-production
+  cancel-in-progress: true
+
 jobs:
   production-smoke:
     if: >-
@@ -16,11 +20,11 @@ jobs:
       (github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
       EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
     steps:
-      - name: Verify exact Cloudflare deployment, county lookup, and service launch gate
+      - name: Verify exact Cloudflare quality-recovery deployment
         run: |
           python - <<'PY'
           import json
@@ -28,18 +32,22 @@ jobs:
           import re
           import time
           from urllib.error import HTTPError, URLError
+          from urllib.parse import urlparse
           from urllib.request import Request, urlopen
+          import xml.etree.ElementTree as ET
 
           BASE = "https://septicscope.com"
           EXPECTED = os.environ["EXPECTED_SHA"].strip()
+          ADSENSE = "ca-pub-8782868222380999"
           HEADERS = {
-              "User-Agent": "SepticScope production smoke test",
+              "User-Agent": "SepticScope production quality smoke test",
               "Cache-Control": "no-cache",
           }
 
-          def fetch_text(path, timeout=30):
+          def fetch(path: str, timeout: int = 30) -> str:
+              separator = "&" if "?" in path else "?"
               request = Request(
-                  f"{BASE}{path}?v={int(time.time())}",
+                  f"{BASE}{path}{separator}v={int(time.time())}",
                   headers=HEADERS,
               )
               with urlopen(request, timeout=timeout) as response:
@@ -49,9 +57,9 @@ jobs:
 
           info = None
           last_error = "not checked"
-          for attempt in range(40):
+          for attempt in range(60):
               try:
-                  info = json.loads(fetch_text("/build-info.json", 20))
+                  info = json.loads(fetch("/build-info.json", 20))
                   deployed = str(info.get("commit_sha", ""))
                   if deployed == EXPECTED:
                       print(f"Cloudflare deployment confirmed at {deployed}")
@@ -59,123 +67,165 @@ jobs:
                   last_error = f"deployed {deployed or 'unknown'}; expected {EXPECTED}"
               except (HTTPError, URLError, TimeoutError, RuntimeError, json.JSONDecodeError) as exc:
                   last_error = repr(exc)
-              print(f"Waiting for deployment ({attempt + 1}/40): {last_error}")
+              print(f"Waiting for deployment ({attempt + 1}/60): {last_error}")
               time.sleep(15)
           else:
-              raise SystemExit(f"Production did not reach the expected commit: {last_error}")
+              raise SystemExit(f"Production did not reach expected commit: {last_error}")
+
+          recovery = json.loads(fetch("/data/adsense-quality-recovery.json"))
+          audit = json.loads(fetch("/data/project-audit-summary.json"))
+          lookup = json.loads(fetch("/data/county-lookup.json"))
+          service_status = json.loads(fetch("/data/service-directory-status.json"))
+          home = fetch("/")
+          counties = fetch("/counties/")
+          guides = fetch("/guides/")
+          faq = fetch("/faq/")
+          about = fetch("/about/")
+          providers = fetch("/providers/")
+          service = fetch("/septic-services-near-me/")
+          sitemap_text = fetch("/sitemap.xml")
+          robots = fetch("/robots.txt")
+          ads_txt = fetch("/ads.txt")
 
           if info.get("quality_gate") != "pass":
               raise SystemExit(f"Production quality gate is not passing: {info}")
           if int(info.get("published_county_or_equivalent_pages", 0)) != 3144:
-              raise SystemExit(f"Production county coverage is incomplete: {info}")
+              raise SystemExit(f"National county/FIPS coverage changed: {info}")
+          if not recovery.get("recovery_mode"):
+              raise SystemExit("AdSense/search quality recovery mode is not active")
 
-          home = fetch_text("/")
-          counties_page = fetch_text("/counties/")
-          county_js = fetch_text("/assets/county-lookup.js")
-          county_data = json.loads(fetch_text("/data/county-lookup.json"))
-          provider_data = json.loads(fetch_text("/data/septic-services-near-me.json"))
-          service_status = json.loads(fetch_text("/data/service-directory-status.json"))
-          locator = fetch_text("/septic-services-near-me/")
-          provider_page = fetch_text("/providers/")
-          sitemap = fetch_text("/sitemap.xml")
-          robots = fetch_text("/robots.txt")
-          verified_county = fetch_text("/counties/virginia/fairfax/")
-          progress_county = fetch_text("/counties/virginia/fairfax-city/")
-
-          # County lookup must be the primary public search on both entry points.
-          for label, body in (("homepage", home), ("county directory", counties_page)):
-              if "data-county-lookup-root" not in body:
-                  raise SystemExit(f"{label} is missing the county lookup")
-              if "/assets/county-lookup.js" not in body:
-                  raise SystemExit(f"{label} is missing the county lookup script")
-          if "Find the septic information that applies to your property" not in home:
-              raise SystemExit("Homepage county-information heading is missing")
-          if "Find county septic information" not in counties_page or "County FIPS" not in counties_page:
-              raise SystemExit("County directory is missing visible county/FIPS guidance")
-          if "county_lookup_search" not in county_js or "data-county-input" not in county_js:
-              raise SystemExit("County lookup JavaScript is incomplete")
-          if "noindex" in counties_page.lower():
-              raise SystemExit("County directory is unexpectedly noindex")
-          county_compact = counties_page.replace(" ", "").lower()
-          if '<linkrel="canonical"href="https://septicscope.com/counties/">' not in county_compact:
-              raise SystemExit("County directory canonical is wrong")
-
-          county_rows = county_data.get("counties", [])
-          if county_data.get("record_count") != 3144 or len(county_rows) != 3144:
-              raise SystemExit("County lookup is not nationally complete")
-          if len({row.get("f") for row in county_rows}) != 3144:
-              raise SystemExit("County lookup contains duplicate FIPS records")
-          denton = next((row for row in county_rows if row.get("f") == "48121"), None)
-          if (
-              not denton
-              or not str(denton.get("n", "")).lower().startswith("denton")
-              or denton.get("a") != "TX"
-              or denton.get("u") != "/counties/texas/denton/"
+          approved = int(recovery.get("quality_approved_counties", 0))
+          retained_guides = int(recovery.get("retained_long_form_guides", 0))
+          expected_sitemap = int(recovery.get("sitemap_urls", -1))
+          if not 5 <= approved <= 175:
+              raise SystemExit(f"Unexpected quality-approved county footprint: {approved}")
+          if retained_guides < 8:
+              raise SystemExit(f"Too few substantive national guides: {retained_guides}")
+          if not 1 <= expected_sitemap <= 210:
+              raise SystemExit(f"Focused sitemap count is invalid: {expected_sitemap}")
+          counts = audit.get("counts", {})
+          if int(counts.get("verified_county_guides", -1)) != approved:
+              raise SystemExit("Inventory and recovery county counts do not match")
+          if int(info.get("verified_county_guides", -1)) != approved:
+              raise SystemExit("Build-info and recovery county counts do not match")
+          for key in (
+              "pages_without_primary_keywords", "duplicate_title_groups",
+              "duplicate_h1_groups", "duplicate_meta_description_groups",
+              "canonical_errors", "canonical_domain_conflicts",
+              "accessibility_warnings", "legacy_brand_occurrences",
           ):
-              raise SystemExit(f"Denton County FIPS sample is wrong: {denton}")
+              if int(counts.get(key, -1)) != 0:
+                  raise SystemExit(f"Production metadata quality regression: {key}={counts.get(key)}")
 
-          # The homepage must not promote the unfinished global service search.
+          # The national lookup remains complete, but only quality-approved counties
+          # are marked as direct published local guides.
+          rows = lookup.get("counties", [])
+          if lookup.get("record_count") != 3144 or len(rows) != 3144:
+              raise SystemExit("County lookup is not nationally complete")
+          if len({row.get("f") for row in rows}) != 3144:
+              raise SystemExit("County lookup contains duplicate FIPS records")
+          if sum(bool(row.get("v")) for row in rows) != approved:
+              raise SystemExit("County lookup approval flags do not match recovery report")
+          if "data-county-lookup-root" not in home or "/assets/county-lookup.js" not in home:
+              raise SystemExit("Homepage county/ZIP/city/FIPS lookup is missing")
+          if "data-county-lookup-root" not in counties or "County FIPS" not in counties:
+              raise SystemExit("County directory lookup is missing")
+
+          # Homepage and core editorial resources must communicate the quality reset.
+          for phrase in (
+              "Practical septic guidance for real property decisions",
+              "Fewer pages, stronger reasons to trust each one",
+              "One comprehensive septic FAQ instead of thin answer pages",
+          ):
+              if phrase not in home:
+                  raise SystemExit(f"Quality-first homepage is missing {phrase!r}")
+          for phrase in ("High-coverage state hubs", "3,144 county and county-equivalent pages"):
+              if phrase in re.sub(r"<[^>]+>", " ", home):
+                  raise SystemExit(f"Homepage still markets page volume: {phrase}")
+          if ADSENSE not in home:
+              raise SystemExit("Substantive homepage lost AdSense site code")
+
+          if faq.count("<h2>") < 10 or '"@type": "FAQPage"' not in faq:
+              raise SystemExit("Consolidated FAQ hub is incomplete")
+          if ADSENSE not in faq:
+              raise SystemExit("Substantive FAQ hub lost AdSense site code")
+          if "How automation is used" not in about or "Advertising and commercial separation" not in about:
+              raise SystemExit("Editorial transparency page is incomplete")
+          if ADSENSE in about:
+              raise SystemExit("About/editorial policy page must remain ad-free")
+          if "Shorter or overlapping pages have been withheld or consolidated" not in guides:
+              raise SystemExit("Quality-reviewed guide hub is not deployed")
+          if ADSENSE in guides:
+              raise SystemExit("Navigation-only guide hub must remain ad-free")
+          for route in recovery.get("retained_guide_routes", []):
+              if route not in guides:
+                  raise SystemExit(f"Guide hub is missing retained guide {route}")
+          for item in recovery.get("demoted_guides", []):
+              route = item.get("route") if isinstance(item, dict) else ""
+              if route and route in guides:
+                  raise SystemExit(f"Guide hub still promotes withheld guide {route}")
+
+          # The incomplete service directory remains hidden, noindex, ad-free, and
+          # absent from the focused sitemap.
+          if bool(service_status.get("public")):
+              raise SystemExit("Global service directory unexpectedly launched")
+          for label, body in (("provider directory", providers), ("service locator", service)):
+              if "noindex,follow" not in body.replace(" ", "").lower():
+                  raise SystemExit(f"Incomplete {label} is not noindex,follow")
+              if ADSENSE in body:
+                  raise SystemExit(f"Incomplete {label} still carries AdSense")
           home_lower = home.lower()
-          forbidden_home_links = (
-              'href="/septic-services-near-me/',
-              "href='/septic-services-near-me/",
-              'href="/providers/',
-              "href='/providers/",
-          )
-          for forbidden in forbidden_home_links:
-              if forbidden in home_lower:
-                  raise SystemExit(f"Homepage promotes an incomplete service directory: {forbidden}")
+          for href in ('href="/providers/', 'href="/septic-services-near-me/'):
+              if href in home_lower:
+                  raise SystemExit(f"Homepage promotes incomplete service feature: {href}")
 
-          providers = provider_data.get("providers", [])
-          provider_counties = provider_data.get("counties", [])
-          if len(providers) != int(info.get("provider_listings", -1)):
-              raise SystemExit("Provider data does not match build-info")
-          if len(provider_counties) != 3144 or len({row.get("f") for row in provider_counties}) != 3144:
-              raise SystemExit("Provider background county index is incomplete")
-          covered = {
-              str(fips)
-              for provider in providers
-              for fips in provider.get("fips", [])
-              if re.fullmatch(r"\d{5}", str(fips))
-          }
-          should_be_public = len(covered) == 3144
-          if int(service_status.get("required_counties", 0)) != 3144:
-              raise SystemExit(f"Service launch requirement is wrong: {service_status}")
-          if int(service_status.get("covered_counties", -1)) != len(covered):
-              raise SystemExit("Service launch status does not match provider coverage")
-          if bool(service_status.get("public")) != should_be_public:
-              raise SystemExit("Service launch gate is inconsistent")
-
-          if should_be_public:
-              if "noindex" in locator.lower() or "data-provider-card" not in locator:
-                  raise SystemExit("Complete national service locator should be public")
-              if "noindex" in provider_page.lower():
-                  raise SystemExit("Complete provider directory should be public")
-              if sitemap.count(f"{BASE}/septic-services-near-me/") != 1:
-                  raise SystemExit("Public service locator must appear once in sitemap")
-          else:
-              if "noindex,follow" not in locator.replace(" ", "").lower():
-                  raise SystemExit("Incomplete service locator is not noindex,follow")
-              if "data-provider-card" in locator:
-                  raise SystemExit("Incomplete service locator still exposes searchable cards")
-              provider_body = provider_page.split("<main", 1)[-1]
-              if "noindex,follow" not in provider_page.replace(" ", "").lower():
-                  raise SystemExit("Incomplete provider directory is not noindex,follow")
-              if '<article class="ss-provider-card">' in provider_body:
-                  raise SystemExit("Incomplete provider directory exposes listing cards")
-              for hidden_url in (f"{BASE}/septic-services-near-me/", f"{BASE}/providers/"):
-                  if hidden_url in sitemap:
-                      raise SystemExit(f"Hidden service route remains in sitemap: {hidden_url}")
-
+          sitemap_root = ET.fromstring(sitemap_text)
+          ns = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+          sitemap_urls = [(node.text or "").strip() for node in sitemap_root.findall(".//s:loc", ns)]
+          if len(sitemap_urls) != expected_sitemap or len(sitemap_urls) != len(set(sitemap_urls)):
+              raise SystemExit(
+                  f"Focused sitemap drift: {len(sitemap_urls)} URLs, expected {expected_sitemap}"
+              )
+          for forbidden in (f"{BASE}/providers/", f"{BASE}/septic-services-near-me/"):
+              if forbidden in sitemap_urls:
+                  raise SystemExit(f"Hidden service route remains in sitemap: {forbidden}")
+          if f"{BASE}/faq/" not in sitemap_urls or f"{BASE}/about/" not in sitemap_urls:
+              raise SystemExit("Core quality/trust pages are missing from sitemap")
           if "Sitemap:" not in robots or "septicscope.com/sitemap.xml" not in robots:
-              raise SystemExit("robots.txt does not publish the sitemap")
-          if "noindex" in verified_county.lower() or "Official sources" not in verified_county:
-              raise SystemExit("Verified Fairfax County guide is invalid")
-          if "noindex,follow" not in progress_county.replace(" ", "").lower():
-              raise SystemExit("In-progress Fairfax City page must remain noindex,follow")
+              raise SystemExit("robots.txt does not expose the production sitemap")
+          if "google.com, pub-8782868222380999, DIRECT, f08c47fec0942fa0" not in ads_txt:
+              raise SystemExit("ads.txt authorization is missing")
+
+          approved_items = recovery.get("approved_counties", [])
+          demoted_items = recovery.get("demoted_counties", [])
+          if not approved_items or not demoted_items:
+              raise SystemExit("Recovery report lacks approved/demoted county samples")
+          approved_path = urlparse(approved_items[0]["url"]).path
+          approved_html = fetch(approved_path)
+          if "noindex" in approved_html.lower() or ADSENSE not in approved_html:
+              raise SystemExit(f"Approved county is not indexable/monetizable: {approved_path}")
+          if "Official sources" not in approved_html or "Permitting authority" not in approved_html:
+              raise SystemExit(f"Approved county lost local source structure: {approved_path}")
+          if BASE + approved_path not in sitemap_urls:
+              raise SystemExit(f"Approved county is missing from sitemap: {approved_path}")
+
+          demoted_path = urlparse(demoted_items[0]["url"]).path
+          demoted_html = fetch(demoted_path)
+          if "noindex,follow" not in demoted_html.replace(" ", "").lower():
+              raise SystemExit(f"Withheld county is not noindex,follow: {demoted_path}")
+          if ADSENSE in demoted_html or "septicscope-quality-status" not in demoted_html:
+              raise SystemExit(f"Withheld county is monetized or lacks quality marker: {demoted_path}")
+          if BASE + demoted_path in sitemap_urls:
+              raise SystemExit(f"Withheld county remains in sitemap: {demoted_path}")
+
+          state_slug = demoted_path.strip("/").split("/")[1]
+          state_hub = fetch(f"/counties/{state_slug}/")
+          if "noindex,follow" not in state_hub.replace(" ", "").lower() or ADSENSE in state_hub:
+              raise SystemExit("Navigation-only state hub is not noindex/ad-free")
 
           print(
-              "PASS: production county ZIP/city/FIPS lookup is live; "
-              f"global service search remains gated at {len(covered)}/3,144 counties"
+              "PASS: production quality recovery is live — "
+              f"{approved} locally differentiated county guides, "
+              f"{retained_guides} substantive guides, {len(sitemap_urls)} sitemap URLs"
           )
           PY
