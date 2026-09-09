@@ -1,10 +1,10 @@
 """Canonical SepticScope production build orchestrator.
 
-Cloudflare Pages and GitHub Actions must both run only this file. The historical
-site generator is preserved as site_core_build.py; supplemental guides, trust
-hardening, provider rendering, county lookup, gated service search, homepage
-experience, contextual links, SEO safeguards and machine-readable inventories
-are executed in a deterministic order so CI and production cannot drift.
+Cloudflare Pages and GitHub Actions must both run only this file. The build now
+prioritizes a small, locally differentiated search footprint over page count. The
+quality-recovery pass runs before the final inventory so unfinished, repetitive,
+navigation-only, and consolidated pages are noindex/ad-free and excluded from the
+sitemap before validation.
 """
 from __future__ import annotations
 
@@ -71,29 +71,31 @@ def _run() -> None:
 
     inventory = ROOT / "site_inventory.py"
     provider_experience = ROOT / "provider_curated_experience.py"
-    growth_experience = ROOT / "continuous_growth_experience.py"
     service_locator = ROOT / "septic_services_near_me.py"
     county_lookup = ROOT / "county_lookup_experience.py"
     homepage_experience = ROOT / "homepage_experience.py"
     service_quality = ROOT / "septic_service_quality.py"
+    quality_recovery = ROOT / "quality_recovery.py"
     seo_review = ROOT / "tools" / "seo_hourly_audit.py"
-    growth_planner = ROOT / "tools" / "continuous_growth.py"
 
-    # The first inventory creates the national county manifest. Provider modules may
-    # continue to enrich counties where public evidence exists, while the global service
-    # directory remains hidden until all 3,144 county-equivalents have coverage.
+    # The first inventory creates the national county manifest used by the lookup and
+    # provider layers. Provider information can still enrich supported county pages,
+    # while the global provider search remains gated until national coverage exists.
     _run_script(inventory, env=env)
     _run_script(provider_experience, env=env)
-    _run_script(growth_experience, env=env)
     _run_script(service_locator, env=env)
     _run_script(county_lookup, env=env)
     _run_script(homepage_experience, env=env)
     _run_script(service_quality, env=env)
 
-    # Refresh inventory before the SEO gate so final public/noindex decisions and the
-    # restored county lookup are reflected in the keyword map and sitemap review.
-    _run_script(inventory, env=env)
+    # This is the decisive quality gate. It consolidates FAQ pages, rebuilds the
+    # homepage and About page, demotes repetitive or insufficiently local county pages,
+    # removes ads from navigation/noindex pages, and creates a focused sitemap.
+    _run_script(quality_recovery, env=env)
 
+    # Final inventories and SEO checks must inspect the post-recovery output rather
+    # than the larger pre-recovery generator footprint.
+    _run_script(inventory, env=env)
     _run_script(
         seo_review,
         "--site",
@@ -103,7 +105,6 @@ def _run() -> None:
         "--apply-safe",
         env=env,
     )
-
     _run_script(inventory, env=env)
     _run_script(
         seo_review,
@@ -113,17 +114,7 @@ def _run() -> None:
         str(ROOT / "site" / "data" / "hourly-seo-build-report.json"),
         env=env,
     )
-
-    _run_script(
-        growth_planner,
-        "--site",
-        str(ROOT / "site"),
-        "--state",
-        str(ROOT / "data" / "growth-links.json"),
-        "--report",
-        str(ROOT / "site" / "data" / "continuous-growth-report.json"),
-        env=env,
-    )
+    _run_script(quality_recovery, "--check", env=env)
 
 
 if __name__ == "__main__":
