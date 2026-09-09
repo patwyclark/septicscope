@@ -2,7 +2,7 @@
 
 Cloudflare Pages and GitHub Actions must both run only this file. The build now
 prioritizes a small, locally differentiated search footprint over page count. The
-quality-recovery pass runs before the final inventory so unfinished, repetitive,
+quality-recovery passes run before the final inventory so unfinished, repetitive,
 navigation-only, and consolidated pages are noindex/ad-free and excluded from the
 sitemap before validation.
 """
@@ -77,6 +77,7 @@ def _run() -> None:
     homepage_experience = ROOT / "homepage_experience.py"
     service_quality = ROOT / "septic_service_quality.py"
     quality_recovery = ROOT / "quality_recovery_execute.py"
+    strict_recovery = ROOT / "quality_recovery_strict.py"
     quality_finalize = ROOT / "quality_recovery_finalize.py"
     redirect_hygiene = ROOT / "recovery_redirect_hygiene.py"
     quality_navigation = ROOT / "quality_recovery_navigation.py"
@@ -92,17 +93,17 @@ def _run() -> None:
     _run_script(homepage_experience, env=env)
     _run_script(service_quality, env=env)
 
-    # This is the decisive quality gate. It consolidates FAQ pages, rebuilds the
-    # homepage and About page, demotes repetitive or insufficiently local county pages,
-    # removes ads from navigation/noindex pages, creates a focused sitemap, and then
-    # rebuilds navigation so users cannot click into withheld guide/county URLs.
+    # The first pass computes evidence and similarity; the strict pass then keeps only
+    # the strongest local pages. The remaining passes strengthen core editorial pages,
+    # keep redirects deployable, and rebuild navigation without withheld destinations.
     _run_script(quality_recovery, env=env)
+    _run_script(strict_recovery, env=env)
     _run_script(quality_finalize, env=env)
     _run_script(redirect_hygiene, env=env)
     _run_script(quality_navigation, env=env)
 
-    # Final inventories and SEO checks must inspect the post-recovery output rather
-    # than the larger pre-recovery generator footprint.
+    # Final inventories and SEO checks inspect the post-recovery output rather than the
+    # much larger pre-recovery generator footprint.
     _run_script(inventory, env=env)
     _run_script(
         seo_review,
@@ -123,6 +124,7 @@ def _run() -> None:
         env=env,
     )
     _run_script(quality_recovery, "--check", env=env)
+    _run_script(strict_recovery, "--check", env=env)
 
 
 if __name__ == "__main__":
