@@ -29,7 +29,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Compile Python sources and self-test maintenance tooling
+      - name: Compile source and self-test maintenance tooling
         run: |
           python -m compileall -q -x '(^|/)(site|\.septicscope-build)/' .
           python tools/provider_discovery.py --self-test
@@ -45,173 +45,12 @@ jobs:
         id: recovery
         continue-on-error: true
         run: |
-          test -f site/deployment-manifest.txt
-          cat site/deployment-manifest.txt
-          test -f site/build-info.json
-          test -f site/data/national-coverage-manifest.json
-          test -f site/data/keyword-map.json
-          test -f site/data/source-catalog.json
-          test -f site/data/project-audit-summary.json
-          test -f site/data/project-audit-summary.txt
-          test -f site/data/hourly-seo-build-report.json
-          test -f site/data/adsense-quality-recovery.json
-          test -f site/data/adsense-quality-recovery.txt
-          test -f site/data/county-lookup.json
-          test -f site/assets/county-lookup.js
-          test -f site/index.html
-          test -f site/counties/index.html
-          test -f site/guides/index.html
-          test -f site/faq/index.html
-          test -f site/about/index.html
-          test -f site/privacy/index.html
-          test -f site/contact/index.html
-          test -f site/providers/index.html
-          test -f site/septic-services-near-me/index.html
-          test -f site/guides/septic-maintenance-checklist/index.html
-          test -f site/guides/septic-inspection-checklist/index.html
-          test -f site/guides/septic-drainfield-repair-replacement/index.html
-          test -f site/guides/types-of-septic-systems/index.html
-          test -f site/guides/septic-system-lifespan/index.html
           node --check site/assets/county-lookup.js
           python quality_recovery.py --check
+          python quality_recovery_strict.py --check
           python site_inventory.py --check
           python tools/seo_hourly_audit.py --site site --report validation-seo-report.json
-          python - <<'PY'
-          import json
-          from html.parser import HTMLParser
-          from pathlib import Path
-          import re
-          import xml.etree.ElementTree as ET
-          from urllib.parse import urlparse
-
-          ADSENSE = 'ca-pub-8782868222380999'
-          SITE = Path('site')
-          recovery = json.loads((SITE / 'data/adsense-quality-recovery.json').read_text())
-          baseline = json.loads(Path('data/quality-baseline.json').read_text())
-          summary = json.loads((SITE / 'data/project-audit-summary.json').read_text())
-          counts = summary['counts']
-
-          if not recovery.get('recovery_mode'):
-              raise SystemExit('Quality recovery mode is not active')
-          approved = int(recovery.get('quality_approved_counties', 0))
-          if approved < int(baseline['minimum_verified_counties']):
-              raise SystemExit(f'Only {approved} county guides passed the local-quality gate')
-          if approved > int(baseline['maximum_indexable_county_guides']):
-              raise SystemExit(f'{approved} county guides remain indexable; recovery footprint is too broad')
-          retained_guides = int(recovery.get('retained_long_form_guides', 0))
-          if retained_guides < int(baseline['minimum_retained_long_form_guides']):
-              raise SystemExit(f'Only {retained_guides} long-form guides survived')
-          if int(recovery.get('sitemap_urls', 99999)) > int(baseline['maximum_recovery_sitemap_urls']):
-              raise SystemExit('Recovery sitemap exceeds the quality ceiling')
-
-          required_zero = {
-              'pages_without_primary_keywords', 'duplicate_title_groups',
-              'duplicate_h1_groups', 'duplicate_meta_description_groups',
-              'canonical_errors', 'canonical_domain_conflicts',
-              'accessibility_warnings', 'legacy_brand_occurrences',
-          }
-          failures = {key: counts.get(key) for key in required_zero if counts.get(key) != 0}
-          if failures:
-              raise SystemExit(f'Final metadata/SEO quality counts are not zero: {failures}')
-          if counts.get('verified_county_guides') != approved:
-              raise SystemExit(
-                  f'Inventory/recovery county count drift: {counts.get("verified_county_guides")} versus {approved}'
-              )
-
-          home = (SITE / 'index.html').read_text(encoding='utf-8')
-          home_visible = re.sub(r'<[^>]+>', ' ', home)
-          home_visible = re.sub(r'\s+', ' ', home_visible)
-          for phrase in (
-              'Practical septic guidance for real property decisions',
-              'Fewer pages, stronger reasons to trust each one',
-              'data-county-lookup-root',
-          ):
-              if phrase not in home:
-                  raise SystemExit(f'Quality-first homepage is missing {phrase!r}')
-          for phrase in ('3,144 county and county-equivalent pages', 'High-coverage state hubs'):
-              if phrase in home_visible:
-                  raise SystemExit(f'Homepage still markets volume rather than value: {phrase}')
-          if ADSENSE not in home:
-              raise SystemExit('Homepage is missing AdSense site code')
-
-          faq = (SITE / 'faq/index.html').read_text(encoding='utf-8')
-          if faq.count('<h2>') < 10 or '"@type": "FAQPage"' not in faq or ADSENSE not in faq:
-              raise SystemExit('Consolidated FAQ hub is incomplete')
-          about = (SITE / 'about/index.html').read_text(encoding='utf-8')
-          if 'How automation is used' not in about or 'Advertising and commercial separation' not in about:
-              raise SystemExit('Editorial transparency page is incomplete')
-          if ADSENSE in about:
-              raise SystemExit('About/editorial policy must remain ad-free')
-
-          county_data = json.loads((SITE / 'data/county-lookup.json').read_text())
-          county_rows = county_data.get('counties', [])
-          if county_data.get('record_count') != 3144 or len(county_rows) != 3144:
-              raise SystemExit('County lookup does not retain all 3,144 county-equivalents')
-          if len({row.get('f') for row in county_rows}) != 3144:
-              raise SystemExit('County lookup contains duplicate county FIPS records')
-          if sum(bool(row.get('v')) for row in county_rows) != approved:
-              raise SystemExit('County lookup approved-guide flags drift from quality report')
-
-          def html_path(url):
-              p = urlparse(url).path.strip('/')
-              return SITE / p / 'index.html' if p else SITE / 'index.html'
-
-          for item in recovery.get('approved_counties', []):
-              path = html_path(item['url'])
-              raw = path.read_text(encoding='utf-8')
-              if 'noindex' in raw.lower() or ADSENSE not in raw:
-                  raise SystemExit(f'Approved county is not indexable/monetizable: {item["url"]}')
-              if item.get('main_words', 0) < 300 or item.get('external_sources', 0) < 3 or item.get('local_sources', 0) < 1:
-                  raise SystemExit(f'Approved county lacks recovery evidence: {item}')
-              if item.get('shared_template_ratio', 1) > 0.48:
-                  raise SystemExit(f'Approved county remains too template-heavy: {item}')
-
-          # Every noindex page must be ad-free; navigation/trust hubs are ad-free even when indexable.
-          noindex_with_ads = []
-          for path in SITE.rglob('*.html'):
-              raw = path.read_text(encoding='utf-8', errors='replace')
-              if 'noindex' in raw.lower() and ADSENSE in raw:
-                  noindex_with_ads.append(str(path))
-          if noindex_with_ads:
-              raise SystemExit(f'Noindex pages still carry AdSense: {noindex_with_ads[:10]}')
-          for relative in ('counties/index.html', 'guides/index.html', 'privacy/index.html', 'contact/index.html', 'about/index.html', 'providers/index.html', 'septic-services-near-me/index.html'):
-              raw = (SITE / relative).read_text(encoding='utf-8')
-              if ADSENSE in raw:
-                  raise SystemExit(f'Navigation/trust/unfinished page still carries ads: {relative}')
-
-          for path in SITE.glob('counties/*/index.html'):
-              raw = path.read_text(encoding='utf-8')
-              if 'noindex' not in raw.lower() or ADSENSE in raw:
-                  raise SystemExit(f'Navigation-only state hub must be noindex/ad-free: {path}')
-          for path in SITE.glob('faq/*/index.html'):
-              raw = path.read_text(encoding='utf-8')
-              if 'noindex' not in raw.lower() or ADSENSE in raw:
-                  raise SystemExit(f'Consolidated FAQ leaf must be noindex/ad-free: {path}')
-
-          growth = json.loads(Path('data/growth-links.json').read_text())
-          if growth.get('links'):
-              raise SystemExit('Repetitive automatic growth links remain active')
-          workflow = Path('.github/workflows/hourly-growth-maintenance.yml').read_text()
-          if 'cron:' in workflow or '--apply-one' in workflow or 'git push origin HEAD:main' in workflow:
-              raise SystemExit('Automatic scheduled content mutation is still enabled')
-
-          sitemap_root = ET.parse(SITE / 'sitemap.xml').getroot()
-          ns = {'s': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
-          sitemap_urls = [(node.text or '').strip() for node in sitemap_root.findall('.//s:loc', ns)]
-          if len(sitemap_urls) != recovery.get('sitemap_urls'):
-              raise SystemExit('Sitemap count drift from quality report')
-          if len(sitemap_urls) != len(set(sitemap_urls)):
-              raise SystemExit('Sitemap contains duplicate URLs')
-          for url in sitemap_urls:
-              raw = html_path(url).read_text(encoding='utf-8')
-              if 'noindex' in raw.lower():
-                  raise SystemExit(f'Noindex page appears in focused sitemap: {url}')
-
-          print(
-              f'PASS: quality recovery retains {approved} county guides, '
-              f'{retained_guides} national guides, and {len(sitemap_urls)} sitemap URLs'
-          )
-          PY
+          python tools/check_quality_recovery.py
 
       - name: Audit every generated page and internal link
         id: internal_audit
@@ -260,6 +99,8 @@ jobs:
             site/faq/index.html
             site/about/index.html
             site/counties/index.html
+            site/guides/index.html
+            site/guides/buying-a-house-with-septic/index.html
             site/sitemap.xml
             site/_redirects
             site/build-info.json
@@ -273,9 +114,25 @@ jobs:
 
       - name: Enforce all quality gates
         if: always()
+        env:
+          RECOVERY_OUTCOME: ${{ steps.recovery.outcome }}
+          INTERNAL_OUTCOME: ${{ steps.internal_audit.outcome }}
+          INDEXING_OUTCOME: ${{ steps.indexing_audit.outcome }}
+          EXTERNAL_OUTCOME: ${{ steps.external_audit.outcome }}
+          ADSENSE_OUTCOME: ${{ steps.adsense_audit.outcome }}
         run: |
-          test "${{ steps.recovery.outcome }}" = "success"
-          test "${{ steps.internal_audit.outcome }}" = "success"
-          test "${{ steps.indexing_audit.outcome }}" = "success"
-          test "${{ steps.external_audit.outcome }}" = "success"
-          test "${{ steps.adsense_audit.outcome }}" = "success"
+          python - <<'PY'
+          import os
+          outcomes = {
+              "recovery": os.environ.get("RECOVERY_OUTCOME", ""),
+              "internal": os.environ.get("INTERNAL_OUTCOME", ""),
+              "indexing": os.environ.get("INDEXING_OUTCOME", ""),
+              "external": os.environ.get("EXTERNAL_OUTCOME", ""),
+              "adsense": os.environ.get("ADSENSE_OUTCOME", ""),
+          }
+          print("Quality gate outcomes:", outcomes)
+          failed = {name: result for name, result in outcomes.items() if result != "success"}
+          if failed:
+              raise SystemExit(f"Quality gates failed: {failed}")
+          print("PASS: all SepticScope quality-recovery gates succeeded")
+          PY
