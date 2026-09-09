@@ -78,6 +78,7 @@ def _run() -> None:
     service_quality = ROOT / "septic_service_quality.py"
     quality_recovery = ROOT / "quality_recovery.py"
     quality_finalize = ROOT / "quality_recovery_finalize.py"
+    redirect_hygiene = ROOT / "recovery_redirect_hygiene.py"
     quality_navigation = ROOT / "quality_recovery_navigation.py"
     seo_review = ROOT / "tools" / "seo_hourly_audit.py"
 
@@ -97,6 +98,7 @@ def _run() -> None:
     # rebuilds navigation so users cannot click into withheld guide/county URLs.
     _run_script(quality_recovery, env=env)
     _run_script(quality_finalize, env=env)
+    _run_script(redirect_hygiene, env=env)
     _run_script(quality_navigation, env=env)
 
     # Final inventories and SEO checks must inspect the post-recovery output rather
