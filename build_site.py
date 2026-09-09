@@ -78,13 +78,14 @@ def _run() -> None:
     service_quality = ROOT / "septic_service_quality.py"
     quality_recovery = ROOT / "quality_recovery_execute.py"
     strict_recovery = ROOT / "quality_recovery_strict.py"
+    provider_visibility = ROOT / "quality_recovery_provider_visibility.py"
     quality_finalize = ROOT / "quality_recovery_finalize.py"
     redirect_hygiene = ROOT / "recovery_redirect_hygiene.py"
     quality_navigation = ROOT / "quality_recovery_navigation.py"
     seo_review = ROOT / "tools" / "seo_hourly_audit.py"
 
     # The first inventory creates the national county manifest used by the lookup and
-    # provider layers. Provider information can still enrich supported county pages,
+    # provider layers. Provider information can still be maintained in source data,
     # while the global provider search remains gated until national coverage exists.
     _run_script(inventory, env=env)
     _run_script(provider_experience, env=env)
@@ -94,10 +95,12 @@ def _run() -> None:
     _run_script(service_quality, env=env)
 
     # The first pass computes evidence and similarity; the strict pass then keeps only
-    # the strongest local pages. The remaining passes strengthen core editorial pages,
-    # keep redirects deployable, and rebuild navigation without withheld destinations.
+    # the strongest local pages. Incomplete provider modules are hidden during recovery.
+    # The remaining passes strengthen core editorial pages, keep redirects deployable,
+    # and rebuild navigation without withheld destinations.
     _run_script(quality_recovery, env=env)
     _run_script(strict_recovery, env=env)
+    _run_script(provider_visibility, env=env)
     _run_script(quality_finalize, env=env)
     _run_script(redirect_hygiene, env=env)
     _run_script(quality_navigation, env=env)
