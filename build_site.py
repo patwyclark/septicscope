@@ -78,6 +78,7 @@ def _run() -> None:
     service_quality = ROOT / "septic_service_quality.py"
     quality_recovery = ROOT / "quality_recovery.py"
     quality_finalize = ROOT / "quality_recovery_finalize.py"
+    quality_navigation = ROOT / "quality_recovery_navigation.py"
     seo_review = ROOT / "tools" / "seo_hourly_audit.py"
 
     # The first inventory creates the national county manifest used by the lookup and
@@ -92,9 +93,11 @@ def _run() -> None:
 
     # This is the decisive quality gate. It consolidates FAQ pages, rebuilds the
     # homepage and About page, demotes repetitive or insufficiently local county pages,
-    # removes ads from navigation/noindex pages, and creates a focused sitemap.
+    # removes ads from navigation/noindex pages, creates a focused sitemap, and then
+    # rebuilds navigation so users cannot click into withheld guide/county URLs.
     _run_script(quality_recovery, env=env)
     _run_script(quality_finalize, env=env)
+    _run_script(quality_navigation, env=env)
 
     # Final inventories and SEO checks must inspect the post-recovery output rather
     # than the larger pre-recovery generator footprint.
