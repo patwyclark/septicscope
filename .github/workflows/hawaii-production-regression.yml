@@ -48,10 +48,7 @@ jobs:
           }
 
           def fetch(path: str) -> str:
-              request = Request(
-                  f"{BASE}{path}?v={int(time.time())}",
-                  headers=HEADERS,
-              )
+              request = Request(f"{BASE}{path}?v={int(time.time())}", headers=HEADERS)
               with urlopen(request, timeout=30) as response:
                   if response.status != 200:
                       raise RuntimeError(f"{path} returned HTTP {response.status}")
@@ -78,18 +75,17 @@ jobs:
           minimum_verified = int(baseline.get("minimum_verified_counties", 0))
           if info.get("quality_gate") != "pass":
               raise SystemExit(f"Production quality gate is not passing: {info}")
-          if int(info.get("published_county_or_equivalent_pages", 0)) != 3144:
-              raise SystemExit(f"National county coverage changed unexpectedly: {info}")
+          if int(info.get("county_lookup_records", 0)) != 3144:
+              raise SystemExit(f"National county lookup changed unexpectedly: {info}")
           if int(info.get("verified_county_guides", 0)) < minimum_verified:
-              raise SystemExit(
-                  f"Verified county total is below the source-controlled baseline "
-                  f"{minimum_verified}: {info}"
-              )
+              raise SystemExit(f"Verified county total is below the source-controlled baseline {minimum_verified}: {info}")
 
           audit = json.loads(fetch("/data/project-audit-summary.json"))
           counts = audit.get("counts", {})
           if int(counts.get("verified_county_guides", 0)) < minimum_verified:
               raise SystemExit(f"Production audit is below the quality baseline: {counts}")
+          if int(counts.get("county_lookup_records", 0)) != 3144:
+              raise SystemExit(f"Production audit lost national lookup coverage: {counts}")
           if int(counts.get("pages_without_primary_keywords", -1)) != 0:
               raise SystemExit(f"An indexable page lacks a primary keyword: {counts}")
           if int(counts.get("canonical_errors", -1)) != 0:
@@ -97,38 +93,29 @@ jobs:
 
           county_slugs = ("hawaii", "honolulu", "kalawao", "kauai", "maui")
           checks = {
-              # The generic state-hub generator owns this page's copy. Verify its
-              # complete five-county link set below instead of pinning old prose.
               "/counties/hawaii/": (),
               "/counties/hawaii/hawaii/": (
-                  "Hawaii County",
-                  "County of Hawaii official website",
+                  "Hawaii County", "County of Hawaii official website",
                   "County-specific details not independently confirmed",
               ),
               "/counties/hawaii/honolulu/": (
-                  "Honolulu County",
-                  "City and County of Honolulu official website",
+                  "Honolulu County", "City and County of Honolulu official website",
                   "County-specific details not independently confirmed",
               ),
               "/counties/hawaii/kalawao/": (
-                  "Kalawao County",
-                  "Kalaupapa",
+                  "Kalawao County", "Kalaupapa",
                   "County-specific details not independently confirmed",
               ),
               "/counties/hawaii/kauai/": (
-                  "Kauai County",
-                  "County of Kauai official website",
+                  "Kauai County", "County of Kauai official website",
                   "County-specific details not independently confirmed",
               ),
               "/counties/hawaii/maui/": (
-                  "Maui County",
-                  "County of Maui government departments",
+                  "Maui County", "County of Maui government departments",
                   "https://www.mauicounty.gov/67/Government",
                   "County-specific details not independently confirmed",
               ),
-              "/sitemap.xml": tuple(
-                  f"{BASE}/counties/hawaii/{slug}/" for slug in county_slugs
-              ),
+              "/sitemap.xml": tuple(f"{BASE}/counties/hawaii/{slug}/" for slug in county_slugs),
           }
 
           bodies = {}
@@ -147,18 +134,14 @@ jobs:
           if expected_hub_canonical.lower() not in hub.lower():
               raise SystemExit("Hawaii state hub has the wrong canonical")
 
-          hub_links = set(
-              re.findall(
-                  r'href=["\'](/counties/hawaii/[^"\']+/)["\']',
-                  hub,
-                  flags=re.I,
-              )
-          )
+          hub_links = set(re.findall(r'href=["\'](/counties/hawaii/[^"\']+/)["\']', hub, flags=re.I))
           expected_links = {f"/counties/hawaii/{slug}/" for slug in county_slugs}
           if not expected_links.issubset(hub_links):
-              missing_links = sorted(expected_links.difference(hub_links))
-              raise SystemExit(f"Hawaii hub is missing county links: {missing_links}")
+              raise SystemExit(f"Hawaii hub is missing county links: {sorted(expected_links.difference(hub_links))}")
 
+          ads_marker = "pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+          if ads_marker in hub:
+              raise SystemExit("Hawaii state navigation hub must remain ad-free")
           for slug in county_slugs:
               path = f"/counties/hawaii/{slug}/"
               body = bodies[path]
@@ -173,9 +156,11 @@ jobs:
                   raise SystemExit(f"Hawaii guide lacks the official Title 11 source: {path}")
               if "Official sources" not in body:
                   raise SystemExit(f"Hawaii guide lacks a visible source section: {path}")
+              if ads_marker in body:
+                  raise SystemExit(f"Hawaii county guide should remain ad-free during recovery: {path}")
 
           print(
-              "PASS: all five Hawaii county-equivalent guides and the state hub are "
-              f"deployed; source-controlled quality baseline {minimum_verified} is intact"
+              "PASS: all five Hawaii county-equivalent guides and the state hub are deployed, "
+              f"source-backed and ad-free; quality baseline {minimum_verified} is intact"
           )
           PY
